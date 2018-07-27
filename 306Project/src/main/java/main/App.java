@@ -1,4 +1,4 @@
-package Project.Project;
+package main;
 
 /**
  * Hello world!
