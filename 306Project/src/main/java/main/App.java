@@ -1,12 +1,17 @@
 package main;
 
+import javafx.application.Application;
+import javafx.stage.Stage;
+
 /**
  * Hello world!
  *
  */
-public class App {
-    public static void main( String[] args ) {
-        System.out.println( "Hello World!" );
-    }
+public class App extends Application{
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+		// TODO Auto-generated method stub
+		 System.out.println( "Hello World!" );
+	}
     
 }
