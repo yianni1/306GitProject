@@ -19,7 +19,8 @@ public class App extends Application{
 		//Loads the graph, code should be smoved where the algorithm will be processed
 		Parameters params = getParameters();
 		List<String> args = params.getRaw();
-		Graph graph = LoadGraph.load(args.get(0)); // Assumes first argument is always dot file name
+		GraphLoader loader = new GraphLoader();
+		Graph load = loader.load(args.get(0)); // Assumes first argument is always dot file name
 		System.out.println("Done"); // FOR DEBUGGING ON CONSOLE
 		Platform.exit(); // Stops javafx app in console
 	}
