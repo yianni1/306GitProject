@@ -1,6 +1,11 @@
 package main;
 
+import java.util.List;
+
+import org.graphstream.graph.Graph;
+
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 
 /**
@@ -10,8 +15,13 @@ import javafx.stage.Stage;
 public class App extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		// TODO Auto-generated method stub
-		 System.out.println( "Hello World!" );
+		System.out.println("Started"); // FOR DEBUGGING ON CONSOLE
+		//Loads the graph, code should be smoved where the algorithm will be processed
+		Parameters params = getParameters();
+		List<String> args = params.getRaw();
+		Graph graph = LoadGraph.load(args.get(0)); // Assumes first argument is always dot file name
+		System.out.println("Done"); // FOR DEBUGGING ON CONSOLE
+		Platform.exit(); // Stops javafx app in console
 	}
 
 	/**
@@ -25,10 +35,10 @@ public class App extends Application{
 
 		//Handling the options
 		if (args.length == 2) {
-			Query.handle(fileName, processorNumber);
+			launch(args); //The only time we have  args is if the option is -v, in which case we launch
 		}
 		else if (args.length == 3) {
-			launch(args); //The only time we have 3 args is if the option is -v, in which case we launch
+			Query.handle(fileName, processorNumber);
 		}
 		else if (args.length == 4 && args[2].equals("p")) {
 			int coreNumber = Integer.parseInt(args[3]);

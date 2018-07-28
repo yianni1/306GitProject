@@ -21,7 +21,7 @@
 				<artifactId>javafx-maven-plugin</artifactId>
 				<version>8.8.3</version>
 				<configuration>
-					<mainClass>application.App</mainClass>
+					<mainClass>main.App</mainClass>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -40,7 +40,7 @@
 							</descriptorRefs>
 							<archive>
 								<manifest>
-									<mainClass>application.Main</mainClass>
+									<mainClass>main.App</mainClass>
 								</manifest>
 							</archive>
 						</configuration>
