@@ -1,5 +1,8 @@
 package graph;
 
+/**
+ * Created by Dweep on 29/7/2018
+ */
 public class Edge {
     private Node startNode;
     private Node endNode;

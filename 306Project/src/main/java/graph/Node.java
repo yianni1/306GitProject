@@ -4,13 +4,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+/**
+ * created by Dweep on 29/7/2018
+ */
 public class Node {
     int weight;
     char name;
     boolean marked;
 
-    HashMap<Node,Boolean> parents;
-    HashMap<Node,Boolean> children;
+    HashSet<Edge> incomingEdge;
+    HashSet<Edge> OutgoingEdge;
     //Edge[] edges;
 
     public Node(int weight, char name) {
@@ -18,7 +21,7 @@ public class Node {
         this.weight = weight;
         this.marked = false;
     }
-    /*
+
     public Node getUnvisitedChildNode() {
         if (this.children.containsValue(true)) {
             for (Map.Entry<Node,Boolean> entry : this.children.entrySet()) {
@@ -28,5 +31,5 @@ public class Node {
             }
         }
     }
-    */
+
 }
