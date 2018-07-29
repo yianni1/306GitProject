@@ -1,15 +1,20 @@
 package graph;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 
 /**
  * Created by olive on 29/07/2018.
  */
 public class TaskGraph {
 
-    private List<TaskEdge> edges = new ArrayList<TaskEdge>(); //The edges of the graph
-
+    private HashSet<TaskEdge> edges; //The edges of the graph
+    private HashSet<TaskNode> nodes;
+    
+    public TaskGraph() {
+    	edges = new HashSet<TaskEdge>();
+    	nodes = new HashSet<TaskNode>(); 
+    }
+    
     /**
      * Adds an edge
      * @param edge
@@ -17,4 +22,15 @@ public class TaskGraph {
     public void addEdge(TaskEdge edge) {
         this.edges.add(edge);
     }
+    
+    /**
+     * Adds a node
+     * @param node
+     */
+    public void addNode(TaskNode node) {
+    	 this.nodes.add(node);
+    }
+    
+    
+    
 }
