@@ -7,13 +7,13 @@ import java.util.HashSet;
  */
 public class TaskNode {
     private int weight;
-    private char name;
+    private String name;
     private boolean visited;
 
     private HashSet<TaskEdge> incomingEdges;
     private HashSet<TaskEdge> outgoingEdges;
 
-    public TaskNode(int weight, char name) {
+    public TaskNode(int weight, String name) {
         this.name = name;
         this.weight = weight;
         this.visited = false;
@@ -45,7 +45,7 @@ public class TaskNode {
         return visited;
     }
 
-    public char getName() {
+    public String getName() {
         return name;
     }
 
