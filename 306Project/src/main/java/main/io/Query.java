@@ -1,4 +1,4 @@
-package main;
+package main.io;
 
 /**
  * Created by olive on 27/07/2018.

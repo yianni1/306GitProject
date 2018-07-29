@@ -2,6 +2,8 @@ package main;
 
 import java.util.List;
 
+import main.io.GraphLoader;
+import main.io.Query;
 import org.graphstream.graph.Graph;
 
 import javafx.application.Application;

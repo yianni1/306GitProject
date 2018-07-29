@@ -1,4 +1,4 @@
-package main;
+package main.scheduling;
 
 import org.graphstream.graph.DepthFirstIterator;
 import org.graphstream.graph.Graph;
