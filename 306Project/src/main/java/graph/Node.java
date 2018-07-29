@@ -22,7 +22,7 @@ public class Node {
         this.marked = false;
     }
 
-    public Node getUnvisitedChildNode() {
+    /*public Node getUnvisitedChildNode() {
         if (this.children.containsValue(true)) {
             for (Map.Entry<Node,Boolean> entry : this.children.entrySet()) {
                 if () {
@@ -31,5 +31,6 @@ public class Node {
             }
         }
     }
+    */
 
 }
