@@ -49,7 +49,7 @@ public class GraphLoader {
 		
 		return graph;
 	}
-	
+	/*
 	private void convertGraph(Graph graph) {
 		
 		TaskGraph taskGraph = new TaskGraph();
@@ -89,6 +89,6 @@ public class GraphLoader {
 		TaskNode taskNode = new TaskNode(nodeWeight, nodeName);
 		return taskNode;
 	}
-	
+	*/
 
 }
