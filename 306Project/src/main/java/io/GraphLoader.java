@@ -62,7 +62,7 @@ public class GraphLoader {
 			for (Edge edge : node) {	
 				TaskEdge taskEdge = createTaskEdge(edge, taskNode);
 			}
-			taskGraph.addNode(taskNode);			
+			//taskGraph.addNode(taskNode);			
 		}
 		
 		
