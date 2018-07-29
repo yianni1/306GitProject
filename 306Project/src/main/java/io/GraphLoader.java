@@ -45,7 +45,7 @@ public class GraphLoader {
 			fs.removeSink(graph);
 		}
 		
-		convertGraph(graph);
+		//convertGraph(graph);
 		
 		return graph;
 	}
