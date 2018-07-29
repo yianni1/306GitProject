@@ -10,9 +10,10 @@ import java.util.List;
  */
 public class Processor {
 
-
+    private int number;
     private List<Task> tasks = new ArrayList<Task>();
     private int cost;
+
 
     /**
      * Adds a new task, with the node, startTime and endTime
