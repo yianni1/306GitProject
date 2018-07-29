@@ -1,6 +1,6 @@
 package scheduling;
 
-import graph.Node;
+import graph.TaskNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ public class Solution {
     private List<Processor> processors;
     private int cost; // The cost for this solution
     private List<Solution> children = new ArrayList<Solution>(); // The children of this solution
-    private List<Node> schedulableTasks = new ArrayList<Node>(); // The tasks that can be scehduled from the current TaskNode.
+    private List<TaskNode> schedulableTasks = new ArrayList<TaskNode>(); // The tasks that can be scehduled from the current TaskNode.
 
     public Solution(List<Processor> processors) {
         this.processors = processors;
