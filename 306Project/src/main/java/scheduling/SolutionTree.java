@@ -1,7 +1,7 @@
 package scheduling;
 
-import graph.Edge;
-import graph.Graph;
+import graph.TaskEdge;
+import graph.TaskGraph;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
 public class SolutionTree {
 
 
-    public SolutionTree(Graph graph, List<Edge> startingEdges) {
+    public SolutionTree(TaskGraph graph, List<TaskEdge> startingEdges) {
 
     }
 }

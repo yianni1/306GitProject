@@ -15,7 +15,7 @@ public class GraphLoader {
 
 	
 	/**
-	 * load method to load graph from dot file into Graph object
+	 * load method to load graph from dot file into TaskGraph object
 	 * @param filepath to dot file
 	 * @return graph representation of dot file
 	 */

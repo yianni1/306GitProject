@@ -1,6 +1,6 @@
 package scheduling;
 
-import graph.Node;
+import graph.TaskNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ public class Processor {
      * @param startTime
      * @param endTime
      */
-    public void addTask(Node node, int startTime, int endTime) {
+    public void addTask(TaskNode node, int startTime, int endTime) {
         tasks.add(new Task(node, startTime, endTime));
         if (cost < endTime) {
             cost = endTime;
@@ -34,7 +34,7 @@ public class Processor {
 }
 
 class Task {
-    private Node node;
+    private TaskNode node;
     private int startTime;
     private int endTime;
 
@@ -44,7 +44,7 @@ class Task {
      * @param startTime
      * @param endTime
      */
-    public Task(Node node, int startTime, int endTime) {
+    public Task(TaskNode node, int startTime, int endTime) {
         this.node = node;
         this.startTime = startTime;
         this.endTime = endTime;
