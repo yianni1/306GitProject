@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import graph.TaskGraph;
 import io.GraphLoader;
-import io.Query;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
