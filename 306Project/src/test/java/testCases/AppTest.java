@@ -1,4 +1,4 @@
-package Project.Project;
+package testCases;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -18,6 +18,15 @@ public class AppTest
     public AppTest( String testName )
     {
         super( testName );
+        /*
+		HashSet<TaskNode> nde = taskGraph.getNodes();
+		for (TaskNode n : nde) {
+			HashSet<TaskEdge> tEdges = n.getIncomingEdges();
+			System.out.println("Node " + n.getName());
+			for (TaskEdge e : tEdges) {
+				System.out.println("Edge " + e.getWeight());
+			}
+		}*/
     }
 
     /**
