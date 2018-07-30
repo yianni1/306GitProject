@@ -31,6 +31,14 @@ public class TaskGraph {
     	 this.nodes.add(node);
     }
     
+    public HashSet<TaskNode> getNodes() {
+    	return nodes;
+    }
+    
+    public HashSet<TaskEdge> getEdges() {
+    	return this.edges;
+    }
+    
     
     
 }
