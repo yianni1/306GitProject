@@ -13,8 +13,9 @@ import java.util.List;
 public class Schedule {
 
     private List<Processor> processors = new ArrayList<Processor>();
-    private int cost; //The cost for this Schedule
-//    private List<Schedule> children = new ArrayList<Schedule>(); //The children of this Schedule
+    private int cost; //The cost for this Schedule.
+    private List<Schedule> children = new ArrayList<Schedule>(); //The children of this Schedule
+    private List<TaskNode> schedulableTasks = new ArrayList<TaskNode>(); // The tasks that can be scehduled from the current TaskNode.
 
     /**
      * Returns a partial schedule
@@ -33,6 +34,14 @@ public class Schedule {
     }
 
     /**
+     * TODO: Complete this method.
+     * @return An arraylist of schedulable TaskNodes.
+     */
+    public List<Schedule> schedulableTasks() {
+        return null;
+    }
+
+    /**
      * Returns all the children of a given partial schedule
      * @param availableNodes
      * @return
@@ -41,4 +50,5 @@ public class Schedule {
         List<Schedule> result = new ArrayList<Schedule>();
         return null;
     }
+
 }
