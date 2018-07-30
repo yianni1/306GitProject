@@ -47,11 +47,15 @@ public class GraphLoader {
 		}
 
 		TaskGraph taskGraph = convertGraph(graph);
-		
+		 
 		return taskGraph;
 	}
 	
-	
+	/**
+	 * convertGraph method to convert GraphStream graph into TaskGraph data Structure
+	 * @param GraphStream representation of dot file
+	 * @return TaskGraph representation of dot file
+	 */
 	private TaskGraph convertGraph(Graph graph) {
 
 		TaskGraph taskGraph = new TaskGraph();
@@ -64,22 +68,18 @@ public class GraphLoader {
 			taskGraph.addNode(taskNode);
 		}
 
-		//Creates Edges for 
+		//Creates Edges for the TaskGraph according to the GraphSteam input and TaskGraph Nodes
 		for (Edge edge : graph.getEdgeSet()) {
+			
+			//Gets the nodes of the taskGraph
 			HashSet<TaskNode> tNodesSet = taskGraph.getNodes();
 
+			//Gets the source and target nodes the edge of the GraphStream graph is attached too
 			Node source = edge.getSourceNode();
 			Node target = edge.getTargetNode();
 			
-			/*double edgeWeight = (double) edge.getAttribute("Weight");
-			int edgeWeightInt = (int) edgeWeight;
 			
-			double sourceWeight = (double) source.getAttribute("Weight");
-			int sourceWeightInt = (int) sourceWeight;
-			
-			double targetWeight = (double) target.getAttribute("Weight");
-			int targetWeightInt = (int) targetWeight;*/
-			
+			//Gets the weights for the edge, source node and target node from the GraphStream graph
 			double edgeWeight = Double.parseDouble(edge.getAttribute("Weight").toString());
 			int edgeWeightInt = (int) edgeWeight;
 			
@@ -89,17 +89,23 @@ public class GraphLoader {
 			double targetWeight = Double.parseDouble(target.getAttribute("Weight").toString());
 			int targetWeightInt = (int) targetWeight;
 			
+			//Creates new task nodes according to the edge for comparison to the Task Nodes created in createTaskNode()
 			TaskNode sourceTaskNode = new TaskNode(sourceWeightInt, source.toString());
 			TaskNode targetTaskNode = new TaskNode(targetWeightInt, target.toString());
 			
+			//Compare the taskNodes created above with the taskNodes in the TaskGraph
 			TaskEdge tEdge = null;
 			for (TaskNode tNode : tNodesSet) {
-				if (sourceTaskNode.getName().equals(tNode.getName())) {
+				if (sourceTaskNode.getName().equals(tNode.getName())) { 
 					for (TaskNode tNodeA : tNodesSet) {
 						if (targetTaskNode.getName().equals(tNodeA.getName())) {
+							
+							//When source node and target node have the same name as the corresponding TaskGraph nodes
+							//Create the TaskEdge according to the TaskGraph nodes and add the TaskEdge reference to the taskNodes
 							 tEdge = new TaskEdge(tNode, tNodeA, edgeWeightInt);
 							 tNode.addOutgoingEdge(tEdge);
 							 tNodeA.addIncomingEdge(tEdge); 
+							 taskGraph.addEdge(tEdge);
 						}
 					}
 				}		
@@ -108,29 +114,22 @@ public class GraphLoader {
 
 		}
 
-/*
-		HashSet<TaskNode> nde = taskGraph.getNodes();
-		for (TaskNode n : nde) {
-			HashSet<TaskEdge> tEdges = n.getIncomingEdges();
-			System.out.println("Node " + n.getName());
-			for (TaskEdge e : tEdges) {
-				System.out.println("Edge " + e.getWeight());
-			}
-		}*/
 		return taskGraph;
 	}
 
-
-
+	/**
+	 * createTaskNode method to create a TaskNode from the corresponding GraphStream node
+	 * @param GraphStream node
+	 * @return TaskGraph node
+	 */
 	private TaskNode createTaskNode(Node node) {
-		/*double nodeWeight = (double) node.getAttribute("Weight");
-		int nodeWeightInt = (int) nodeWeight;*/
-		
+
 		double nodeWeight =  Double.parseDouble(node.getAttribute("Weight").toString());
 		int nodeWeightInt = (int) nodeWeight;
 
 		String nodeName = node.toString();
-
+		
+		//Creates the TaskNode according to its weight and name
 		TaskNode taskNode = new TaskNode(nodeWeightInt, nodeName);
 
 		return taskNode;
