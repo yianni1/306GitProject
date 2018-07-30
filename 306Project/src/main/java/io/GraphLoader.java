@@ -105,6 +105,7 @@ public class GraphLoader {
 							 tEdge = new TaskEdge(tNode, tNodeA, edgeWeightInt);
 							 tNode.addOutgoingEdge(tEdge);
 							 tNodeA.addIncomingEdge(tEdge); 
+							 taskGraph.addEdge(tEdge);
 						}
 					}
 				}		
