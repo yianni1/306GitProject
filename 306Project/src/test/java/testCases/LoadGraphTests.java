@@ -25,6 +25,9 @@ public class LoadGraphTests {
 	private static String filePath = "src/main/resources/DotFiles/Nodes_7_OutTree.dot";
 	private static Graph graphStreamGraph;
 	
+	/**
+	 * Before method to load the dot file as a GraphStream Graph
+	 */
 	@Before
 	public void loadGraphStreamGraph() {
 		Graph graph = new SingleGraph("graph"); // Creates graph
@@ -46,35 +49,44 @@ public class LoadGraphTests {
 		graphStreamGraph = graph;
 	}
 	
+	
+	/**
+	 * Tests that GraphLoader correctly loads the GraphStreamGraph into TaskGraph
+	 */
 	@Test
 	public void testGraphLoader() {
     	
 		GraphLoader loader = new GraphLoader();
 		TaskGraph graph = loader.load(filePath);
 		
+		//This block checks the node names and weights are the same
 		HashSet<TaskNode> nodes = graph.getNodes();	
 		for (TaskNode taskNode : nodes) {
 			boolean nodesTrue = false;
 			boolean nodeWeight = false;
-		
+			
 			for (Node graphStreamNode : graphStreamGraph) {
+				//If GraphStream Graph node name equals taskNode name, node is correct
 				if (graphStreamNode.toString().equals(taskNode.getName())) {
 					nodesTrue = true;		
 				}
 				
-				
+				//If GraphStream weight is equal to TaskNode weight, nodeWeight is correct.
 				double nod =  Double.parseDouble(graphStreamNode.getAttribute("Weight").toString());
 				int nodeWeightInt = (int) nod;
 				if (taskNode.getWeight() == nodeWeightInt ) {
 					nodeWeight = true;
 				}
 			}			
+			//node names and weights should be true for all iterations
 			assertTrue(nodesTrue);
 			assertTrue(nodeWeight);
 		}
 		
 		HashSet<TaskEdge> edges = graph.getEdges();
 
+		//This block checks the edges source and target nodes match the GraphStream graph
+		//Also checks weights
 		for (TaskEdge taskEdge : edges) {			
 			boolean sourceNodeFromEdges = false;
 			boolean targetNodeFromEdges = false;
@@ -84,14 +96,19 @@ public class LoadGraphTests {
 				Node source = edge.getSourceNode();
 				Node target = edge.getTargetNode();
 				
+				//If sourceNode name of GraphStream edge equals name of taskEdge start node, 
+				//TaskGraph source node of TaskEdge is correct
 				if (source.toString().equals(taskEdge.getStartNode().getName())) {
 					sourceNodeFromEdges = true;
 				}
 				
+				//If targetNode name of GraphStream edge equals name of taskEdge end node, 
+				//TaskGraph target node of TaskEdge is correct
 				if (target.toString().equals(taskEdge.getEndNode().getName())) {
 					targetNodeFromEdges = true;
 				}
 				
+				//Ensures weights are the same for TaskEdge and edge
 				double edgeWeight = Double.parseDouble(edge.getAttribute("Weight").toString());
 				int edgeWeightInt = (int) edgeWeight;
 				if (edgeWeightInt == taskEdge.getWeight()) {
@@ -99,6 +116,7 @@ public class LoadGraphTests {
 				}
 				
 			}
+			//edge names and weights should be true for all iterations
 			assertTrue(sourceNodeFromEdges);
 			assertTrue(targetNodeFromEdges);
 			assertTrue(taskEdgeWeight);
