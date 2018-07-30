@@ -6,6 +6,7 @@ import io.GraphLoader;
 import io.Query;
 import org.graphstream.graph.Graph;
 
+import graph.TaskGraph;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
@@ -22,7 +23,7 @@ public class App extends Application{
 		Parameters params = getParameters();
 		List<String> args = params.getRaw();
 		GraphLoader loader = new GraphLoader();
-		Graph load = loader.load(args.get(0)); // Assumes first argument is always dot file name
+		TaskGraph load = loader.load(args.get(0)); // Assumes first argument is always dot file name
 		System.out.println("Done"); // FOR DEBUGGING ON CONSOLE
 		Platform.exit(); // Stops javafx app in console
 	}
