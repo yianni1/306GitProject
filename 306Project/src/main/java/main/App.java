@@ -47,28 +47,33 @@ public class App extends Application{
         CommandLine cmd = parser.parse(options, args);
 
         if (args.length < 2) {
-            System.out.println("Please specify input file and number of processors");
+            System.out.println("Insufficient arguments. Please specify input file and number of processors.");
         } else {
+        	//required arguments
 			String fileName = args[0];
 			int processorNumber = Integer.parseInt(args[1]);
 
-            GraphLoader loader = new GraphLoader();
-            TaskGraph graph = loader.load(fileName);
+			//default values for optional arguments
+			int numCores = 1;
+			String outputName = fileName + "-output.dot";
+
 
             if (cmd.hasOption("p")) {
-                int numCores = Integer.parseInt(cmd.getOptionValue("p"));
-                //handling this particular argument through abstraction
-                Query.handle(fileName, processorNumber, numCores);
+                numCores = Integer.parseInt(cmd.getOptionValue("p"));
             }
 
             if (cmd.hasOption("o")) {
-                String outputName = cmd.getOptionValue("o");
-                Query.handle(fileName, processorNumber, outputName);
+                outputName = cmd.getOptionValue("o");
             }
             if (cmd.hasOption("v")) {
                 //If visualisation is required, initialise root layout
                 initRootLayout();
             }
+
+			System.out.println("Scheduling on " + processorNumber + " processors using " + numCores + " cores.");
+
+			GraphLoader loader = new GraphLoader();
+			TaskGraph graph = loader.load(fileName);
 
 			System.out.println("Done"); // FOR DEBUGGING ON CONSOLE
         }
