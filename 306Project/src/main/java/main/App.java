@@ -66,13 +66,30 @@ public class App extends Application{
             initRootLayout();
         }
 
-        if (cmd.hasOption("p")) {
+        if ((args.length > 2)&&(cmd.hasOption("p"))) {
+            //storing the number of cores
         	int numCores = Integer.parseInt(cmd.getOptionValue("p"));
+
+        	//storing the filename and the processor number which are the first two arguments
+        	String filename = args[0];
+        	int processorNumber = Integer.parseInt(args[1]);
+
+        	//handling this particular argument through abstraction
+        	Query.handle(filename, processorNumber, numCores);
+    }
+
+		if ((args.length > 2) && (cmd.hasOption("o"))) {
+			String outputName = cmd.getOptionValue("o");
+
+			//storing the filenmae & Processor numbers
+            String filename = args[0];
+            int processorNumber = Integer.parseInt(args[1]);
+
+            //handling the argument with output option
+            Query.handle(filename, processorNumber, outputName);
 		}
 
-		if (cmd.hasOption("o")) {
-			String outputName = cmd.getOptionValue("o");
-		}
+
 
 		Platform.exit(); // Stops javafx app in console
 	}
