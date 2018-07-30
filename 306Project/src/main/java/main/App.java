@@ -3,6 +3,7 @@ package main;
 import java.io.IOException;
 import java.util.List;
 
+import graph.TaskGraph;
 import io.GraphLoader;
 import io.Query;
 import javafx.fxml.FXMLLoader;
@@ -38,10 +39,6 @@ public class App extends Application{
 		Parameters params = getParameters();
 		int size = params.getRaw().size();
 		String[] args = params.getRaw().toArray(new String[size]);
-//		List<String> args = params.getRaw();
-
-		
-
 
 		//Sorting the first two arguments, the file name and the number of processors
 		String fileName = args[0];
@@ -66,30 +63,8 @@ public class App extends Application{
             initRootLayout();
         }
 
-
-		//Handling the options
-//		if (args.size() == 2) {
-//            Query.handle(fileName, processorNumber);
-//		}
-//		else if (args.size() == 3 && args.get(2).equals("-v")) {
-//            initRootLayout(); //The only time we have  args is if the option is -v, in which case we launch
-//		}
-//		else if (args.size() == 4 && args.get(2).equals("-p")) {
-//			int coreNumber = Integer.parseInt(args.get(3));
-//			Query.handle(fileName, processorNumber, coreNumber);
-//		}
-//		else if (args.size() == 4 && args.get(2).equals("-o")) {
-//			String outputName = args.get(3);
-//			Query.handle(fileName, processorNumber, outputName);
-//		}
-//		else {
-//			//doSomething();
-//		}
-
-
-
 		GraphLoader loader = new GraphLoader();
-		Graph load = loader.load(fileName); // Assumes first argument is always dot file name
+		TaskGraph graph = loader.load(fileName); // Assumes first argument is always dot file name
 		System.out.println("Done"); // FOR DEBUGGING ON CONSOLE
 		Platform.exit(); // Stops javafx app in console
 	}
