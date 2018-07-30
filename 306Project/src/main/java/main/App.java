@@ -1,11 +1,9 @@
 package main;
 
 import java.io.IOException;
-import java.util.List;
 
 import graph.TaskGraph;
 import io.GraphLoader;
-import io.Query;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -13,10 +11,8 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
-import org.graphstream.graph.Graph;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.stage.Stage;
 
 /**
@@ -34,16 +30,12 @@ public class App extends Application{
 		this.primaryStage.setTitle("Graph view");
 
 		System.out.println("Started"); // FOR DEBUGGING ON CONSOLE
-		//Loads the graph, code should be smoved where the algorithm will be processed
 
 		Parameters params = getParameters();
 		int size = params.getRaw().size();
 		String[] args = params.getRaw().toArray(new String[size]);
 
-		//Sorting the first two arguments, the file name and the number of processors
-		String fileName = args[0];
-		int processorNumber = Integer.parseInt(args[1]);
-
+		//Command line options using Apache Commons CLI
         Options options = new Options();
 
         options.addOption("p", true, "Number of cores to use");
@@ -54,19 +46,36 @@ public class App extends Application{
         CommandLine cmd = parser.parse(options, args);
 
         if (args.length < 2) {
-            System.out.println("Please specify input file and number of processors");
+            System.out.println("Insufficient arguments. Please specify input file and number of processors.");
         } else {
-            Query.handle(fileName, processorNumber);
-        }
+        	//required arguments
+			String fileName = args[0];
+			int processorNumber = Integer.parseInt(args[1]);
 
-        if (cmd.hasOption("v")) {
-            initRootLayout();
-        }
+			//default values for optional arguments
+			int numCores = 1;
+			String outputName = fileName + "-output.dot";
 
-		GraphLoader loader = new GraphLoader();
-		TaskGraph graph = loader.load(fileName); // Assumes first argument is always dot file name
-		System.out.println("Done"); // FOR DEBUGGING ON CONSOLE
-		Platform.exit(); // Stops javafx app in console
+
+            if (cmd.hasOption("p")) {
+                numCores = Integer.parseInt(cmd.getOptionValue("p"));
+            }
+
+            if (cmd.hasOption("o")) {
+                outputName = cmd.getOptionValue("o");
+            }
+            if (cmd.hasOption("v")) {
+                //If visualisation is required, initialise root layout
+                initRootLayout();
+            }
+
+			System.out.println("Scheduling on " + processorNumber + " processors using " + numCores + " cores.");
+
+			GraphLoader loader = new GraphLoader();
+			TaskGraph graph = loader.load(fileName);
+
+			System.out.println("Done"); // FOR DEBUGGING ON CONSOLE
+        }
 	}
 
 	/**
@@ -85,7 +94,7 @@ public class App extends Application{
 			//Load the root layout from the fxml file
 
 			//printing out the location of the file
-			Parent root =FXMLLoader.load(getClass().getResource("/fxml/RootLayout.fxml"));
+			Parent root = FXMLLoader.load(getClass().getResource("/fxml/RootLayout.fxml"));
 
 			//scene showing the root layout is displayed
 			Scene scene = new Scene(root);
