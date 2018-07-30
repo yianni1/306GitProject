@@ -34,28 +34,30 @@ public class App extends Application{
 		Parameters params = getParameters();
 		List<String> args = params.getRaw();
 
+
 		//Sorting the first two arguments, the file name and the number of processors
 		String fileName = args.get(0);
 		int processorNumber = Integer.parseInt(args.get(1));
 
+
 		//Handling the options
 		if (args.size() == 2) {
-			initRootLayout(); //The only time we have  args is if the option is -v, in which case we launch
+            Query.handle(fileName, processorNumber);
 		}
-		else if (args.size() == 3) {
-			Query.handle(fileName, processorNumber);
+		else if (args.size() == 3 && args.get(2).equals("-v")) {
+            initRootLayout(); //The only time we have  args is if the option is -v, in which case we launch
 		}
-		else if (args.size() == 4 && args.get(2).equals("p")) {
-			int coreNumber = Integer.parseInt(args.get(3));
-			Query.handle(fileName, processorNumber, coreNumber);
-		}
-		else if (args.size() == 4 && args.get(2).equals("o")) {
-			String outputName = args.get(3);
-			Query.handle(fileName, processorNumber, outputName);
-		}
-		else {
-			//doSomething();
-		}
+//		else if (args.size() == 4 && args.get(2).equals("-p")) {
+//			int coreNumber = Integer.parseInt(args.get(3));
+//			Query.handle(fileName, processorNumber, coreNumber);
+//		}
+//		else if (args.size() == 4 && args.get(2).equals("-o")) {
+//			String outputName = args.get(3);
+//			Query.handle(fileName, processorNumber, outputName);
+//		}
+//		else {
+//			//doSomething();
+//		}
 
 
 
