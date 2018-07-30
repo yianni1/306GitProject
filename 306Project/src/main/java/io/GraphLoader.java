@@ -71,13 +71,22 @@ public class GraphLoader {
 			Node source = edge.getSourceNode();
 			Node target = edge.getTargetNode();
 			
-			double edgeWeight = (double) edge.getAttribute("Weight");
+			/*double edgeWeight = (double) edge.getAttribute("Weight");
 			int edgeWeightInt = (int) edgeWeight;
 			
 			double sourceWeight = (double) source.getAttribute("Weight");
 			int sourceWeightInt = (int) sourceWeight;
 			
 			double targetWeight = (double) target.getAttribute("Weight");
+			int targetWeightInt = (int) targetWeight;*/
+			
+			double edgeWeight = Double.parseDouble(edge.getAttribute("Weight").toString());
+			int edgeWeightInt = (int) edgeWeight;
+			
+			double sourceWeight = Double.parseDouble(source.getAttribute("Weight").toString());
+			int sourceWeightInt = (int) sourceWeight;
+			
+			double targetWeight = Double.parseDouble(target.getAttribute("Weight").toString());
 			int targetWeightInt = (int) targetWeight;
 			
 			TaskNode sourceTaskNode = new TaskNode(sourceWeightInt, source.toString());
@@ -114,7 +123,10 @@ public class GraphLoader {
 
 
 	private TaskNode createTaskNode(Node node) {
-		double nodeWeight = (double) node.getAttribute("Weight");
+		/*double nodeWeight = (double) node.getAttribute("Weight");
+		int nodeWeightInt = (int) nodeWeight;*/
+		
+		double nodeWeight =  Double.parseDouble(node.getAttribute("Weight").toString());
 		int nodeWeightInt = (int) nodeWeight;
 
 		String nodeName = node.toString();
