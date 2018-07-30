@@ -34,6 +34,8 @@ public class App extends Application{
 		Parameters params = getParameters();
 		List<String> args = params.getRaw();
 
+		
+
 
 		//Sorting the first two arguments, the file name and the number of processors
 		String fileName = args.get(0);
