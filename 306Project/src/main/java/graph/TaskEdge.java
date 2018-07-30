@@ -31,4 +31,12 @@ public class TaskEdge {
     public int getWeight() {
         return weight;
     }
+    
+    public void setStartNode(TaskNode startNode) {
+    	this.startNode = startNode;
+    }
+    
+    public void setEndNode(TaskNode endNode) {
+    	this.endNode = endNode;
+    }
 }
