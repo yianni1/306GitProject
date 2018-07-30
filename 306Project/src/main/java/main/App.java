@@ -8,6 +8,10 @@ import io.Query;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Options;
 import org.graphstream.graph.Graph;
 
 import javafx.application.Application;
@@ -32,23 +36,44 @@ public class App extends Application{
 		//Loads the graph, code should be smoved where the algorithm will be processed
 
 		Parameters params = getParameters();
-		List<String> args = params.getRaw();
+		int size = params.getRaw().size();
+		String[] args = params.getRaw().toArray(new String[size]);
+//		List<String> args = params.getRaw();
 
 		
 
 
 		//Sorting the first two arguments, the file name and the number of processors
-		String fileName = args.get(0);
-		int processorNumber = Integer.parseInt(args.get(1));
+		String fileName = args[0];
+		int processorNumber = Integer.parseInt(args[1]);
+
+        Options options = new Options();
+
+        options.addOption("p", true, "Number of cores to use");
+        options.addOption("v", false, "Use visualisation");
+        options.addOption("o", true, "Output file name" );
+
+        CommandLineParser parser = new DefaultParser();
+        CommandLine cmd = parser.parse(options, args);
+
+        if (args.length < 2) {
+            System.out.println("Please specify input file and number of processors");
+        } else {
+            Query.handle(fileName, processorNumber);
+        }
+
+        if (cmd.hasOption("v")) {
+            initRootLayout();
+        }
 
 
 		//Handling the options
-		if (args.size() == 2) {
-            Query.handle(fileName, processorNumber);
-		}
-		else if (args.size() == 3 && args.get(2).equals("-v")) {
-            initRootLayout(); //The only time we have  args is if the option is -v, in which case we launch
-		}
+//		if (args.size() == 2) {
+//            Query.handle(fileName, processorNumber);
+//		}
+//		else if (args.size() == 3 && args.get(2).equals("-v")) {
+//            initRootLayout(); //The only time we have  args is if the option is -v, in which case we launch
+//		}
 //		else if (args.size() == 4 && args.get(2).equals("-p")) {
 //			int coreNumber = Integer.parseInt(args.get(3));
 //			Query.handle(fileName, processorNumber, coreNumber);
