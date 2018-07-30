@@ -31,14 +31,14 @@ public class TaskNode {
     public void visit() {
         visited = true;
         for (TaskEdge edge : outgoingEdges) {
-            edge.getEndNode().parentScheduled();
+            edge.getEndNode().parentScheduled(); //Telling it's children that it's been scheduled
         }
     }
 
     public void unvisit() {
         visited = false;
         for (TaskEdge edge : outgoingEdges) {
-            edge.getEndNode().parentNoLongerScheduled();
+            edge.getEndNode().parentNoLongerScheduled(); //Telling its children it's been unscheduled
         }
     }
 
