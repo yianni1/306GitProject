@@ -90,7 +90,7 @@ public class GraphLoader {
 						if (targetTaskNode.getName().equals(tNodeA.getName())) {
 							 tEdge = new TaskEdge(tNode, tNodeA, edgeWeightInt);
 							 tNode.addOutgoingEdge(tEdge);
-							 tNodeA.addIncomingEdge(tEdge);
+							 tNodeA.addIncomingEdge(tEdge); 
 						}
 					}
 				}		
