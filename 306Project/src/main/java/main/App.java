@@ -41,8 +41,6 @@ public class App extends Application{
 		String[] args = params.getRaw().toArray(new String[size]);
 
 		//Sorting the first two arguments, the file name and the number of processors
-		String fileName = args[0];
-		int processorNumber = Integer.parseInt(args[1]);
 
         Options options = new Options();
 
@@ -56,16 +54,26 @@ public class App extends Application{
         if (args.length < 2) {
             System.out.println("Please specify input file and number of processors");
         } else {
+			String fileName = args[0];
+			int processorNumber = Integer.parseInt(args[1]);
             Query.handle(fileName, processorNumber);
+			GraphLoader loader = new GraphLoader();
+			TaskGraph graph = loader.load(fileName); // Assumes first argument is always dot file name
+			System.out.println("Done"); // FOR DEBUGGING ON CONSOLE
         }
 
         if (cmd.hasOption("v")) {
             initRootLayout();
         }
 
-		GraphLoader loader = new GraphLoader();
-		TaskGraph graph = loader.load(fileName); // Assumes first argument is always dot file name
-		System.out.println("Done"); // FOR DEBUGGING ON CONSOLE
+        if (cmd.hasOption("p")) {
+        	int numCores = Integer.parseInt(cmd.getOptionValue("p"));
+		}
+
+		if (cmd.hasOption("o")) {
+			String outputName = cmd.getOptionValue("o");
+		}
+
 		Platform.exit(); // Stops javafx app in console
 	}
 
