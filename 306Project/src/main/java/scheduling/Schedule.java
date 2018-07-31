@@ -5,6 +5,7 @@ import graph.TaskNode;
 
 import javax.xml.soap.Node;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ public class Schedule {
     private List<Processor> processors = new ArrayList<Processor>();
     private int cost; //The cost for this Schedule.
     private List<Schedule> children = new ArrayList<Schedule>(); //The children of this Schedule
-    private List<TaskNode> schedulableTasks = new ArrayList<TaskNode>(); // The tasks that can be scehduled from the current TaskNode.
+    private HashSet<TaskNode> schedulableTasks = new HashSet<TaskNode>(); // The tasks that can be scehduled from the current TaskNode.
 
     /**
      * Returns a partial schedule
@@ -34,11 +35,27 @@ public class Schedule {
     }
 
     /**
-     * TODO: Complete this method.
-     * @return An arraylist of schedulable TaskNodes.
+     * Initialises the 'schedulable nodes' list. (i.e. the entry nodes)
+     * In the beginning, the only schedulable nodes will be the entry nodes.
+     * @return schedulable: the list of schedulable nodes.
      */
-    public List<Schedule> schedulableTasks() {
-        return null;
+    public void initializeSchedulableNodes(TaskGraph tg) {
+        HashSet<TaskNode> initialNodes = new HashSet<TaskNode>();
+        HashSet<TaskNode> nodes = tg.getNodes();
+
+        for (TaskNode n: nodes) {
+            if (n.getIncomingEdges().size() == 0) {
+                schedulableTasks.add(n);
+            }
+        }
+        this.schedulableTasks = initialNodes;
+    }
+
+    /**
+     * Return schedulable Nodes
+     */
+    public HashSet<TaskNode> getSchedulableNodes() {
+        return this.schedulableTasks;
     }
 
     /**

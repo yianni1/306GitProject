@@ -34,6 +34,7 @@ public class TaskNode {
     /**
      * Visits the node
      */
+    /*
     public void schedule(int startTime, Processor processor) {
         this.scheduled = true;
         this.startTime = startTime;
@@ -51,7 +52,7 @@ public class TaskNode {
             edge.getEndNode().parentNoLongerScheduled(); //Telling its children it's been unscheduled
         }
     }
-
+    */
     public void setGraph(TaskGraph graph) {
         this.graph = graph;
     }
@@ -62,24 +63,26 @@ public class TaskNode {
      * If this number is equal to the number of parents, then it will
      * be added to the taskgraph
      */
+    /*
     private void parentScheduled() {
         numberOfVisitedParents++;
         if (numberOfVisitedParents == incomingEdges.size()) {
             graph.nodeMadeAvailable(this);
         }
     }
-
+    */
 
     /**
      * Indicates that a node is no longer available
      */
+    /*
     private void parentNoLongerScheduled() {
         if (numberOfVisitedParents == incomingEdges.size()) {
             graph.nodeNoLongerAvailable(this);
         }
         numberOfVisitedParents--;
     }
-
+    */
 
     public void addIncomingEdge(TaskEdge edge) {
         incomingEdges.add(edge);

@@ -14,6 +14,7 @@ import org.apache.commons.cli.Options;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import scheduling.SolutionTree;
 
 /**
  * Hello world!
@@ -31,7 +32,7 @@ public class App extends Application{
 
 		System.out.println("Started"); // FOR DEBUGGING ON CONSOLE
 
-		Parameters params = getParameters();
+		Parameters params = getParameters(); 
 		int size = params.getRaw().size();
 		String[] args = params.getRaw().toArray(new String[size]);
 
@@ -73,7 +74,8 @@ public class App extends Application{
 
 			GraphLoader loader = new GraphLoader();
 			TaskGraph graph = loader.load(fileName);
-
+			SolutionTree solution = new SolutionTree(graph, processorNumber);
+			solution.doSchedule();
 			System.out.println("Done"); // FOR DEBUGGING ON CONSOLE
         }
 	}
