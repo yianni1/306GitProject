@@ -1,5 +1,7 @@
 package graph;
 
+import scheduling.Processor;
+
 import java.util.HashSet;
 
 /**
@@ -8,7 +10,9 @@ import java.util.HashSet;
 public class TaskNode {
     private int weight;
     private String name;
-    private boolean visited;
+    private boolean scheduled;
+    private int startTime;
+    private Processor processor;
 
     private TaskGraph graph; //Temporary. This is all I can think of atm, if there's a better way please change
 
@@ -20,7 +24,9 @@ public class TaskNode {
     public TaskNode(int weight, String name) {
         this.name = name;
         this.weight = weight;
-        this.visited = false;
+        this.scheduled = false;
+        this.startTime = -1;
+        this.processor = null;
         incomingEdges = new HashSet<TaskEdge>();
         outgoingEdges = new HashSet<TaskEdge>();
     }
@@ -28,20 +34,25 @@ public class TaskNode {
     /**
      * Visits the node
      */
-    public void visit() {
-        visited = true;
+    /*
+    public void schedule(int startTime, Processor processor) {
+        this.scheduled = true;
+        this.startTime = startTime;
+        this.processor = processor;
         for (TaskEdge edge : outgoingEdges) {
             edge.getEndNode().parentScheduled(); //Telling it's children that it's been scheduled
         }
     }
 
-    public void unvisit() {
-        visited = false;
+    public void deschedule() {
+        scheduled = false;
+        this.processor = null;
+        this.startTime = -1;
         for (TaskEdge edge : outgoingEdges) {
             edge.getEndNode().parentNoLongerScheduled(); //Telling its children it's been unscheduled
         }
     }
-
+    */
     public void setGraph(TaskGraph graph) {
         this.graph = graph;
     }
@@ -52,24 +63,26 @@ public class TaskNode {
      * If this number is equal to the number of parents, then it will
      * be added to the taskgraph
      */
+    /*
     private void parentScheduled() {
         numberOfVisitedParents++;
         if (numberOfVisitedParents == incomingEdges.size()) {
             graph.nodeMadeAvailable(this);
         }
     }
-
+    */
 
     /**
      * Indicates that a node is no longer available
      */
+    /*
     private void parentNoLongerScheduled() {
         if (numberOfVisitedParents == incomingEdges.size()) {
             graph.nodeNoLongerAvailable(this);
         }
         numberOfVisitedParents--;
     }
-
+    */
 
     public void addIncomingEdge(TaskEdge edge) {
         incomingEdges.add(edge);
@@ -91,8 +104,8 @@ public class TaskNode {
         return weight;
     }
 
-    public boolean visited() {
-        return visited;
+    public boolean isScheduled() {
+        return scheduled;
     }
 
     public String getName() {
