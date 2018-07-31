@@ -33,16 +33,19 @@ public class SolutionTree {
     	
     }
     
+    /**
+     * Implementation of the graph scheduling
+     */
     public void doSchedule() {
     	/*List<TaskNode> initialNodes = graph.getAvailableNodes();
     	
-    	//Adds initial nodes with no incomming edges to processor
+    	//Adds initial nodes with no incoming edges to processor
     	int minimialInitialNodeweight = 0;
     	TaskNode initialNode = initialNodes.get(0);
     	
     	for (TaskNode taskNode : initialNodes) {
     		
-    		// Gets node with minimal weight and keeps it
+    		// Gets node with minimal weight and keeps it, to be scheduled on processor
     		int weight = taskNode.getWeight();
     		if (minimialInitialNodeweight < weight) { 
     			minimialInitialNodeweight = weight;
@@ -50,7 +53,8 @@ public class SolutionTree {
     		}
     	}
     
-    	//processorList.get(0).addTask(initialNode);
+    	//Schedules minimal node with minimal weight first
+    	processorList.get(0).addTask(initialNode);
     	
     	TaskNode smallestTaskNode = null;
     	
@@ -63,8 +67,8 @@ public class SolutionTree {
     		if (smallestTaskNode.getWeight() < childweight) {
     			smallestTaskNode = childNode;
     		}
-    	}*/
-    	
+    	}
+    	*/
     }
     
 
