@@ -34,7 +34,7 @@ public class TaskNode {
         this.startTime = startTime;
         this.processor = processor;
         this.scheduled = true;
-        processor.addTask(this);
+        processor.addTask(this, this.weight);
         return true;
     }
 

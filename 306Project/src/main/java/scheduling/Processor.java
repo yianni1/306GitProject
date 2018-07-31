@@ -29,16 +29,20 @@ public class Processor {
      * Called by TaskNode.
      * @param node The node to be added.
      */
-    public void addTask(TaskNode node) {
+    public void addTask(TaskNode node, int time) {
         tasks.add(node);
-        if (cost < node.getEndTime()) {
-            cost = node.getEndTime();
-        }
+        cost = cost + time;
     }
 
 
-    int getCost() {
+    public int getCost() {
         return cost;
+    }
+    
+    public List<TaskNode> getTasks() {
+    	
+    	return tasks;
+    	
     }
 }
 

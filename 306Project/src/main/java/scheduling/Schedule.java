@@ -54,6 +54,12 @@ public class Schedule {
         this.schedulableTasks = initialNodes;
     }
 
+
+    public List<Processor> getProcessors() {	
+        return processors;
+    }
+    
+    
     /**
      * Updates the schedulable nodes (for after a node get scheduled).
      *
