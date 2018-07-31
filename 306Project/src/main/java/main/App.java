@@ -32,7 +32,7 @@ public class App extends Application{
 
 		System.out.println("Started"); // FOR DEBUGGING ON CONSOLE
 
-		Parameters params = getParameters();
+		Parameters params = getParameters(); 
 		int size = params.getRaw().size();
 		String[] args = params.getRaw().toArray(new String[size]);
 
