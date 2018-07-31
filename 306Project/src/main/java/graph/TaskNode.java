@@ -14,10 +14,6 @@ public class TaskNode {
     private int startTime;
     private Processor processor;
 
-    private TaskGraph graph; //Temporary. This is all I can think of atm, if there's a better way please change
-
-    private int numberOfVisitedParents = 0;
-
     private HashSet<TaskEdge> incomingEdges;
     private HashSet<TaskEdge> outgoingEdges;
 
@@ -31,10 +27,40 @@ public class TaskNode {
         outgoingEdges = new HashSet<TaskEdge>();
     }
 
-    public void setGraph(TaskGraph graph) {
-        this.graph = graph;
+    public boolean schedule(int startTime, Processor processor) {
+        if (!this.isSchedulable()) {
+            return false;
+        }
+        this.startTime = startTime;
+        this.processor = processor;
+        this.scheduled = true;
+        processor.addTask(this);
+        return true;
     }
 
+    public int getEndTime(){
+        return this.startTime + this.weight;
+    }
+
+    /**
+     * This should only be run if the task is schedulable.
+     * TODO: IMCOMPLETE
+     * @return
+     */
+    public int getEarliestSchedulbleTime () {
+        int latestEndTime = -1;
+        if (this.isSchedulable()) {
+            for (TaskEdge e : this.getIncomingEdges()) {
+                int endTime = e.getStartNode().getEndTime();
+                if (endTime > latestEndTime) {
+                    latestEndTime = endTime;
+                }
+                e.getWeight();
+            }
+        }
+
+        return latestEndTime;
+    }
 
 
     public void addIncomingEdge(TaskEdge edge) {

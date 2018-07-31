@@ -7,8 +7,8 @@ import java.util.HashSet;
  */
 public class TaskGraph {
 
-    private HashSet<TaskEdge> edges; //The edges of the graph
-    private HashSet<TaskNode> nodes;
+    private HashSet<TaskEdge> edges; // The edges in the graph
+    private HashSet<TaskNode> nodes; // The nodes in the graph
 
     public TaskGraph() {
         edges = new HashSet<TaskEdge>();
@@ -31,7 +31,9 @@ public class TaskGraph {
         this.nodes.add(node);
     }
 
-    public HashSet<TaskNode> getNodes() { return this.nodes; }
+    public HashSet<TaskNode> getNodes() {
+        return this.nodes;
+    }
 
     public HashSet<TaskEdge> getEdges() {
         return this.edges;
