@@ -21,6 +21,7 @@ public class Schedule {
 
     /**
      * Constructor
+     *
      * @param processors
      */
     public Schedule(List<Processor> processors) {
@@ -38,13 +39,14 @@ public class Schedule {
     /**
      * Initialises the 'schedulable nodes' list. (i.e. the entry nodes)
      * In the beginning, the only schedulable nodes will be the entry nodes.
+     *
      * @return schedulable: the list of schedulable nodes.
      */
     public void initializeSchedulableNodes(TaskGraph tg) {
         HashSet<TaskNode> initialNodes = new HashSet<TaskNode>();
         HashSet<TaskNode> nodes = tg.getNodes();
 
-        for (TaskNode n: nodes) {
+        for (TaskNode n : nodes) {
             if (n.getIncomingEdges().size() == 0) {
                 schedulableTasks.add(n);
             }
@@ -54,12 +56,13 @@ public class Schedule {
 
     /**
      * Updates the schedulable nodes (for after a node get scheduled).
+     *
      * @param tn is the node that has just been scheduled.
      */
-    public void updateSchedulableNodes(TaskNode tn){
+    public void updateSchedulableNodes(TaskNode tn) {
         schedulableTasks.remove(tn);
 
-        for (TaskEdge e: tn.getOutgoingEdges()) {
+        for (TaskEdge e : tn.getOutgoingEdges()) {
             if (e.getEndNode().isSchedulable()) {
                 schedulableTasks.add(e.getEndNode());
             }
@@ -73,20 +76,14 @@ public class Schedule {
         return this.schedulableTasks;
     }
 
-
-
-
-
-
-
     /**
      * Returns all the children of a given partial schedule
+     *
      * @param availableNodes
      * @return
      */
     public List<Schedule> createChildren(List<TaskNode> availableNodes) {
-        List<Schedule> result = new ArrayList<Schedule>();
-        return null;
+        return this.children;
     }
 
 }
