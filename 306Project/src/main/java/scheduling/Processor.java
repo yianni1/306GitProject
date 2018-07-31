@@ -13,7 +13,7 @@ import java.util.Map;
 public class Processor {
 
     private int number;
-    private List<Task> tasks = new ArrayList<Task>();
+    private List<TaskNode> tasks = new ArrayList<TaskNode>();
     private int cost;
 
     /**
@@ -31,9 +31,7 @@ public class Processor {
      * @param endTime
      */
     public void addTask(TaskNode node, int startTime, int endTime) {
-        Task task = Task.getTask(node); //Creates/returns the task
-        task.scheduleTask(startTime, endTime, this);
-        tasks.add(task);
+        tasks.add(node);
         if (cost < endTime) {
             cost = endTime;
         }
