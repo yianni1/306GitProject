@@ -25,17 +25,9 @@ import io.GraphLoader;
 
 public class LoadGraphTests {
 
-//	private static String filePath = "src/main/resources/DotFiles/Nodes_7_OutTree.dot";
 	private static Graph graphStreamGraph;
 	private static List<String> filePaths;
-	
-//	/**
-//	 * Before method to load the dot file as a GraphStream Graph
-//	 */
-//	@Before
-//	public void loadGraphStreamGraph() {
-//
-//	}
+
 
 	@Before
 	public void initialisePaths() {
