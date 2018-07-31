@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public class Processor {
 
-    private int number;
+    private int procID;
     private List<TaskNode> tasks = new ArrayList<TaskNode>();
     private int cost;
 
@@ -21,19 +21,18 @@ public class Processor {
      * @param number
      */
     public Processor(int number) {
-        this.number = number;
+        this.procID = number;
     }
 
     /**
-     * Adds a new task, with the node, startTime and endTime
-     * @param node
-     * @param startTime
-     * @param endTime
+     * Adds a new task, with the node.
+     * Called by TaskNode.
+     * @param node The node to be added.
      */
-    public void addTask(TaskNode node, int startTime, int endTime) {
+    public void addTask(TaskNode node) {
         tasks.add(node);
-        if (cost < endTime) {
-            cost = endTime;
+        if (cost < node.getEndTime()) {
+            cost = node.getEndTime();
         }
     }
 
@@ -44,60 +43,3 @@ public class Processor {
 }
 
 
-class Task {
-    private TaskNode node;
-    private int startTime;
-    private int endTime;
-    private Processor processor; //The processor it's on
-
-    private static Map<TaskNode, Task> nodes = new HashMap<TaskNode, Task>();
-
-
-
-    /**
-     * The task that will be done
-     * Private because we do not want two
-     * tasks with the same tasknode
-     * @param node
-     */
-    private Task(TaskNode node) {
-        this.node = node;
-
-        nodes.put(node, this);
-    }
-
-    /**
-     *
-     * Schedules a task.
-     * @param startTime
-     * @param endTime
-     * @param processor
-     */
-    public void scheduleTask(int startTime, int endTime, Processor processor) {
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.processor = processor;
-    }
-
-    /**
-     * Returns a task that encapsulates a given node
-     * @param node
-     * @return
-     */
-    public static Task getTask(TaskNode node) {
-        if (nodes.get(node) == null) {
-            return new Task(node);
-        }
-        else {
-            return nodes.get(node);
-        }
-    }
-
-
-
-
-
-
-
-
-}

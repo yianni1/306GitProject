@@ -7,13 +7,13 @@ import org.graphstream.graph.Node;
 /**
  * Created by Ray on 28/07/2018.
  */
-public class DFS {
+public class DFBnB {
         Graph inputGraph;
         Node startNode;
         DepthFirstIterator it;
 
     /**
-     * Method to initialised before using DFS
+     * Method to initialised before using DFBnB
      * @param graph: the graph we wish to span
      *         node: the starting node
      */
@@ -29,7 +29,7 @@ public class DFS {
 
             while (it.hasNext()) {
                 Node n = it.next();
-                // Do something (visualise node or what ever we want). This iterates through the graph in DFS.
+                // Do something (visualise node or what ever we want). This iterates through the graph in DFBnB.
             }
 
         }

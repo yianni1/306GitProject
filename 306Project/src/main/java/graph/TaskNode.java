@@ -14,10 +14,6 @@ public class TaskNode {
     private int startTime;
     private Processor processor;
 
-    private TaskGraph graph; //Temporary. This is all I can think of atm, if there's a better way please change
-
-    private int numberOfVisitedParents = 0;
-
     private HashSet<TaskEdge> incomingEdges;
     private HashSet<TaskEdge> outgoingEdges;
 
@@ -31,58 +27,41 @@ public class TaskNode {
         outgoingEdges = new HashSet<TaskEdge>();
     }
 
-    /**
-     * Visits the node
-     */
-    /*
-    public void schedule(int startTime, Processor processor) {
-        this.scheduled = true;
+    public boolean schedule(int startTime, Processor processor) {
+        if (!this.isSchedulable()) {
+            return false;
+        }
         this.startTime = startTime;
         this.processor = processor;
-        for (TaskEdge edge : outgoingEdges) {
-            edge.getEndNode().parentScheduled(); //Telling it's children that it's been scheduled
-        }
+        this.scheduled = true;
+        processor.addTask(this);
+        return true;
     }
 
-    public void deschedule() {
-        scheduled = false;
-        this.processor = null;
-        this.startTime = -1;
-        for (TaskEdge edge : outgoingEdges) {
-            edge.getEndNode().parentNoLongerScheduled(); //Telling its children it's been unscheduled
-        }
-    }
-    */
-    public void setGraph(TaskGraph graph) {
-        this.graph = graph;
+    public int getEndTime(){
+        return this.startTime + this.weight;
     }
 
     /**
-     * This method indicates a parent has been scheduled.
-     * It is asking this node to increase the number of visited parents
-     * If this number is equal to the number of parents, then it will
-     * be added to the taskgraph
+     * This should only be run if the task is schedulable.
+     * TODO: IMCOMPLETE
+     * @return
      */
-    /*
-    private void parentScheduled() {
-        numberOfVisitedParents++;
-        if (numberOfVisitedParents == incomingEdges.size()) {
-            graph.nodeMadeAvailable(this);
+    public int getEarliestSchedulbleTime () {
+        int latestEndTime = -1;
+        if (this.isSchedulable()) {
+            for (TaskEdge e : this.getIncomingEdges()) {
+                int endTime = e.getStartNode().getEndTime();
+                if (endTime > latestEndTime) {
+                    latestEndTime = endTime;
+                }
+                e.getWeight();
+            }
         }
-    }
-    */
 
-    /**
-     * Indicates that a node is no longer available
-     */
-    /*
-    private void parentNoLongerScheduled() {
-        if (numberOfVisitedParents == incomingEdges.size()) {
-            graph.nodeNoLongerAvailable(this);
-        }
-        numberOfVisitedParents--;
+        return latestEndTime;
     }
-    */
+
 
     public void addIncomingEdge(TaskEdge edge) {
         incomingEdges.add(edge);
@@ -108,20 +87,17 @@ public class TaskNode {
         return scheduled;
     }
 
+    public boolean isSchedulable() {
+        for (TaskEdge e: incomingEdges) {
+            if (!e.getStartNode().isScheduled()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public String getName() {
         return name;
     }
-
-
-    /*public TaskNode getUnvisitedChildNode() {
-        if (this.children.containsValue(true)) {
-            for (Map.Entry<TaskNode,Boolean> entry : this.children.entrySet()) {
-                if () {
-                    return ;
-                }
-            }
-        }
-    }
-    */
 
 }
