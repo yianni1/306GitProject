@@ -38,16 +38,18 @@ public class TaskNode {
         return true;
     }
 
-    public int getEndTime(){
+    public int getEndTime() {
         return this.startTime + this.weight;
     }
 
     /**
      * This should only be run if the task is schedulable.
+     * It should return the earliest schedulable time.
      * TODO: IMCOMPLETE
+     *
      * @return
      */
-    public int getEarliestSchedulbleTime () {
+    public int getEarliestSchedulbleTime() {
         int latestEndTime = -1;
         if (this.isSchedulable()) {
             for (TaskEdge e : this.getIncomingEdges()) {
@@ -88,7 +90,7 @@ public class TaskNode {
     }
 
     public boolean isSchedulable() {
-        for (TaskEdge e: incomingEdges) {
+        for (TaskEdge e : incomingEdges) {
             if (!e.getStartNode().isScheduled()) {
                 return false;
             }
