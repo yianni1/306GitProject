@@ -24,7 +24,7 @@ public class SolutionTree {
 
         //Creating the processors
         for (int i = 0; i < processorNumber; i++) {
-            processors.put(i, new Processor());
+            processors.put(i, new Processor(i));
         }
 
 

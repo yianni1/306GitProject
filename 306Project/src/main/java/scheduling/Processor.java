@@ -14,6 +14,13 @@ public class Processor {
     private List<Task> tasks = new ArrayList<Task>();
     private int cost;
 
+    /**
+     * The processor with a number
+     * @param number
+     */
+    public Processor(int number) {
+        this.number = number;
+    }
 
     /**
      * Adds a new task, with the node, startTime and endTime
