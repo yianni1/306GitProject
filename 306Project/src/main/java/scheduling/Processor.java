@@ -3,7 +3,9 @@ package scheduling;
 import graph.TaskNode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class represents a processor, with a list of tasks
@@ -29,7 +31,9 @@ public class Processor {
      * @param endTime
      */
     public void addTask(TaskNode node, int startTime, int endTime) {
-        tasks.add(new Task(node, startTime, endTime));
+        Task task = Task.getTask(node); //Creates/returns the task
+        task.scheduleTask(startTime, endTime, this);
+        tasks.add(task);
         if (cost < endTime) {
             cost = endTime;
         }
@@ -41,20 +45,61 @@ public class Processor {
     }
 }
 
+
 class Task {
     private TaskNode node;
     private int startTime;
     private int endTime;
+    private Processor processor; //The processor it's on
+
+    private static Map<TaskNode, Task> nodes = new HashMap<TaskNode, Task>();
+
+
 
     /**
      * The task that will be done
+     * Private because we do not want two
+     * tasks with the same tasknode
      * @param node
+     */
+    private Task(TaskNode node) {
+        this.node = node;
+
+        nodes.put(node, this);
+    }
+
+    /**
+     *
+     * Schedules a task.
      * @param startTime
      * @param endTime
+     * @param processor
      */
-    public Task(TaskNode node, int startTime, int endTime) {
-        this.node = node;
+    public void scheduleTask(int startTime, int endTime, Processor processor) {
         this.startTime = startTime;
         this.endTime = endTime;
+        this.processor = processor;
     }
+
+    /**
+     * Returns a task that encapsulates a given node
+     * @param node
+     * @return
+     */
+    public static Task getTask(TaskNode node) {
+        if (nodes.get(node) == null) {
+            return new Task(node);
+        }
+        else {
+            return nodes.get(node);
+        }
+    }
+
+
+
+
+
+
+
+
 }
