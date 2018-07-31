@@ -18,7 +18,7 @@ public class SolutionTree {
     private List<Processor> processorList;
     private TaskGraph graph;
     
-    private List<TaskNode> initialNodes;
+    private HashSet<TaskNode> initialNodes;
 
     /**
      * Constructor builds a solution tree, with all the solutions
@@ -40,11 +40,14 @@ public class SolutionTree {
      * Implementation of the graph scheduling
      */
     public void doSchedule() {
-    	/*initialNodes = graph.getAvailableNodes();
-    	
+    	/*
+    	Schedule schedule = new Schedule(processorList);
+    	schedule.initializeSchedulableNodes(graph);
+    	initialNodes = schedule.getSchedulableNodes();
     	
     	int minimialInitialNodeweight = 0;
-    	TaskNode initialNode = initialNodes.get(0);
+    	
+    	TaskNode initialNode = null;
     	
     	//Adds initial nodes with no incoming edges to processor
     	for (TaskNode taskNode : initialNodes) {
@@ -64,8 +67,7 @@ public class SolutionTree {
     	
     	TaskNode smallestTaskNode = null;
     	int smallestTaskNodeWeight = 0;
-    	
-    	for (TaskNode )
+    
     	// Checks child nodes of initial node
     	for (TaskEdge edge : initialNode.getOutgoingEdges()) {
     		
@@ -101,9 +103,9 @@ public class SolutionTree {
     			}
     		}
     		
-    	}
+    	}*/
     	
-    	*/
+    	
     	
     }
     

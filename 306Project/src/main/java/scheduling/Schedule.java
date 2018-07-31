@@ -46,7 +46,7 @@ public class Schedule {
 
         for (TaskNode n: nodes) {
             if (n.getIncomingEdges().size() == 0) {
-                schedulableTasks.add(n);
+            	initialNodes.add(n);
             }
         }
         this.schedulableTasks = initialNodes;
