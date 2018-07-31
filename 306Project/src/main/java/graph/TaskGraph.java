@@ -37,18 +37,4 @@ public class TaskGraph {
         return this.edges;
     }
 
-    /*
-    public void updateSchedulableNodes(TaskNode added) {
-        this.schedulable.remove(added);
-
-        // Send a message to all the nodes chlidren.
-        TaskNode childNode;
-        for (TaskEdge e: added.getOutgoingEdges()) {
-            childNode = e.getEndNode();
-            // Add one to the childNodes 'parentsvisited' field.
-        }
-
-
-    }
-    */
 }

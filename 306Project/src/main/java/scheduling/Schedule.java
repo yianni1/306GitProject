@@ -1,5 +1,6 @@
 package scheduling;
 
+import graph.TaskEdge;
 import graph.TaskGraph;
 import graph.TaskNode;
 
@@ -52,11 +53,31 @@ public class Schedule {
     }
 
     /**
+     * Updates the schedulable nodes (for after a node get scheduled).
+     * @param tn is the node that has just been scheduled.
+     */
+    public void updateSchedulableNodes(TaskNode tn){
+        schedulableTasks.remove(tn);
+
+        for (TaskEdge e: tn.getOutgoingEdges()) {
+            if (e.getEndNode().isSchedulable()) {
+                schedulableTasks.add(e.getEndNode());
+            }
+        }
+    }
+
+    /**
      * Return schedulable Nodes
      */
     public HashSet<TaskNode> getSchedulableNodes() {
         return this.schedulableTasks;
     }
+
+
+
+
+
+
 
     /**
      * Returns all the children of a given partial schedule
