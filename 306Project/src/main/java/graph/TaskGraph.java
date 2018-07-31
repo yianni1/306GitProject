@@ -9,12 +9,10 @@ public class TaskGraph {
 
     private HashSet<TaskEdge> edges; //The edges of the graph
     private HashSet<TaskNode> nodes;
-    private HashSet<TaskNode> schedulable;
 
     public TaskGraph() {
         edges = new HashSet<TaskEdge>();
         nodes = new HashSet<TaskNode>();
-        schedulable = new HashSet<TaskNode>();
     }
 
     /**
@@ -39,7 +37,7 @@ public class TaskGraph {
         return this.edges;
     }
 
-
+    /*
     public void updateSchedulableNodes(TaskNode added) {
         this.schedulable.remove(added);
 
@@ -52,5 +50,5 @@ public class TaskGraph {
 
 
     }
-
+    */
 }

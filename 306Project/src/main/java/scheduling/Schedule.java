@@ -52,7 +52,7 @@ public class Schedule {
     }
 
     /**
-     * Get schedulable Nodes
+     * Return schedulable Nodes
      */
     public HashSet<TaskNode> getSchedulableNodes() {
         return this.schedulableTasks;
