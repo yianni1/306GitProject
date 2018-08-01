@@ -52,7 +52,7 @@ public class LoadGraphTests {
 	/**
 	 * Tests graph loader for a particular graph
 	 * @param filePath
-	 */ 
+	 */
 	private void testGraphLoader(String filePath) {
 		GraphLoader loader = new GraphLoader();
 		TaskGraph graph = loader.load(filePath);
