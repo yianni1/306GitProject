@@ -83,102 +83,113 @@ public class SolutionTree {
 				newInitialNode(currentchildNode);
 			}
 		}
+		
+		
+		
+		
+		
+		
+		
+		
+	}
+	
+	
+	
+	
+	
 
-
+	private void prunning(List<TaskNode> scheduableChildren, TaskNode initialNode) {
 		//Loop to determine which processor to schedule nodes
-		for (TaskNode node : scheduableChildren) {
+				for (TaskNode node : scheduableChildren) {
 
-			
-			for (Processor processor : processorList) {
-
-				boolean scheduled = false;
-				
-				//If schedule is not empty
-				if (processor.getTasks().size() != 0) {
 					
-					//If Schedule does not already contain node
-					if (!processor.getTasks().contains(node)) {
+					for (Processor processor : processorList) {
+
+						boolean scheduled = false;
 						
-						//Get latestTask from processor
-						TaskNode latestTask = processor.getTasks().get(processor.getTasks().size() - 1);
-
-						//If latest Task == current node parent, schedule this node on this processor for 
-						//No switching processor edge cost
-						for (TaskEdge edgeB : node.getIncomingEdges()) {
-							if (latestTask.equals(edgeB.getStartNode())) {
-								processor.addTask(node, node.getWeight());
-								scheduled = true;
-								break;
-							}
-						}
-
-						//If current schedule does is not parent node
-						for (TaskEdge edgeA : latestTask.getIncomingEdges()) {
-							for (TaskEdge edgeB : node.getIncomingEdges()) {
+						//If schedule is not empty
+						if (processor.getTasks().size() != 0) {
+							
+							//If Schedule does not already contain node
+							if (!processor.getTasks().contains(node)) {
 								
-								//Ensures parent nodes same for latest task node and current toSchedule node
-								if (edgeB.getStartNode().equals(edgeA.getStartNode())) {
+								//Get latestTask from processor
+								TaskNode latestTask = processor.getTasks().get(processor.getTasks().size() - 1);
 
-									//Determines the processing time for staying on current processor 
-									//And for scheduling on other processor
-									int differentProcessorTime = initialNode.getWeight() + edgeB.getWeight();
-									int sameProcessorTime = processor.getCost();
-
-									//Checks which processor to schedule on
-									if (differentProcessorTime < sameProcessorTime) {
-										
-										//Schedules node on other processor 
-										for (Processor otherProcessor : processorList) {
-											if (!otherProcessor.equals(processor)) {
-												otherProcessor.addTask(node, differentProcessorTime + node.getWeight());
-												scheduled = true;
-												break;
-											}
-										}
-
-									}
-									//Schedules node on same processor
-									else {
+								//If latest Task == current node parent, schedule this node on this processor for 
+								//No switching processor edge cost
+								for (TaskEdge edgeB : node.getIncomingEdges()) {
+									if (latestTask.equals(edgeB.getStartNode())) {
 										processor.addTask(node, node.getWeight());
 										scheduled = true;
 										break;
 									}
+								}
+
+								//If current schedule does not have a parent node
+								for (TaskEdge edgeA : latestTask.getIncomingEdges()) {
+									for (TaskEdge edgeB : node.getIncomingEdges()) {
+										
+										//Ensures parent nodes same for latest task node and current toSchedule node
+										if (edgeB.getStartNode().equals(edgeA.getStartNode())) {
+
+											//Determines the processing time for staying on current processor 
+											//And for scheduling on other processor
+											int differentProcessorTime = initialNode.getWeight() + edgeB.getWeight();
+											int sameProcessorTime = processor.getCost();
+
+											//Checks which processor to schedule on
+											if (differentProcessorTime < sameProcessorTime) {
+												
+												//Schedules node on other processor 
+												for (Processor otherProcessor : processorList) {
+													if (!otherProcessor.equals(processor)) {
+														otherProcessor.addTask(node, differentProcessorTime + node.getWeight());
+														scheduled = true;
+														break;
+													}
+												}
+
+											}
+											//Schedules node on same processor
+											else {
+												processor.addTask(node, node.getWeight());
+												scheduled = true;
+												break;
+											}
+
+										}
+									}
+								}
+							}
+						}
+						else {
+							//INCORRECT WHAT TO DO WHEN CURRENT PROCESSOR HAS NO CURRENT SCHEDULE?????
+							if (node.isScheduled()) {
+								for (TaskEdge edge : node.getIncomingEdges()) {
+									if (edge.getStartNode().equals(initialNode)) {
+										int differentProcessorTime = edge.getStartNode().getWeight() + initialNode.getWeight();
+										int sameProcessorTime = initialNode.getWeight();
+
+										if (differentProcessorTime > sameProcessorTime) {
+											processor.addTask(node, differentProcessorTime);
+										}
+									}
 
 								}
 							}
 						}
-					}
-				}
-				else {
-					//INCORRECT WHAT TO DO WHEN CURRENT PROCESSOR HAS NO CURRENT SCHEDULE?????
-					if (node.isScheduled()) {
-						for (TaskEdge edge : node.getIncomingEdges()) {
-							if (edge.getStartNode().equals(initialNode)) {
-								int differentProcessorTime = edge.getStartNode().getWeight() + initialNode.getWeight();
-								int sameProcessorTime = initialNode.getWeight();
-
-								if (differentProcessorTime > sameProcessorTime) {
-									processor.addTask(node, differentProcessorTime);
-								}
-							}
-
+						//Break if current node is scheduled
+						if (scheduled) {
+							break;
 						}
 					}
+
 				}
-				//Break if current node is scheduled
-				if (scheduled) {
-					break;
-				}
-			}
-
-		}
-
-
-		System.out.println(processorList);
-
 
 	}
-
+	
+	
 	/**
 	 * Schedules another initial node
 	 */

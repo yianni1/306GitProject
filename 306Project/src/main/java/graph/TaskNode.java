@@ -88,6 +88,10 @@ public class TaskNode {
     public boolean isScheduled() {
         return scheduled;
     }
+    
+    public void schedule() {
+    	scheduled = true;
+    }
 
     public boolean isSchedulable() {
         for (TaskEdge e : incomingEdges) {
