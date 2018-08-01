@@ -6,6 +6,7 @@ import java.util.List;
 
 import graph.TaskGraph;
 import graph.TaskNode;
+import io.Output;
 
 public class SimpleScheduler {
 
@@ -48,7 +49,15 @@ public class SimpleScheduler {
 				schedule.updateSchedulableNodes(node);
 			}
 		}
-		System.out.println(processor);
+
+
+		Output.setOutputFileName("output");
+		try {
+			Output.createOutput(processor, graph);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		
 		
