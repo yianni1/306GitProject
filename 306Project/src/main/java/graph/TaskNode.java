@@ -2,11 +2,10 @@ package graph;
 
 import scheduling.Processor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
-/**
- * created by Dweep on 29/7/2018
- */
 public class TaskNode {
     private int weight;
     private String name;
@@ -27,6 +26,14 @@ public class TaskNode {
         outgoingEdges = new HashSet<TaskEdge>();
     }
 
+    /**
+     *
+     * Sets the status of this node to scheduled, assigning a start time and a processor.
+     *
+     * @param startTime the time at which the node is scheduled
+     * @param processor the processor that this node has been scheduled on
+     * @return
+     */
     public boolean schedule(int startTime, Processor processor) {
         if (!this.isSchedulable()) {
             return false;
@@ -37,6 +44,10 @@ public class TaskNode {
         return true;
     }
 
+    /**
+     * Resets this node to its unscheduled state.
+     * @return
+     */
     public boolean deschedule() {
         if (this.isSchedulable()) {
             return false;
@@ -47,6 +58,10 @@ public class TaskNode {
         return true;
     }
 
+    /**
+     * Gets the time at which this node ends.
+     * @return
+     */
     public int getEndTime() {
         return this.startTime + this.weight;
     }
@@ -74,32 +89,63 @@ public class TaskNode {
         return earliestStartTime;
     }
 
-
+    /**
+     * Adds an incoming edge to this node.
+     * @param edge the edge to be added
+     */
     public void addIncomingEdge(TaskEdge edge) {
         incomingEdges.add(edge);
     }
 
+    /**
+     * Adds an outgoing edge to this node.
+     * @param edge the edge to be added
+     */
     public void addOutgoingEdge(TaskEdge edge) {
         outgoingEdges.add(edge);
     }
 
+    /**
+     * Retrieves incoming edges of this node.
+     * @return
+     */
     public HashSet<TaskEdge> getIncomingEdges() {
         return incomingEdges;
     }
 
+    /**
+     * Retrieves outgoing edges of this node.
+     * @return
+     */
     public HashSet<TaskEdge> getOutgoingEdges() {
         return outgoingEdges;
     }
 
+    /**
+     * Retrieves the weight of this node.
+     * @return
+     */
     public int getWeight() {
         return weight;
     }
 
+    /**
+     * Checks whether this node is scheduled.
+     * @return
+     */
     public boolean isScheduled() {
         return scheduled;
     }
 
+    /**
+     * Checks whether this node is schedulable.
+     * @return
+     */
     public boolean isSchedulable() {
+        if (this.isScheduled()) {
+            return false;
+        }
+
         for (TaskEdge e : incomingEdges) {
             if (!e.getStartNode().isScheduled()) {
                 return false;
@@ -108,6 +154,10 @@ public class TaskNode {
         return true;
     }
 
+    /**
+     * Returns the name of this node.
+     * @return
+     */
     public String getName() {
         return name;
     }

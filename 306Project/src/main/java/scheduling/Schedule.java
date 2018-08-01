@@ -15,38 +15,32 @@ import java.util.List;
 public class Schedule {
 
     private List<Processor> processors = new ArrayList<Processor>();
-    private int cost; //The cost for this Schedule.
-    private List<TaskNode> schedulableTasks = new ArrayList<TaskNode>(); // The tasks that can be scheduled.
+    private List<TaskNode> schedulableNodes = new ArrayList<TaskNode>(); // The tasks that can be scheduled.
+    private TaskNode lastScheduledTask;
+    private TaskGraph graph;
 
-    /**
-     * Constructor
-     *
-     * @param processors
-     */
-    public Schedule(int numberOfProcessors) {
+    public Schedule(int numberOfProcessors, TaskGraph graph) {
         List<Processor> processors = new ArrayList<Processor>();
         for (int i = 0; i < numberOfProcessors; i++) {
             processors.add(new Processor(i));
         }
 
         this.processors = processors;
+        this.lastScheduledTask = null;
+        this.graph = graph;
 
-//        //Calculating cost
-//        this.cost = 0;
-//        for (Processor p : this.processors) {
-//            if (p.getCost() > cost) {
-//                this.cost = p.getCost();
-//            }
-//        }
+        initializeSchedulableNodes(graph);
+
     }
 
     /**
      * Initialises the 'schedulable nodes' list. (i.e. the entry nodes)
      * In the beginning, the only schedulable nodes will be the entry nodes.
+     * Called from the constructor.
      *
      * @return schedulable: the list of schedulable nodes.
      */
-    public void initializeSchedulableNodes(TaskGraph tg) {
+    private void initializeSchedulableNodes(TaskGraph tg) {
         List<TaskNode> initialNodes = new ArrayList<TaskNode>();
         HashSet<TaskNode> nodes = tg.getNodes();
 
@@ -55,10 +49,14 @@ public class Schedule {
             	initialNodes.add(n);
             }
         }
-        this.schedulableTasks = initialNodes;
+        this.schedulableNodes = initialNodes;
     }
 
-
+    /**
+     * Returns the processors that this schedule contains.
+     *
+     * @return processors: the list of processors.
+     */
     public List<Processor> getProcessors() {	
         return processors;
     }
@@ -70,20 +68,59 @@ public class Schedule {
      * @param tn is the node that has just been scheduled.
      */
     public void updateSchedulableNodes(TaskNode tn) {
-        schedulableTasks.remove(tn);
+        schedulableNodes.remove(tn);
 
         for (TaskEdge e : tn.getOutgoingEdges()) {
             if (e.getEndNode().isSchedulable()) {
-                schedulableTasks.add(e.getEndNode());
+                schedulableNodes.add(e.getEndNode());
             }
         }
     }
 
     /**
-     * Return schedulable Nodes
+     * Gets all the nodes that have been scheduled on this schedule.
+     *
+     * @return scheduledNodes: all the nodes that have been scheduled.
+     */
+    public List<TaskNode> getScheduledNodes() {
+        List<TaskNode> scheduledNodes = new ArrayList<TaskNode>();
+        for (Processor processor : processors) {
+            scheduledNodes.addAll(processor.getTasks());
+        }
+
+        return scheduledNodes;
+    }
+
+    /**
+     * Gets all nodes that are able to be scheduled.
+     *
+     * @return schedulableNodes
      */
     public List<TaskNode> getSchedulableNodes() {
-        return this.schedulableTasks;
+        return this.schedulableNodes;
+    }
+
+    /**
+     * Adds a task to the current schedule.
+     *
+     * @param node the node to be added
+     * @param processorIndex the index of the processor to add it too
+     */
+    public void addTask(TaskNode node, int processorIndex) {
+        Processor processor = processors.get(processorIndex);
+        processor.addTask(node, node.getEarliestSchedulableTime(processor));
+        lastScheduledTask = node;
+    }
+
+    /**
+     * Removes the last scheduled task.
+     */
+    public void removeLastScheduledTask() {
+        for (Processor processor : processors) {
+            if (processor.getTasks().contains(lastScheduledTask)) {
+                processor.removeTask(lastScheduledTask);
+            }
+        }
     }
 
 
