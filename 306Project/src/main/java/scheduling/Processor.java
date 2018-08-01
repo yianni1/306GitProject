@@ -31,7 +31,13 @@ public class Processor {
      */
     public void addTask(TaskNode node, int time) {
         tasks.add(node);
+        node.schedule(time, this);
         cost = cost + time;
+    }
+
+    public void removeLastTask() {
+        tasks.remove(tasks.size() - 1);
+        tasks.get(tasks.size() - 1).deschedule();
     }
 
 

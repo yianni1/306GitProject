@@ -34,7 +34,16 @@ public class TaskNode {
         this.startTime = startTime;
         this.processor = processor;
         this.scheduled = true;
-        processor.addTask(this, this.weight);
+        return true;
+    }
+
+    public boolean deschedule() {
+        if (this.isSchedulable()) {
+            return false;
+        }
+        this.startTime = -1;
+        this.processor = null;
+        this.scheduled = false;
         return true;
     }
 
@@ -45,23 +54,24 @@ public class TaskNode {
     /**
      * This should only be run if the task is schedulable.
      * It should return the earliest schedulable time.
-     * TODO: IMCOMPLETE
      *
      * @return
      */
-    public int getEarliestSchedulbleTime() {
-        int latestEndTime = -1;
+    public int getEarliestSchedulableTime(Processor p) {
+        int earliestStartTime = -1;
         if (this.isSchedulable()) {
             for (TaskEdge e : this.getIncomingEdges()) {
                 int endTime = e.getStartNode().getEndTime();
-                if (endTime > latestEndTime) {
-                    latestEndTime = endTime;
+                if (endTime > earliestStartTime) {
+                    earliestStartTime = endTime;
                 }
-                e.getWeight();
+                if (!e.getStartNode().processor.equals(p)) {
+                    earliestStartTime = earliestStartTime + e.getWeight();
+                }
             }
         }
 
-        return latestEndTime;
+        return earliestStartTime;
     }
 
 
