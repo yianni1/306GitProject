@@ -12,7 +12,6 @@ public class TaskNode {
     private String name;
     private boolean scheduled;
     private int startTime;
-    private Processor processor;
 
     private HashSet<TaskEdge> incomingEdges;
     private HashSet<TaskEdge> outgoingEdges;
@@ -22,7 +21,6 @@ public class TaskNode {
         this.weight = weight;
         this.scheduled = false;
         this.startTime = -1;
-        this.processor = null;
         incomingEdges = new HashSet<TaskEdge>();
         outgoingEdges = new HashSet<TaskEdge>();
     }
@@ -31,8 +29,8 @@ public class TaskNode {
         if (!this.isSchedulable()) {
             return false;
         }
-        this.startTime = startTime;
-        this.processor = processor;
+        this.startTime = processor.getCost();
+
         this.scheduled = true;
         processor.addTask(this, this.weight);
         return true;
@@ -41,7 +39,11 @@ public class TaskNode {
     public int getEndTime() {
         return this.startTime + this.weight;
     }
-
+    
+    public int getStartTime() {
+    	return this.startTime;
+    }
+    
     /**
      * This should only be run if the task is schedulable.
      * It should return the earliest schedulable time.
@@ -89,8 +91,9 @@ public class TaskNode {
         return scheduled;
     }
     
-    public void schedule() {
+    public void schedule(int time) {
     	scheduled = true;
+    	this.startTime = time;
     }
 
     public boolean isSchedulable() {
