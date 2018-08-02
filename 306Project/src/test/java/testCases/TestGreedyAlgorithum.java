@@ -33,15 +33,22 @@ public class TestGreedyAlgorithum {
 		
 		filePaths = new ArrayList<String>();
 		filePaths.addAll(Arrays.asList("src/main/resources/DotFiles/Nodes_7_OutTree.dot", "src/main/resources/DotFiles/Test1.dot",
-				"src/main/resources/DotFiles/TestTwoParents.dot"));
+				"src/main/resources/DotFiles/TestTwoParents.dot", "src/main/resources/DotFiles/Nodes_10_Random.dot", 
+				"src/main/resources/DotFiles/Nodes_9_SeriesParallel.dot", "src/main/resources/DotFiles/Nodes_11_OutTree.dot",
+				"src/main/resources/DotFiles/Nodes_8_Random.dot"));
 	}
 	
-
-	@Test
+	@Test 
 	public void testGreedySchedule() {
+		for (String filePath : filePaths) {
+			greedySchedule(filePath);
+		}
+	}
+	
+	private void greedySchedule(String filePath) {
 		
 		GraphLoader loader = new GraphLoader();
-		TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_7_OutTree.dot");
+		TaskGraph graph = loader.load(filePath);
 		
 		GreedySchedule schedule = new GreedySchedule(graph, processorNum);
 		Schedule solution = schedule.doSchedule();
