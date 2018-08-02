@@ -5,7 +5,6 @@ import graph.TaskGraph;
 import graph.TaskNode;
 import scheduling.Processor;
 import scheduling.SimpleScheduler;
-import scheduling.SolutionTree;
 
 import java.io.File;
 import java.io.FileWriter;
