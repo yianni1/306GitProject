@@ -44,10 +44,14 @@ public class GreedySchedule {
 			@SuppressWarnings("unchecked")
 			HashSet<TaskNode> avalibleNodes = (HashSet<TaskNode>) schedule.getSchedulableNodes().clone();
 			List<Processor> processors = schedule.getProcessors();
+			
+			//Loop through Available nodes
 			for (TaskNode node : avalibleNodes) {
 				boolean scheduled = false;
+				//Loop through each processor
 				for (Processor processor : processors) {
 
+					//If node is an initial node, simply schedule it on first processor
 					if (node.getIncomingEdges().size() == 0) {
 						processor.addTask(node, node.getWeight());
 						schedule.updateSchedulableNodes(node);
@@ -58,16 +62,19 @@ public class GreedySchedule {
 						List<TaskNode> parents = new ArrayList<TaskNode>();
 						List<TaskNode> elementsAfterParent = new ArrayList<TaskNode>();
 
+						//Get the parent nodes for the current to be scheduled node
 						for (TaskEdge edgeParents : node.getIncomingEdges()) {
 							parents.add(edgeParents.getStartNode());
 						}
 
 						int parentWeight = 0;
+						//Get the min weight from its parents indicating the min start time of the node
 						for (TaskNode parent : parents) {
 
 							parentWeight = parentWeight + parent.getWeight() + parent.getStartTime();
 						}
 
+						// Determine which is greater, the parent weight cost, or the current processor total cost
 						int sameProcessorCost = 0;
 						if (parentWeight >= processor.getCost()) {
 							sameProcessorCost = parentWeight;
@@ -76,7 +83,9 @@ public class GreedySchedule {
 							sameProcessorCost = processor.getCost();
 						}
 						
-
+						int bestOtherProcessorCost = Integer.MAX_VALUE;
+						Processor bestP = processor;
+						//Loop through other processors to see if there is a better schedule
 						for (Processor otherProcessor : processors) {
 							if(!otherProcessor.equals(processor)) {
 								
@@ -89,24 +98,30 @@ public class GreedySchedule {
 										edge = e;
 									}
 								}
+								
 								int differentProcessorCost =  parentWeight + edge.getWeight() + otherProcessor.getCost();
-
-								if (sameProcessorCost < differentProcessorCost) {
-									if (!processor.getTasks().contains(node)) {
-										processor.addTask(node, sameProcessorCost + node.getWeight());
-										schedule.updateSchedulableNodes(node);
-										scheduled = true;
-									}
-								}
-								else {
-									otherProcessor.addTask(node, differentProcessorCost + node.getWeight());
-									schedule.updateSchedulableNodes(node);
-									scheduled = true;
-								}
-								if (scheduled) {
-									break;
+								if (bestOtherProcessorCost > differentProcessorCost) {
+									bestOtherProcessorCost = differentProcessorCost;
+									bestP = otherProcessor;
 								}
 							}
+						}
+						
+						if (sameProcessorCost < bestOtherProcessorCost) {
+							if (!processor.getTasks().contains(node)) {
+								processor.addTask(node, sameProcessorCost + node.getWeight());
+								schedule.updateSchedulableNodes(node);
+								scheduled = true;
+							}
+						}
+						else {
+							
+							bestP.addTask(node, bestOtherProcessorCost + node.getWeight());
+							schedule.updateSchedulableNodes(node);
+							scheduled = true;
+						}
+						if (scheduled) {
+							break;
 						}
 					}
 					if (scheduled) {

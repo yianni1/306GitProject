@@ -31,7 +31,7 @@ public class Processor {
      */
     public void addTask(TaskNode node, int time) {
         tasks.add(node);
-        node.schedule(cost + time);
+        node.schedule(time);
         cost = cost + time;
     }
 

@@ -29,7 +29,7 @@ public class TestGreedyAlgorithum {
 	@Before
 	public void initialisePaths() {
 		
-		processorNum = 2;
+		processorNum = 3;
 		
 		filePaths = new ArrayList<String>();
 		filePaths.addAll(Arrays.asList("src/main/resources/DotFiles/Nodes_7_OutTree.dot", "src/main/resources/DotFiles/Test1.dot",
@@ -43,6 +43,7 @@ public class TestGreedyAlgorithum {
 		for (String filePath : filePaths) {
 			greedySchedule(filePath);
 		}
+		//greedySchedule("src/main/resources/DotFiles/Test1.dot");
 	}
 	
 	private void greedySchedule(String filePath) {
@@ -53,7 +54,7 @@ public class TestGreedyAlgorithum {
 		GreedySchedule schedule = new GreedySchedule(graph, processorNum);
 		Schedule solution = schedule.doSchedule();
 		
-		
+		int nodeNum = 0;
 		for (Processor processor : solution.getProcessors()) {
 			int totalWeight = 0;
 			
@@ -69,6 +70,7 @@ public class TestGreedyAlgorithum {
 					assertTrue(parentStart <= nodeStart);
 					
 				}
+				nodeNum++;
 			}
 			
 			//Checks each node is only schedule once, i.e. no duplicate nodes in any processor
@@ -77,6 +79,17 @@ public class TestGreedyAlgorithum {
 			   fail();
 			}
 			
+		}
+		
+		for (Processor p : solution.getProcessors()) {
+			int size = p.getTasks().size();
+			if (size >= nodeNum) {
+				fail();
+			}
+			
+			//if (p.getTasks().size() == 0) {
+			//	fail();
+			//}
 		}
 	}
 
