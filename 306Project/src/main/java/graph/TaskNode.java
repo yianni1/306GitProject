@@ -136,6 +136,10 @@ public class TaskNode {
     public boolean isScheduled() {
         return scheduled;
     }
+    
+    public void schedule() {
+    	scheduled = true;
+    }
 
     /**
      * Checks whether this node is schedulable.

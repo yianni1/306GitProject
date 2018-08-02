@@ -1,0 +1,9 @@
+digraph outputOutput {
+  a  [Weight=1,Start=-1,Processor=1];
+  c  [Weight=6,Start=-1,Processor=1];
+  b  [Weight=5,Start=-1,Processor=1];
+  d  [Weight=7,Start=-1,Processor=1];
+  a->c  [Weight=6];
+  a->d  [Weight=3];
+  a->b  [Weight=5];
+}

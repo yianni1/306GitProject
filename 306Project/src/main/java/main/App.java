@@ -14,6 +14,7 @@ import org.apache.commons.cli.Options;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import scheduling.SimpleScheduler;
 
 /**
  * Hello world!
@@ -73,8 +74,8 @@ public class App extends Application{
 
 			GraphLoader loader = new GraphLoader();
 			TaskGraph graph = loader.load(fileName);
-//			SolutionTree solution = new SolutionTree(graph, processorNumber);
-//			solution.doSchedule();
+			SimpleScheduler solution = new SimpleScheduler(graph, processorNumber);
+			solution.doSchedule();
 			System.out.println("Done"); // FOR DEBUGGING ON CONSOLE
         }
 	}
