@@ -70,18 +70,19 @@ public class GreedySchedule {
 						int parentWeight = 0;
 						//Get the min weight from its parents indicating the min start time of the node
 						for (TaskNode parent : parents) {
-
-							parentWeight = parentWeight + parent.getWeight() + parent.getStartTime();
+							if (parent.getEndTime() > parentWeight) {
+								parentWeight = parent.getEndTime();
+							}
 						}
 
 						// Determine which is greater, the parent weight cost, or the current processor total cost
 						int sameProcessorCost = 0;
-						if (parentWeight >= processor.getCost()) {
-							sameProcessorCost = parentWeight;
-						}
-						else {
+						//if (parentWeight >= processor.getCost()) {
+						///	sameProcessorCost = parentWeight;
+						//}
+						//else {
 							sameProcessorCost = processor.getCost();
-						}
+						//}
 						
 						int bestOtherProcessorCost = Integer.MAX_VALUE;
 						Processor bestP = processor;

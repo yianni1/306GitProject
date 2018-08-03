@@ -40,10 +40,10 @@ public class TestGreedyAlgorithum {
 	
 	@Test 
 	public void testGreedySchedule() {
-		for (String filePath : filePaths) {
-			greedySchedule(filePath);
-		}
-		//greedySchedule("src/main/resources/DotFiles/Test1.dot");
+		//for (String filePath : filePaths) {
+		//	greedySchedule(filePath);
+		//}
+		greedySchedule("src/main/resources/DotFiles/Test1.dot");
 	}
 	
 	private void greedySchedule(String filePath) {
@@ -91,6 +91,22 @@ public class TestGreedyAlgorithum {
 			//	fail();
 			//}
 		}
+	}
+	
+	@Test
+	public void testTest1Schedule() {
+		GraphLoader loader = new GraphLoader();
+		TaskGraph graph = loader.load("src/main/resources/DotFiles/Test1.dot");
+		GreedySchedule schedule = new GreedySchedule(graph, processorNum);
+		Schedule solution = schedule.doSchedule();
+		
+		ArrayList<Processor> processorList = new ArrayList<Processor>();
+		for (int i = 0; i < processorNum; i++) {
+			processorList.add(new Processor(i));
+		}
+		Schedule s = new Schedule(processorList);
+		
+		
 	}
 
 }
