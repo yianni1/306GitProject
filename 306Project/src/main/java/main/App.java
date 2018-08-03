@@ -60,7 +60,7 @@ public class App extends Application{
 
 			//default values for optional arguments
 			int numCores = 1;
-			String outputName = fileName + "-output.dot";
+//			String outputName = fileName + "-output.dot";
 
 
             if (cmd.hasOption("p")) {
@@ -68,7 +68,10 @@ public class App extends Application{
             }
 
             if (cmd.hasOption("o")) {
-                outputName = cmd.getOptionValue("o");
+                String outputName = cmd.getOptionValue("o");
+                if (outputName == null) {
+                	outputName = fileName + "-output.dot";
+				}
 				Output.setOutputFileName(outputName); //Seting the output name
 				GraphLoader loader = new GraphLoader(); //Loading the graph
 				TaskGraph graph = loader.load(fileName);
