@@ -1,4 +1,3 @@
-
 package main;
 
 import java.io.IOException;
@@ -12,6 +11,7 @@ import javafx.scene.Scene;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 import javafx.application.Application;
@@ -42,60 +42,90 @@ public class App extends Application{
 		String[] args = params.getRaw().toArray(new String[size]);
 
 		//Command line options using Apache Commons CLI
-        Options options = new Options();
+		Options options = new Options();
 
-        options.addOption("p", true, "Number of cores to use");
-        options.addOption("v", false, "Use visualisation");
-        options.addOption("o", true, "Output file name" );
+		options.addOption("p", true, "Number of cores to use");
+		options.addOption("v", false, "Use visualisation");
+		options.addOption("o", true, "Output file name" );
 
-        CommandLineParser parser = new DefaultParser();
-        CommandLine cmd = parser.parse(options, args);
+		
+		/*String nextPart = null;
+		for (int i = 0; i < args.length; i++) {
+			if (args[i].equals("-o")) {
+				if (i + 1 == args.length) {
+					options.addOption("o", false, "Output file name" );
+					break;
+				}
+				else {
+					nextPart = args[i + 1];
+					if (nextPart.equals("-p") || (nextPart.equals("-v")) ) {
+						options.addOption("o", false, "Output file name" );
+						break;
+					}
+				}
+			}
+		}*/
+		
+		CommandLineParser parser = new DefaultParser();
+		CommandLine cmd = parser.parse(options, args);
 
-        if (args.length < 2) {
-            System.out.println("Insufficient arguments. Please specify input file and number of processors.");
-        } else {
-        	//required arguments
+		if (args.length < 2) {
+			System.out.println("Insufficient arguments. Please specify input file and number of processors.");
+		} else {
+			//required arguments
 			String fileName = args[0];
 			int processorNumber = Integer.parseInt(args[1]);
 
 			//default values for optional arguments
 			int numCores = 1;
-//			String outputName = fileName + "-output.dot";
+			//			String outputName = fileName + "-output.dot";
 
 
-            if (cmd.hasOption("p")) {
-                numCores = Integer.parseInt(cmd.getOptionValue("p"));
-            }
+			if (cmd.hasOption("p")) {
+				numCores = Integer.parseInt(cmd.getOptionValue("p"));
+			}
 
-            if (cmd.hasOption("o")) {
-                String outputName = cmd.getOptionValue("o");
-                if (outputName == null) {
-                	outputName = fileName + "-output.dot";
-				}
-				Output.setOutputFileName(outputName); //Seting the output name
+			if (cmd.hasOption("o")) {
+				//Block for user specified opiton
+				String sendToOutputClass = cmd.getOptionValue("o");
+
 				GraphLoader loader = new GraphLoader(); //Loading the graph
-				TaskGraph graph = loader.load(fileName);
+				TaskGraph graph = loader.load("src/main/resources/DotFiles/" + fileName);
 
 				//Doing the algorithm
 				GreedyScheduler solution = new GreedyScheduler();
 				Schedule finalSolution = solution.createSchedule(graph, processorNumber);
 
 				//Transporting to output
-				Output.createOutput(finalSolution.getProcessors(), graph);
+				Output.createOutput(finalSolution.getProcessors(), graph, sendToOutputClass);
 			}
-            if (cmd.hasOption("v")) {
-                //If visualisation is required, initialise root layout
-                initRootLayout();
-            }
+			else {
+				//Block for non specified option
+				String outputN = fileName.substring(0, fileName.length() - 4);
+				
+				
+				String sendToOutputClass = outputN;
+				
+				GraphLoader loader = new GraphLoader(); //Loading the graph
+				TaskGraph graph = loader.load("src/main/resources/DotFiles/" + fileName);
+
+				//Doing the algorithm
+				GreedyScheduler solution = new GreedyScheduler();
+				Schedule finalSolution = solution.createSchedule(graph, processorNumber);
+
+				//Transporting to output
+				Output.createOutput(finalSolution.getProcessors(), graph, sendToOutputClass);
+
+			}
+			if (cmd.hasOption("v")) {
+				//If visualisation is required, initialise root layout
+				initRootLayout();
+			}
 
 			System.out.println("Scheduling on " + processorNumber + " processors using " + numCores + " cores.");
 
-			GraphLoader loader = new GraphLoader();
-			TaskGraph graph = loader.load(fileName);
-			SimpleScheduler solution = new SimpleScheduler(graph, processorNumber);
-			solution.doSchedule();
 			System.out.println("Done"); // FOR DEBUGGING ON CONSOLE
-        }
+		}
 	}
 
 	/**
@@ -125,5 +155,5 @@ public class App extends Application{
 		}
 
 	}
-    
+
 }

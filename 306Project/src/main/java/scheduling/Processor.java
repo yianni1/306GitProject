@@ -24,6 +24,9 @@ public class Processor {
         this.procID = number;
     }
 
+    public int getID() {
+    	return procID;
+    }
     /**
      * Adds a new task, with the node.
      * Called by TaskNode.
