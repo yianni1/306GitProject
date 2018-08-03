@@ -9,10 +9,13 @@ public class TaskGraph {
 
     private HashSet<TaskEdge> edges; // The edges in the graph
     private HashSet<TaskNode> nodes; // The nodes in the graph
+    private String title;
 
-    public TaskGraph() {
+
+    public TaskGraph(String title) {
         edges = new HashSet<TaskEdge>();
         nodes = new HashSet<TaskNode>();
+        this.title = title;
     }
 
     /**
@@ -37,6 +40,10 @@ public class TaskGraph {
 
     public HashSet<TaskEdge> getEdges() {
         return this.edges;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
 }
