@@ -14,6 +14,7 @@ import org.apache.commons.cli.Options;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import scheduling.GreedyScheduler;
 import scheduling.SimpleScheduler;
 
 /**
@@ -74,8 +75,8 @@ public class App extends Application{
 
 			GraphLoader loader = new GraphLoader();
 			TaskGraph graph = loader.load(fileName);
-			SimpleScheduler solution = new SimpleScheduler(graph, processorNumber);
-			solution.doSchedule();
+			GreedyScheduler scheduler = new GreedyScheduler();
+			scheduler.createSchedule(graph, processorNumber);
 			System.out.println("Done"); // FOR DEBUGGING ON CONSOLE
         }
 	}

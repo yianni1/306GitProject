@@ -67,29 +67,6 @@ public class TaskNode {
     }
 
     /**
-     * This should only be run if the task is schedulable.
-     * It should return the earliest schedulable time.
-     *
-     * @return
-     */
-    public int getEarliestSchedulableTime(Processor p) {
-        int earliestStartTime = -1;
-        if (this.isSchedulable()) {
-            for (TaskEdge e : this.getIncomingEdges()) {
-                int endTime = e.getStartNode().getEndTime();
-                if (endTime > earliestStartTime) {
-                    earliestStartTime = endTime;
-                }
-                if (!e.getStartNode().processor.equals(p)) {
-                    earliestStartTime = earliestStartTime + e.getWeight();
-                }
-            }
-        }
-
-        return earliestStartTime;
-    }
-
-    /**
      * Adds an incoming edge to this node.
      * @param edge the edge to be added
      */
@@ -166,4 +143,7 @@ public class TaskNode {
         return name;
     }
 
+    public Processor getProcessor() {
+        return processor;
+    }
 }

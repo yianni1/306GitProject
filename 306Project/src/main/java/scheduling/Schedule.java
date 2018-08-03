@@ -104,11 +104,10 @@ public class Schedule {
      * Adds a task to the current schedule.
      *
      * @param node the node to be added
-     * @param processorIndex the index of the processor to add it too
+     * @param processor the processor to add it to
      */
-    public void addTask(TaskNode node, int processorIndex) {
-        Processor processor = processors.get(processorIndex);
-        processor.addTask(node, node.getEarliestSchedulableTime(processor));
+    public void addTask(TaskNode node, Processor processor, int time) {
+        processor.addTask(node, time);
         lastScheduledTask = node;
     }
 
@@ -121,6 +120,29 @@ public class Schedule {
                 processor.removeTask(lastScheduledTask);
             }
         }
+    }
+
+    /**
+     * This should only be run if the task is schedulable.
+     * It should return the earliest schedulable time.
+     *
+     * @return
+     */
+    public int getEarliestSchedulableTime(TaskNode node, Processor p) {
+        int earliestStartTime = -1;
+        if (node.isSchedulable()) {
+            for (TaskEdge e : node.getIncomingEdges()) {
+                int endTime = e.getStartNode().getEndTime();
+                if (endTime > earliestStartTime) {
+                    earliestStartTime = endTime;
+                }
+                if (!e.getStartNode().getProcessor().equals(p)) {
+                    earliestStartTime = earliestStartTime + e.getWeight();
+                }
+            }
+        }
+
+        return Math.max(earliestStartTime, p.getBound());
     }
 
 
