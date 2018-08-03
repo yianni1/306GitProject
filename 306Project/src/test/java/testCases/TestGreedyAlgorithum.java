@@ -29,7 +29,7 @@ public class TestGreedyAlgorithum {
 	@Before
 	public void initialisePaths() {
 		
-		processorNum = 3;
+		processorNum = 4;
 		
 		filePaths = new ArrayList<String>();
 		filePaths.addAll(Arrays.asList("src/main/resources/DotFiles/Nodes_7_OutTree.dot", "src/main/resources/DotFiles/Test1.dot",
@@ -87,7 +87,7 @@ public class TestGreedyAlgorithum {
 				fail();
 			}
 			
-			//if (p.getTasks().size() == 0) {
+		//	if (p.getTasks().size() == 0) {
 			//	fail();
 			//}
 		}
