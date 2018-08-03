@@ -4,11 +4,14 @@ import graph.TaskEdge;
 import graph.TaskGraph;
 import graph.TaskNode;
 import scheduling.Processor;
+import scheduling.Schedule;
 import scheduling.SimpleScheduler;
+import scheduling.SolutionTree;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by olive on 1/08/2018.
@@ -26,7 +29,8 @@ public class Output {
      * @param completedSolution
      * @return
      */
-    public static void createOutput(Processor completedSolution, TaskGraph graph) {
+    public static void createOutput(List<Processor> completedSolution, TaskGraph graph) {
+
 
         //Creating the file
         String fileName = FILEPATH + outputFileName + ".dot";
@@ -34,14 +38,22 @@ public class Output {
         try {
             file.createNewFile();
 
+            //Writing to the file
             FileWriter writer = new FileWriter(file);
-            writer.write("digraph " + outputFileName + "Output" + " {\n");
+            writer.write("digraph " + "\"output" + graph.getTitle() + "\" {\n"); //Writing the first line
+            int count = 0; //The processor number
 
-            for (TaskNode node : completedSolution.getTasks()) {
-                writer.write("  " + node.getName() + "  [Weight=" + node.getWeight() + ",Start="
-                        + (node.getEndTime() - node.getWeight()) + ",Processor=1];\n");
+            //For EAch processor, we go through each of its nodes
+            //Then print out the weight, start and processor number
+            for (Processor processor : completedSolution) {
+                count++;
+                for (TaskNode node : processor.getTasks()) {
+                    writer.write("  " + node.getName() + "  [Weight=" + node.getWeight() + ",Start="
+                            + (node.getEndTime() - node.getWeight()) + ",Processor=" + count + "];\n");
+                }
             }
 
+            //We now print all the edges out
             for (TaskEdge edge : graph.getEdges()) {
                 writer.write("  " + edge.getStartNode().getName() + "->" + edge.getEndNode().getName() + "  ");
                 writer.write("[Weight=" + edge.getWeight() + "];\n");

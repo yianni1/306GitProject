@@ -1,8 +1,10 @@
 package io;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Scanner;
 
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
@@ -22,12 +24,26 @@ import graph.TaskNode;
 public class GraphLoader {
 
 
+
 	/**
 	 * load method to load graph from dot file into TaskGraph object
-	 * @param filepath to dot file
+	 * @param filePath to dot file
 	 * @return graph representation of dot file
 	 */
 	public TaskGraph load(String filePath) {
+
+		//Finding the name of the graph
+		String graphTitle = null;
+		try {
+			File file = new File(filePath);
+			Scanner sc = new Scanner(file);
+			graphTitle = sc.nextLine().split("\"")[1];
+			sc.close();
+		}
+		catch (Exception ex) {
+
+		}
+
 
 		Graph graph = new SingleGraph("graph"); // Creates graph
 		FileSource fs = null;		
@@ -40,25 +56,26 @@ public class GraphLoader {
 
 			fs.readAll(filePath);
 
+
 		} catch( IOException e) {
 
 		} finally {
 			fs.removeSink(graph);
 		}
 
-		TaskGraph taskGraph = convertGraph(graph);
+		TaskGraph taskGraph = convertGraph(graph, graphTitle);
 		 
 		return taskGraph;
 	}
 	
 	/**
 	 * convertGraph method to convert GraphStream graph into TaskGraph data Structure
-	 * @param GraphStream representation of dot file
+	 * @param graph Taskgraph representation of dot file
 	 * @return TaskGraph representation of dot file
 	 */
-	private TaskGraph convertGraph(Graph graph) {
+	private TaskGraph convertGraph(Graph graph, String graphTitle) {
 
-		TaskGraph taskGraph = new TaskGraph();
+		TaskGraph taskGraph = new TaskGraph(graphTitle);
 
 		//Creates TaskNodes for each node in GraphStream graph
 		for (Node node : graph) {
@@ -119,7 +136,7 @@ public class GraphLoader {
 
 	/**
 	 * createTaskNode method to create a TaskNode from the corresponding GraphStream node
-	 * @param GraphStream node
+	 * @param node GraphStream node
 	 * @return TaskGraph node
 	 */
 	private TaskNode createTaskNode(Node node) {
