@@ -5,6 +5,10 @@ import graph.TaskNode;
 
 import java.util.List;
 
+/**
+ * Created on 3/0/8/2018 by Ray and Kevin
+ */
+
 public class GreedyScheduler {
 
     private List<TaskNode> schedulableNodes;
