@@ -15,7 +15,7 @@ import java.util.List;
 public class Schedule {
 
     private List<Processor> processors = new ArrayList<Processor>();
-    private ArrayList<TaskNode> schedulableNodes = new ArrayList<TaskNode>(); // The tasks that can be scheduled.
+    private List<TaskNode> schedulableNodes = new ArrayList<TaskNode>(); // The tasks that can be scheduled.
     private TaskNode lastScheduledTask;
     private TaskGraph graph;
 
@@ -41,7 +41,7 @@ public class Schedule {
      * @return schedulable: the list of schedulable nodes.
      */
     private void initializeSchedulableNodes(TaskGraph tg) {
-    	ArrayList<TaskNode> initialNodes = new ArrayList<TaskNode>();
+        List<TaskNode> initialNodes = new ArrayList<TaskNode>();
         HashSet<TaskNode> nodes = tg.getNodes();
 
         for (TaskNode n : nodes) {
@@ -82,8 +82,8 @@ public class Schedule {
      *
      * @return scheduledNodes: all the nodes that have been scheduled.
      */
-    public ArrayList<TaskNode> getScheduledNodes() {
-    	ArrayList<TaskNode> scheduledNodes = new ArrayList<TaskNode>();
+    public List<TaskNode> getScheduledNodes() {
+        List<TaskNode> scheduledNodes = new ArrayList<TaskNode>();
         for (Processor processor : processors) {
             scheduledNodes.addAll(processor.getTasks());
         }
@@ -96,7 +96,7 @@ public class Schedule {
      *
      * @return schedulableNodes
      */
-    public ArrayList<TaskNode> getSchedulableNodes() {
+    public List<TaskNode> getSchedulableNodes() {
         return this.schedulableNodes;
     }
 
@@ -104,11 +104,10 @@ public class Schedule {
      * Adds a task to the current schedule.
      *
      * @param node the node to be added
-     * @param processorIndex the index of the processor to add it too
+     * @param processor the processor to add it to
      */
-    public void addTask(TaskNode node, int processorIndex) {
-        Processor processor = processors.get(processorIndex);
-        //processor.addTask(node, node.getEarliestSchedulableTime(processor));
+    public void addTask(TaskNode node, Processor processor, int time) {
+        processor.addTask(node, time);
         lastScheduledTask = node;
     }
 
@@ -121,6 +120,29 @@ public class Schedule {
                 processor.removeTask(lastScheduledTask);
             }
         }
+    }
+
+    /**
+     * This should only be run if the task is schedulable.
+     * It should return the earliest schedulable time.
+     *
+     * @return
+     */
+    public int getEarliestSchedulableTime(TaskNode node, Processor p) {
+        int earliestStartTime = -1;
+        if (node.isSchedulable()) {
+            for (TaskEdge e : node.getIncomingEdges()) {
+                int endTime = e.getStartNode().getEndTime();
+                if (endTime > earliestStartTime) {
+                    earliestStartTime = endTime;
+                }
+                if (!e.getStartNode().getProcessor().equals(p)) {
+                    earliestStartTime = earliestStartTime + e.getWeight();
+                }
+            }
+        }
+
+        return Math.max(earliestStartTime, p.getBound());
     }
 
 
