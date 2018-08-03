@@ -1,3 +1,4 @@
+
 package main;
 
 import java.io.IOException;
@@ -15,7 +16,6 @@ import org.apache.commons.cli.Options;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import scheduling.SimpleScheduler;
-import scheduling.SolutionTree;
 
 /**
  * Hello world!
