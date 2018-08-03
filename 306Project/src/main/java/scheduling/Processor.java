@@ -31,8 +31,10 @@ public class Processor {
      */
     public void addTask(TaskNode node, int time) {
         tasks.add(node);
+
         node.schedule(time, this);
         bound = time + node.getWeight();
+
     }
 
     /**

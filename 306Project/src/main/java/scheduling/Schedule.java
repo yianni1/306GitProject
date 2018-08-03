@@ -15,7 +15,7 @@ import java.util.List;
 public class Schedule {
 
     private List<Processor> processors = new ArrayList<Processor>();
-    private List<TaskNode> schedulableNodes = new ArrayList<TaskNode>(); // The tasks that can be scheduled.
+    private ArrayList<TaskNode> schedulableNodes = new ArrayList<TaskNode>(); // The tasks that can be scheduled.
     private TaskNode lastScheduledTask;
     private TaskGraph graph;
 
@@ -41,7 +41,7 @@ public class Schedule {
      * @return schedulable: the list of schedulable nodes.
      */
     private void initializeSchedulableNodes(TaskGraph tg) {
-        List<TaskNode> initialNodes = new ArrayList<TaskNode>();
+    	ArrayList<TaskNode> initialNodes = new ArrayList<TaskNode>();
         HashSet<TaskNode> nodes = tg.getNodes();
 
         for (TaskNode n : nodes) {
@@ -82,8 +82,8 @@ public class Schedule {
      *
      * @return scheduledNodes: all the nodes that have been scheduled.
      */
-    public List<TaskNode> getScheduledNodes() {
-        List<TaskNode> scheduledNodes = new ArrayList<TaskNode>();
+    public ArrayList<TaskNode> getScheduledNodes() {
+    	ArrayList<TaskNode> scheduledNodes = new ArrayList<TaskNode>();
         for (Processor processor : processors) {
             scheduledNodes.addAll(processor.getTasks());
         }
@@ -96,7 +96,7 @@ public class Schedule {
      *
      * @return schedulableNodes
      */
-    public List<TaskNode> getSchedulableNodes() {
+    public ArrayList<TaskNode> getSchedulableNodes() {
         return this.schedulableNodes;
     }
 
@@ -108,7 +108,7 @@ public class Schedule {
      */
     public void addTask(TaskNode node, int processorIndex) {
         Processor processor = processors.get(processorIndex);
-        processor.addTask(node, node.getEarliestSchedulableTime(processor));
+        //processor.addTask(node, node.getEarliestSchedulableTime(processor));
         lastScheduledTask = node;
     }
 
