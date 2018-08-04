@@ -4,6 +4,7 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -23,6 +24,7 @@ import graph.TaskGraph;
 import graph.TaskNode;
 import io.GraphLoader;
 import io.Output;
+import main.App;
 import scheduling.GreedyScheduler;
 import scheduling.Processor;
 import scheduling.Schedule;
@@ -96,14 +98,16 @@ public class AllTests extends testCases.CompareOutput {
 	
 	
 	@Test
-	public void testTest1Dot() throws IOException {
+	public void testTest1Dot() throws IOException, URISyntaxException {
 		GraphLoader loader = new GraphLoader();
 		TaskGraph graph = loader.load("src/main/resources/DotFiles/Test1.dot");
 
+		String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+		
 		GreedyScheduler schedule = new GreedyScheduler(graph, 2);
 		Schedule solution = schedule.createSchedule();
 
-		Output.createOutput(solution.getProcessors(), graph, "greedySolution");
+		Output.createOutput(solution.getProcessors(), graph, path + "greedySolution.dot");
 
 
 
@@ -118,21 +122,23 @@ public class AllTests extends testCases.CompareOutput {
 		p2.addTask(new TaskNode(6, "c"), 4);
 		p2.addTask(new TaskNode(3, "d"), 10);
 
-		Output.createOutput(processes, graph, "CorrectSolution");
+		Output.createOutput(processes, graph, path + "greedySolutionCorrectSolution.dot");
 
-		boolean same = compareTextFiles("src/main/resources/DotFiles/greedySolution-output.dot", "src/main/resources/DotFiles/CorrectSolution-output.dot");
+		boolean same = compareTextFiles(path + "greedySolution.dot", path + "greedySolutionCorrectSolution.dot");
 		assertTrue(same);
 	}
 
 	@Test
-	public void testTripleProcessorDot() throws IOException {
+	public void testTripleProcessorDot() throws IOException, URISyntaxException {
 		GraphLoader loader = new GraphLoader();
 		TaskGraph graph = loader.load("src/main/resources/DotFiles/TripleProcessor.dot");
 
+		String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+		
 		SchedulerI schedule = new GreedyScheduler(graph, 3);
 		Schedule solution = schedule.createSchedule();
 
-		Output.createOutput(solution.getProcessors(), graph, "greedySolutionTripleProcessor");
+		Output.createOutput(solution.getProcessors(), graph, path + "greedySolutionTripleProcessor.dot");
 
 
 
@@ -151,7 +157,7 @@ public class AllTests extends testCases.CompareOutput {
 		p3.addTask(new TaskNode(7, "f"), 14);
 		p2.addTask(new TaskNode(4, "e"), 19);
 
-		Output.createOutput(processes1, graph, "CorrectTripleProcessorS1");
+		Output.createOutput(processes1, graph, path + "CorrectTripleProcessorS1.dot");
 
 
 		Schedule correctSolution2 = new Schedule(3, graph);
@@ -169,7 +175,7 @@ public class AllTests extends testCases.CompareOutput {
 		twop2.addTask(new TaskNode(7, "f"), 16);
 		twop3.addTask(new TaskNode(4, "e"), 14);
 
-		Output.createOutput(processes2, graph, "CorrectTripleProcessorS2");
+		Output.createOutput(processes2, graph, path + "CorrectTripleProcessorS2.dot");
 
 
 		Schedule correctSolution3 = new Schedule(3, graph);
@@ -187,11 +193,12 @@ public class AllTests extends testCases.CompareOutput {
 		threep1.addTask(new TaskNode(7, "f"), 16);
 		threep3.addTask(new TaskNode(4, "e"), 14);
 
-		Output.createOutput(processes3, graph, "CorrectTripleProcessorS3");
+		Output.createOutput(processes3, graph, path + "CorrectTripleProcessorS3.dot");
 
-		boolean s1 = compareTextFiles("src/main/resources/DotFiles/CorrectTripleProcessorS1-output.dot", "src/main/resources/DotFiles/greedySolutionTripleProcessor-output.dot");
-		boolean s2 = compareTextFiles("src/main/resources/DotFiles/CorrectTripleProcessorS2-output.dot", "src/main/resources/DotFiles/greedySolutionTripleProcessor-output.dot");
-		boolean s3 = compareTextFiles("src/main/resources/DotFiles/CorrectTripleProcessorS3-output.dot", "src/main/resources/DotFiles/greedySolutionTripleProcessor-output.dot");
+	
+		boolean s1 = compareTextFiles(path + "CorrectTripleProcessorS1.dot", path + "greedySolutionTripleProcessor.dot");
+		boolean s2 = compareTextFiles(path + "CorrectTripleProcessorS2.dot", path + "greedySolutionTripleProcessor.dot");
+		boolean s3 = compareTextFiles(path + "CorrectTripleProcessorS3.dot", path + "greedySolutionTripleProcessor.dot");
 
 		if (s1) {
 			assertTrue(s1);
@@ -209,17 +216,19 @@ public class AllTests extends testCases.CompareOutput {
 	}
 	
 	 @Test
-	    public void testTwoEntryNodes() throws IOException {
+	    public void testTwoEntryNodes() throws IOException, URISyntaxException {
 
 	        // Put a unique file name (doesn't have to be the name of the graph), and the graphs file path.
 		 	GraphLoader loader = new GraphLoader();
 	        String outputFileName = "TwoParents";
 	        TaskGraph graph = loader.load("src/main/resources/DotFiles/TestTwoParents.dot");
 	        
+	        String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+	        
 	        SchedulerI scheduler = new GreedyScheduler(graph, 2);
 	        Schedule solution = scheduler.createSchedule();
 
-	        Output.createOutput(solution.getProcessors(), graph, outputFileName + "TestSolution");
+	        Output.createOutput(solution.getProcessors(), graph, path + "TwoEntryTestSolution.dot");
 
 	        Schedule correctSolution = new Schedule(2, graph);
 
@@ -234,9 +243,9 @@ public class AllTests extends testCases.CompareOutput {
 	        p2.addTask(new TaskNode(12, "d"), 100);
 	        p2.addTask(new TaskNode(13, "f"), 112);
 
-	        Output.createOutput(processes, graph, outputFileName + "CorrectSolution");
+	        Output.createOutput(processes, graph, path + "TwoEntryCorrectSolution.dot");
 
-	        boolean same = compareTextFiles("src/main/resources/DotFiles/" + outputFileName +"TestSolution-output.dot", "src/main/resources/DotFiles/" + outputFileName + "CorrectSolution-output.dot");
+	        boolean same = compareTextFiles(path + "TwoEntryTestSolution.dot", path + "TwoEntryCorrectSolution.dot");
 	        assertTrue(same);
 	    }
 	
@@ -247,10 +256,12 @@ public class AllTests extends testCases.CompareOutput {
 	        String outputFileName = "outputThreeParents";
 	        TaskGraph graph = loader.load("src/main/resources/DotFiles/threeParents.dot");
 
+	        String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+	        
 	        SchedulerI scheduler = new GreedyScheduler(graph, 2);
 	        Schedule solution = scheduler.createSchedule();
 
-	        Output.createOutput(solution.getProcessors(), graph, outputFileName + "TestSolution");
+	        Output.createOutput(solution.getProcessors(), graph, path + "ThreeParentsTestSolution.dot");
 
 	        Schedule correctSolution = new Schedule(2, graph);
 
@@ -265,9 +276,9 @@ public class AllTests extends testCases.CompareOutput {
 	        p1.addTask(new TaskNode(12, "d"), 13);
 	        p1.addTask(new TaskNode(3, "e"), 25);
 
-	        Output.createOutput(processes, graph, outputFileName + "CorrectSolution");
+	        Output.createOutput(processes, graph, path + "ThreeParentsCorrectSolution.dot");
 
-	        boolean same = compareTextFiles("src/main/resources/DotFiles/" + outputFileName +"TestSolution-output.dot", "src/main/resources/DotFiles/" + outputFileName + "CorrectSolution-output.dot");
+	        boolean same = compareTextFiles(path + "ThreeParentsTestSolution.dot", path + "ThreeParentsCorrectSolution.dot");
 	        System.out.println(same);
 	        assertTrue(same);
 
