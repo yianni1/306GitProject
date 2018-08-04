@@ -7,7 +7,7 @@ import java.io.IOException;
 /**
  * Created by olive on 4/08/2018.
  */
-public class Test {
+public class CompareOutput {
 
     /**
      * Compares 2 text files
@@ -36,11 +36,11 @@ public class Test {
                     lineNum2++;
                     if(line2 == null) {
                         areEqual = false;
-                        System.out.println("Line " + lineNum1 + " does not appear in the second file.");
+                        //System.out.println("Line " + lineNum1 + " does not appear in the second file.");
                         break;
                     }
                 } else {
-                    System.out.println("Line " + lineNum1 + " appears in line " + lineNum2 + " of TextB.");
+                    //System.out.println("Line " + lineNum1 + " appears in line " + lineNum2 + " of TextB.");
                     break;
                 }
             }
@@ -52,7 +52,7 @@ public class Test {
         reader1.close();
 
         if(areEqual) {
-            System.out.println("Two files have same content.");
+            //System.out.println("Two files have same content.");
             return true;
         }
         else {
