@@ -9,14 +9,18 @@ import java.util.List;
  * Created on 3/0/8/2018 by Ray and Kevin
  */
 
-public class GreedyScheduler {
+public class GreedyScheduler extends Scheduler {
 
-    private List<TaskNode> schedulableNodes;
-    private Schedule schedule;
+    /**
+     * Constructor takes in a graph and the number of processors
+     * @param graph
+     * @param processors
+     */
+    public GreedyScheduler(TaskGraph graph, int processors) {
+        super(graph, processors);
+    }
 
-    public Schedule createSchedule(TaskGraph graph, int processors) {
-        schedule = new Schedule(processors, graph);
-        schedulableNodes = schedule.getSchedulableNodes();
+    public Schedule createSchedule() {
 
         //While there are still nodes to schedule
         while (schedulableNodes.size() > 0) {

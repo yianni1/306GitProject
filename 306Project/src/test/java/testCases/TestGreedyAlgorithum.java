@@ -52,8 +52,8 @@ public class TestGreedyAlgorithum {
 		GraphLoader loader = new GraphLoader();
 		TaskGraph graph = loader.load(filePath);
 
-		GreedyScheduler schedule = new GreedyScheduler();
-		Schedule solution = schedule.createSchedule(graph, processorNum);
+		GreedyScheduler schedule = new GreedyScheduler(graph, processorNum);
+		Schedule solution = schedule.createSchedule();
 
 		int nodeNum = 0;
 		for (Processor processor : solution.getProcessors()) {
@@ -124,8 +124,8 @@ public class TestGreedyAlgorithum {
 		/*GraphLoader loader = new GraphLoader();
 		TaskGraph graph = loader.load("src/main/resources/DotFiles/Test1.dot");
 
-		GreedyScheduler schedule = new GreedyScheduler();
-		Schedule solution = schedule.createSchedule(graph, 2);
+		GreedyScheduler schedule = new GreedyScheduler(graph, 2);
+		Schedule solution = schedule.createSchedule();
 		
 		Output.createOutput(solution.getProcessors(), graph, "greedySolution");
 		
