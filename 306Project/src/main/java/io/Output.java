@@ -17,7 +17,7 @@ import java.util.List;
  * Created by olive on 1/08/2018.
  */
 public class Output {
-
+ 
     private static final String FILEPATH = "src/main/resources/DotFiles/";
     private static File file;
     private static String outputFileName;
@@ -29,11 +29,11 @@ public class Output {
      * @param completedSolution
      * @return
      */
-    public static void createOutput(List<Processor> completedSolution, TaskGraph graph) {
+    public static void createOutput(List<Processor> completedSolution, TaskGraph graph, String outputFileName) {
 
 
         //Creating the file
-        String fileName = FILEPATH + outputFileName + ".dot";
+        String fileName = FILEPATH + outputFileName + "-output.dot";
         file = new File(fileName);
         try {
             file.createNewFile();
@@ -47,6 +47,7 @@ public class Output {
             //Then print out the weight, start and processor number
             for (Processor processor : completedSolution) {
                 count++;
+
                 for (TaskNode node : processor.getTasks()) {
                     writer.write("  " + node.getName() + "  [Weight=" + node.getWeight() + ",Start="
                             + (node.getEndTime() - node.getWeight()) + ",Processor=" + count + "];\n");
@@ -67,7 +68,4 @@ public class Output {
         }
     }
 
-    public static void setOutputFileName(String outputFileName) {
-        Output.outputFileName = outputFileName;
-    }
 }
