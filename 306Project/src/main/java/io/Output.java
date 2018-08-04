@@ -17,7 +17,7 @@ import java.util.List;
  * Created by olive on 1/08/2018.
  */
 public class Output {
-
+ 
     private static final String FILEPATH = "src/main/resources/DotFiles/";
     private static File file;
     private static String outputFileName;

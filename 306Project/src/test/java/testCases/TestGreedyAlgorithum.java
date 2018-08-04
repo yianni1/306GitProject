@@ -87,17 +87,21 @@ public class TestGreedyAlgorithum {
 	@Test
 	public void testCustomTestDot() {
 		/*GraphLoader loader = new GraphLoader();
-		TaskGraph graph = loader.load("src/main/resources/DotFiles/Test1.dot");
+		TaskGraph graph = loader.load("src/main/resources/DotFiles/CustomTest.dot");
 
 		GreedyScheduler schedule = new GreedyScheduler();
 		Schedule solution = schedule.createSchedule(graph, 2);
 		
+		
+		
+		Output.createOutput(solution.getProcessors(), graph, "greedySolution");
+
 		Schedule correctSolution = new Schedule(2, graph);
 		
 		List<Processor> processes = correctSolution.getProcessors();
 		
-		Processor p1 = new Processor(0);
-		Processor p2 = new Processor(1);
+		Processor p1 = processes.get(0);
+		Processor p2 = processes.get(1);
 		
 		p1.addTask(new TaskNode(5, "g"), 0);
 		p2.addTask(new TaskNode(6, "a"), 0);
@@ -106,15 +110,39 @@ public class TestGreedyAlgorithum {
 		p2.addTask(new TaskNode(3, "d"), 14);
 		p2.addTask(new TaskNode(8, "f"), 17);
 		p2.addTask(new TaskNode(10, "e"), 25);
-		
 
-		Output.createOutput(solution.getProcessors(), graph, "hello");
+		Output.createOutput(correctSolution.getProcessors(), graph, "CustomTestAnswer");
+
+		TaskGraph g = loader.load("src/main/resources/DotFiles/CustomTestAnswer-output.dot");
+		TaskGraph g1 = loader.load("src/main/resources/DotFiles/greedySolution-output.dot");
 		
-		for (Processor processor : solution.getProcessors()) {
-			if (processor.getID() == p1.getID()) {
-				assertEquals(processor.getTasks(), p1.getTasks());
-			}
-		}*/
+		assertEquals(g, g1);*/
 	}
 
+	@Test
+	public void testTest1Dot() {
+		GraphLoader loader = new GraphLoader();
+		TaskGraph graph = loader.load("src/main/resources/DotFiles/Test1.dot");
+
+		GreedyScheduler schedule = new GreedyScheduler();
+		Schedule solution = schedule.createSchedule(graph, 2);
+		
+		Output.createOutput(solution.getProcessors(), graph, "greedySolution");
+		
+		
+		
+		Schedule correctSolution = new Schedule(2, graph);
+		List<Processor> processes = correctSolution.getProcessors();
+		
+		Processor p1 = processes.get(0);
+		Processor p2 = processes.get(1);
+		
+		p1.addTask(new TaskNode(3, "a"), 0);
+		p1.addTask(new TaskNode(4, "b"), 3);
+		p2.addTask(new TaskNode(6, "c"), 4);
+		p1.addTask(new TaskNode(3, "d"), 14);
+
+		Output.createOutput(processes, graph, "CorrectSolution");
+	}
+	
 }

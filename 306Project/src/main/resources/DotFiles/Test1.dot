@@ -1,10 +1,10 @@
-digraph "Graph1" {
-	a	 [Weight=6];
-	c	 [Weight=7];
-	b	 [Weight=100];
-	d	 [Weight=12];
-	a -> c	 [Weight=4];
-	b -> d	 [Weight=67];
-	a -> b	 [Weight=1];
-	c -> d	 [Weight=3];
+digraph "outputGraph1" {
+  a  [Weight=3];
+  b  [Weight=4];
+  c  [Weight=6];
+  d  [Weight=3];
+  a->c  [Weight=1];
+  a->b  [Weight=2];
+  c->d  [Weight=4];
+  b->d  [Weight=3];
 }
