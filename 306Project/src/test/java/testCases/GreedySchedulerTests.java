@@ -11,6 +11,7 @@ import org.junit.Test;
 import scheduling.GreedyScheduler;
 import scheduling.Processor;
 import scheduling.Schedule;
+import scheduling.SchedulerI;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -35,8 +36,7 @@ public class GreedySchedulerTests {
                 "src/main/resources/DotFiles/TestTwoParents.dot"));
 
         loader = new GraphLoader();
-        scheduler = new GreedyScheduler();
-
+        
         taskGraphs = new ArrayList<TaskGraph>();
 
         for (String filePath : filePaths) {
@@ -53,7 +53,8 @@ public class GreedySchedulerTests {
         // Put a unique file name (doesn't have to be the name of the graph), and the graphs file path.
         String outputFileName = "TwoParents";
         TaskGraph graph = loader.load("src/main/resources/DotFiles/TestTwoParents.dot");
-        Schedule solution = scheduler.createSchedule(graph, 2);
+        SchedulerI scheduler = new GreedyScheduler(graph, 2);
+        Schedule solution = scheduler.createSchedule();
 
         Output.createOutput(solution.getProcessors(), graph, outputFileName + "TestSolution");
 
@@ -82,7 +83,8 @@ public class GreedySchedulerTests {
         // Put a unique file name (doesn't have to be the name of the graph), and the graphs file path.
         String outputFileName = "TwoParents";
         TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_7_OutTree.dot");
-        Schedule solution = scheduler.createSchedule(graph, 2);
+        SchedulerI scheduler = new GreedyScheduler(graph, 2);
+        Schedule solution = scheduler.createSchedule();
 
         Output.createOutput(solution.getProcessors(), graph, outputFileName + "TestSolution");
 

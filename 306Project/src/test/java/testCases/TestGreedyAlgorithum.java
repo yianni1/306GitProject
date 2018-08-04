@@ -19,6 +19,7 @@ import io.Output;
 import scheduling.GreedyScheduler;
 import scheduling.Processor;
 import scheduling.Schedule;
+import scheduling.SchedulerI;
 
 public class TestGreedyAlgorithum {
 
@@ -150,8 +151,8 @@ public class TestGreedyAlgorithum {
 		GraphLoader loader = new GraphLoader();
 		TaskGraph graph = loader.load("src/main/resources/DotFiles/TripleProcessor.dot");
 		
-		GreedyScheduler schedule = new GreedyScheduler();
-		Schedule solution = schedule.createSchedule(graph, 3);
+		SchedulerI schedule = new GreedyScheduler(graph, 3);
+		Schedule solution = schedule.createSchedule();
 		
 		Output.createOutput(solution.getProcessors(), graph, "greedySolutionTripleProcessor");
 		
