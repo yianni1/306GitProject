@@ -45,7 +45,7 @@ public class App extends Application{
 		options.addOption("p", true, "Number of cores to use");
 		options.addOption("v", false, "Use visualisation");
 		options.addOption("o", true, "Output file name" );
-		
+
 		CommandLineParser parser = new DefaultParser();
 		CommandLine cmd = parser.parse(options, args);
 
@@ -63,49 +63,56 @@ public class App extends Application{
 
 			if (cmd.hasOption("p")) {
 				numCores = Integer.parseInt(cmd.getOptionValue("p"));
+				if (cmd.hasOption("p")) {
+					numCores = Integer.parseInt(cmd.getOptionValue("p"));
+				}
+
+				if (cmd.hasOption("o")) {
+					//Block for user specified opiton
+					String sendToOutputClass = cmd.getOptionValue("o");
+
+					GraphLoader loader = new GraphLoader(); //Loading the graph
+					String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+					TaskGraph graph = loader.load(path + fileName);
+
+					//Doing the algorithm
+					GreedyScheduler solution = new GreedyScheduler(graph, processorNumber);
+					Schedule finalSolution = solution.createSchedule();
+
+					//Transporting to output
+					Output.createOutput(finalSolution.getProcessors(), graph, path + sendToOutputClass + ".dot");
+				} else {
+					//Block for non specified option
+					String outputN = fileName.substring(0, fileName.length() - 4);
+
+
+					String sendToOutputClass = outputN;
+
+					GraphLoader loader = new GraphLoader(); //Loading the graph
+					String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+					TaskGraph graph = loader.load(path + fileName);
+
+					//Doing the algorithm
+					SchedulerI solution = new GreedyScheduler(graph, processorNumber);
+					Schedule finalSolution = solution.createSchedule();
+
+					//Transporting to output
+					Output.createOutput(finalSolution.getProcessors(), graph, path + sendToOutputClass + "-output.dot");
+
+				}
+				if (cmd.hasOption("v")) {
+					//If visualisation is required, initialise root layout
+					initRootLayout();
+				}
+
+				System.out.println("Scheduling on " + processorNumber + " processors using " + numCores + " cores.");
+
+				System.out.println("Done"); // FOR DEBUGGING ON CONSOLE
+
 			}
 
-			if (cmd.hasOption("o")) {
-				//Block for user specified opiton
-				String sendToOutputClass = cmd.getOptionValue("o");
-
-				GraphLoader loader = new GraphLoader(); //Loading the graph
-				TaskGraph graph = loader.load("src/main/resources/DotFiles/" + fileName);
-
-				//Doing the algorithm
-				GreedyScheduler solution = new GreedyScheduler(graph, processorNumber);
-				Schedule finalSolution = solution.createSchedule();
-
-				//Transporting to output
-				Output.createOutput(finalSolution.getProcessors(), graph, sendToOutputClass);
-			}
-			else {
-				//Block for non specified option
-				String outputN = fileName.substring(0, fileName.length() - 4);
-				
-				
-				String sendToOutputClass = outputN;
-				
-				GraphLoader loader = new GraphLoader(); //Loading the graph
-				TaskGraph graph = loader.load("src/main/resources/DotFiles/" + fileName);
-
-				//Doing the algorithm
-				SchedulerI solution = new GreedyScheduler(graph, processorNumber);
-				Schedule finalSolution = solution.createSchedule();
-
-				//Transporting to output
-				Output.createOutput(finalSolution.getProcessors(), graph, sendToOutputClass);
-
-			}
-			if (cmd.hasOption("v")) {
-				//If visualisation is required, initialise root layout
-				initRootLayout();
-			}
-
-			System.out.println("Scheduling on " + processorNumber + " processors using " + numCores + " cores.");
-
-			System.out.println("Done"); // FOR DEBUGGING ON CONSOLE
 		}
+
 	}
 
 	/**
@@ -113,7 +120,7 @@ public class App extends Application{
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
+
 		//setting the GraphViewer to the advanced viewer
 		System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
 		launch(args);
