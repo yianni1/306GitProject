@@ -20,7 +20,7 @@ import static junit.framework.TestCase.assertTrue;
 /**
  * Created by olive on 4/08/2018.
  */
-public class ThreeParentsTest {
+public class ThreeParentsTest extends testCases.Test{
 
     private static List<String> filePaths;
     private static GraphLoader loader;
@@ -35,7 +35,7 @@ public class ThreeParentsTest {
     }
 
     @Test
-    public void testThreeParents() {
+    public void testThreeParents() throws Exception {
         String outputFileName = "outputThreeParents";
         TaskGraph graph = loader.load("src/main/resources/DotFiles/threeParents.dot");
 
@@ -53,15 +53,15 @@ public class ThreeParentsTest {
 
         p1.addTask(new TaskNode(7, "a"), 0);
         p1.addTask(new TaskNode(6, "c"), 7);
-        p2.addTask(new TaskNode(7, "b"), 7);
+        p2.addTask(new TaskNode(7, "b"), 9);
         p1.addTask(new TaskNode(12, "d"), 13);
         p1.addTask(new TaskNode(3, "e"), 25);
 
         Output.createOutput(processes, graph, outputFileName + "CorrectSolution");
 
-//        boolean same = compareTextFiles("src/main/resources/DotFiles/" + outputFileName +"TestSolution-output.dot", "src/main/resources/DotFiles/" + outputFileName + "CorrectSolution-output.dot");
-//        assertTrue(same);
+        boolean same = compareTextFiles("src/main/resources/DotFiles/" + outputFileName +"TestSolution-output.dot", "src/main/resources/DotFiles/" + outputFileName + "CorrectSolution-output.dot");
+        System.out.println(same);
+        assertTrue(same);
 
-        assertTrue(true);
     }
 }
