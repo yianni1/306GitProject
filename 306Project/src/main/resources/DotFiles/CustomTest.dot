@@ -1,7 +1,7 @@
 digraph "Graph1" {
 	a	 [Weight=6];
 	b	 [Weight=7];
-	c	 [Weight=12]
+	c	 [Weight=2];
 	d	 [Weight=3];
 	e	 [Weight=10];
 	f	 [Weight=8];

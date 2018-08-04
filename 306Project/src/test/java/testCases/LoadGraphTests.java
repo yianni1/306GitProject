@@ -33,7 +33,7 @@ public class LoadGraphTests {
 	public void initialisePaths() {
 		filePaths = new ArrayList<String>();
 		filePaths.addAll(Arrays.asList("src/main/resources/DotFiles/Nodes_7_OutTree.dot", "src/main/resources/DotFiles/Test1.dot",
-				"src/main/resources/DotFiles/TestTwoParents.dot"));
+				"src/main/resources/DotFiles/TestTwoParents.dot", "src/main/resources/DotFiles/CustomTest.dot"));
 	}
 
 	

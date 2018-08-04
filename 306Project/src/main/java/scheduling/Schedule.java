@@ -130,13 +130,20 @@ public class Schedule {
      */
     public int getEarliestSchedulableTime(TaskNode node, Processor p) {
         int earliestStartTime = -1;
+
         if (node.isSchedulable()) {
             for (TaskEdge e : node.getIncomingEdges()) {
-                int endTime = e.getStartNode().getEndTime();
+                int endTime = e.getStartNode().getEndTime();             
                 if (endTime > earliestStartTime) {
                     earliestStartTime = endTime;
                 }
                 if (!e.getStartNode().getProcessor().equals(p)) {
+                	
+                    
+                    if (node.getName().equals("f")) {
+                        System.out.println( earliestStartTime + " on "+ p.getID());
+                	}
+                	
                     earliestStartTime = earliestStartTime + e.getWeight();
                 }
             }
