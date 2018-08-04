@@ -138,13 +138,9 @@ public class Schedule {
                     earliestStartTime = endTime;
                 }
                 if (!e.getStartNode().getProcessor().equals(p)) {
-                	
-                    
-                    if (node.getName().equals("f")) {
-                        System.out.println( earliestStartTime + " on "+ p.getID());
-                	}
-                	
-                    earliestStartTime = earliestStartTime + e.getWeight();
+                    if (earliestStartTime <= e.getStartNode().getEndTime()) {
+                        earliestStartTime = earliestStartTime + e.getWeight();
+                    }
                 }
             }
         }
