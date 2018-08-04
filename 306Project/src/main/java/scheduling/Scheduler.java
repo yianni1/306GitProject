@@ -6,7 +6,7 @@ import graph.TaskNode;
 
 import java.util.List;
 
-public abstract class Scheduler {
+public abstract class 	Scheduler {
 
 	protected List<TaskNode> schedulableNodes;
 	protected Schedule schedule;
