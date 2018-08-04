@@ -3,51 +3,69 @@ package scheduling;
 import graph.TaskNode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class represents a processor, with a list of tasks
  */
 public class Processor {
 
-    private int number;
-    private List<Task> tasks = new ArrayList<Task>();
-    private int cost;
-
+    private int procID;
+    private List<TaskNode> tasks = new ArrayList<TaskNode>();
+    private int bound;
 
     /**
-     * Adds a new task, with the node, startTime and endTime
-     * @param node
-     * @param startTime
-     * @param endTime
+     * The processor with a number
+     * @param number
      */
-    public void addTask(TaskNode node, int startTime, int endTime) {
-        tasks.add(new Task(node, startTime, endTime));
-        if (cost < endTime) {
-            cost = endTime;
-        }
+    public Processor(int number) {
+        this.procID = number;
     }
 
+    public int getID() {
+    	return procID;
+    }
+    /**
+     * Adds a new task, with the node.
+     * Called by TaskNode.
+     * @param node The node to be added.
+     */
+    public void addTask(TaskNode node, int time) {
+        tasks.add(node);
 
-    int getCost() {
-        return cost;
+        node.schedule(time, this);
+        bound = time + node.getWeight();
+
+    }
+
+    /**
+     * Removes a task from this node.
+     * @param node
+     */
+    public void removeTask(TaskNode node) {
+        tasks.remove(node);
+        node.deschedule();
+    }
+
+    /**
+     * Returns the current bound of this node.
+     * @return
+     */
+    public int getBound() {
+        return bound;
+    }
+
+    /**
+     * Returns the nodes that have been scheduled on this processor.
+     * @return
+     */
+    public List<TaskNode> getTasks() {
+    	
+    	return tasks;
+    	
     }
 }
 
-class Task {
-    private TaskNode node;
-    private int startTime;
-    private int endTime;
 
-    /**
-     * The task that will be done
-     * @param node
-     * @param startTime
-     * @param endTime
-     */
-    public Task(TaskNode node, int startTime, int endTime) {
-        this.node = node;
-        this.startTime = startTime;
-        this.endTime = endTime;
-    }
-}
