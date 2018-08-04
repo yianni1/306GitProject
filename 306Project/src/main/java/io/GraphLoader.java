@@ -60,7 +60,12 @@ public class GraphLoader {
 		} catch( IOException e) {
 
 		} finally {
-			fs.removeSink(graph);
+//			try {
+				fs.removeSink(graph);
+//			}
+//			catch (NullPointerException npex) {
+//				System.out.println("Invalid input file");
+//			}
 		}
 
 		TaskGraph taskGraph = convertGraph(graph, graphTitle);
