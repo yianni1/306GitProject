@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import graph.TaskGraph;
 import io.GraphLoader;
+import io.Output;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -14,7 +15,9 @@ import org.apache.commons.cli.Options;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import scheduling.SolutionTree;
+import scheduling.GreedyScheduler;
+import scheduling.Schedule;
+import scheduling.SchedulerI;
 
 /**
  * Hello world!
@@ -37,47 +40,76 @@ public class App extends Application{
 		String[] args = params.getRaw().toArray(new String[size]);
 
 		//Command line options using Apache Commons CLI
-        Options options = new Options();
+		Options options = new Options();
 
-        options.addOption("p", true, "Number of cores to use");
-        options.addOption("v", false, "Use visualisation");
-        options.addOption("o", true, "Output file name" );
+		options.addOption("p", true, "Number of cores to use");
+		options.addOption("v", false, "Use visualisation");
+		options.addOption("o", true, "Output file name" );
+		
+		CommandLineParser parser = new DefaultParser();
+		CommandLine cmd = parser.parse(options, args);
 
-        CommandLineParser parser = new DefaultParser();
-        CommandLine cmd = parser.parse(options, args);
+		try {
+			if (args.length < 2) {
+				System.out.println("Insufficient arguments. Please specify input file and number of processors.");
+			} else {
+				//required arguments
+				String fileName = args[0];
+				int processorNumber = Integer.parseInt(args[1]);
 
-        if (args.length < 2) {
-            System.out.println("Insufficient arguments. Please specify input file and number of processors.");
-        } else {
-        	//required arguments
-			String fileName = args[0];
-			int processorNumber = Integer.parseInt(args[1]);
-
-			//default values for optional arguments
-			int numCores = 1;
-			String outputName = fileName + "-output.dot";
+				//default values for optional arguments
+				int numCores = 1;
+				//			String outputName = fileName + "-output.dot";
 
 
-            if (cmd.hasOption("p")) {
-                numCores = Integer.parseInt(cmd.getOptionValue("p"));
-            }
+				if (cmd.hasOption("p")) {
+					numCores = Integer.parseInt(cmd.getOptionValue("p"));
+				}
 
-            if (cmd.hasOption("o")) {
-                outputName = cmd.getOptionValue("o");
-            }
-            if (cmd.hasOption("v")) {
-                //If visualisation is required, initialise root layout
-                initRootLayout();
-            }
+				if (cmd.hasOption("o")) {
+					//Block for user specified opiton
+					String sendToOutputClass = cmd.getOptionValue("o");
 
-			System.out.println("Scheduling on " + processorNumber + " processors using " + numCores + " cores.");
+					GraphLoader loader = new GraphLoader(); //Loading the graph
+					TaskGraph graph = loader.load("src/main/resources/DotFiles/" + fileName);
 
-			GraphLoader loader = new GraphLoader();
-			TaskGraph graph = loader.load(fileName);
-			SolutionTree solution = new SolutionTree(graph, processorNumber);
-			solution.doSchedule();
-			System.out.println("Done"); // FOR DEBUGGING ON CONSOLE
-        }
+					//Doing the algorithm
+					GreedyScheduler solution = new GreedyScheduler(graph, processorNumber);
+					Schedule finalSolution = solution.createSchedule();
+
+					//Transporting to output
+					Output.createOutput(finalSolution.getProcessors(), graph, sendToOutputClass);
+				} else {
+					//Block for non specified option
+					String outputN = fileName.substring(0, fileName.length() - 4);
+
+
+					String sendToOutputClass = outputN;
+
+					GraphLoader loader = new GraphLoader(); //Loading the graph
+					TaskGraph graph = loader.load("src/main/resources/DotFiles/" + fileName);
+
+					//Doing the algorithm
+					SchedulerI solution = new GreedyScheduler(graph, processorNumber);
+					Schedule finalSolution = solution.createSchedule();
+
+					//Transporting to output
+					Output.createOutput(finalSolution.getProcessors(), graph, sendToOutputClass);
+
+				}
+				if (cmd.hasOption("v")) {
+					//If visualisation is required, initialise root layout
+					initRootLayout();
+				}
+
+				System.out.println("Scheduling on " + processorNumber + " processors using " + numCores + " cores.");
+
+				System.out.println("Done"); // FOR DEBUGGING ON CONSOLE
+			}
+		}
+		catch (NullPointerException nnpex) {
+			System.out.println("The input file name does not exist");
+		}
 	}
 
 	/**
@@ -107,5 +139,5 @@ public class App extends Application{
 		}
 
 	}
-    
+
 }

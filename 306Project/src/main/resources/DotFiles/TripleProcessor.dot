@@ -1,0 +1,16 @@
+digraph "outputGraph1" {
+  a  [Weight=5];
+  b  [Weight=4];
+  c  [Weight=6];
+  d  [Weight=2];
+  e  [Weight=4];
+  f  [Weight=7];
+  g  [Weight=8];
+  a->c  [Weight=2];
+  a->b  [Weight=3];
+  d->b  [Weight=1];
+  b->e  [Weight=4];
+  c->e  [Weight=5];
+  c->f  [Weight=2];
+  g->c  [Weight=4];
+}

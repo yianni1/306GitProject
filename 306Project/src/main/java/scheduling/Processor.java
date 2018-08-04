@@ -14,7 +14,7 @@ public class Processor {
 
     private int procID;
     private List<TaskNode> tasks = new ArrayList<TaskNode>();
-    private int cost;
+    private int bound;
 
     /**
      * The processor with a number
@@ -24,21 +24,47 @@ public class Processor {
         this.procID = number;
     }
 
+    public int getID() {
+    	return procID;
+    }
     /**
      * Adds a new task, with the node.
      * Called by TaskNode.
      * @param node The node to be added.
      */
-    public void addTask(TaskNode node) {
+    public void addTask(TaskNode node, int time) {
         tasks.add(node);
-        if (cost < node.getEndTime()) {
-            cost = node.getEndTime();
-        }
+
+        node.schedule(time, this);
+        bound = time + node.getWeight();
+
     }
 
+    /**
+     * Removes a task from this node.
+     * @param node
+     */
+    public void removeTask(TaskNode node) {
+        tasks.remove(node);
+        node.deschedule();
+    }
 
-    int getCost() {
-        return cost;
+    /**
+     * Returns the current bound of this node.
+     * @return
+     */
+    public int getBound() {
+        return bound;
+    }
+
+    /**
+     * Returns the nodes that have been scheduled on this processor.
+     * @return
+     */
+    public List<TaskNode> getTasks() {
+    	
+    	return tasks;
+    	
     }
 }
 
