@@ -3,8 +3,8 @@ digraph "outputoutputGraph1" {
   b  [Weight=4,Start=3,Processor=1];
   c  [Weight=6,Start=4,Processor=2];
   d  [Weight=3,Start=10,Processor=2];
-  c->d  [Weight=4];
-  b->d  [Weight=3];
   a->b  [Weight=2];
+  b->d  [Weight=3];
   a->c  [Weight=1];
+  c->d  [Weight=4];
 }
