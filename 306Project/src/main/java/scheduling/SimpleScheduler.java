@@ -8,27 +8,21 @@ import graph.TaskGraph;
 import graph.TaskNode;
 import io.Output;
 
-public class SimpleScheduler {
+public class SimpleScheduler extends Scheduler {
 
-
-	private int numProcessors;
-	private TaskGraph graph;
 
 	public SimpleScheduler(TaskGraph graph, int processors) {
-
-		this.numProcessors = processors;
-		this.graph = graph;
-
+		super(graph, processors);
 	}
 	
 	
 	/**
 	 * Implementation of the graph scheduling
 	 */
-	public void doSchedule() {
+	public Schedule createSchedule() {
 
-		Schedule schedule = new Schedule(numProcessors, graph);
-		Processor processor = schedule.getProcessors().get(0);
+//		Schedule schedule = new Schedule(numProcessors, graph);
+//		Processor processor = schedule.getProcessors().get(0);
 		
 //		while (schedule.getSchedulableNodes().size() > 0) {
 //
@@ -48,7 +42,7 @@ public class SimpleScheduler {
 //		catch (Exception e) {
 //			e.printStackTrace();
 //		}
-
+		return null;
 		
 		
 		
