@@ -235,7 +235,7 @@ public class TestGreedyAlgorithum {
 						break;
 					}
 				} else {
-					System.out.println("Line " + lineNum1 + " appears in line " + lineNum2 + " of TextB.");
+					//System.out.println("Line " + lineNum1 + " appears in line " + lineNum2 + " of TextB.");
 					break;
 				}
 			}
@@ -251,6 +251,7 @@ public class TestGreedyAlgorithum {
 			return true;
 		}
 		else {
+			System.out.println("Two files are not the same.");
 			return false;
 		}
 	}
