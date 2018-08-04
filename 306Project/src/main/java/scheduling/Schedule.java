@@ -16,8 +16,8 @@ public class Schedule {
 
     private List<Processor> processors = new ArrayList<Processor>();
     private List<TaskNode> schedulableNodes = new ArrayList<TaskNode>(); // The tasks that can be scheduled.
-    private TaskNode lastScheduledTask;
     private TaskGraph graph;
+    private List<TaskNode> scheduleOrder; // The order in which the tasks have been scheduled.
 
     public Schedule(int numberOfProcessors, TaskGraph graph) {
         List<Processor> processors = new ArrayList<Processor>();
@@ -26,8 +26,8 @@ public class Schedule {
         }
 
         this.processors = processors;
-        this.lastScheduledTask = null;
         this.graph = graph;
+        this.scheduleOrder = new ArrayList<TaskNode>();
 
         initializeSchedulableNodes(graph);
 
@@ -60,22 +60,7 @@ public class Schedule {
     public List<Processor> getProcessors() {	
         return processors;
     }
-    
-    
-    /**
-     * Updates the schedulable nodes (for after a node get scheduled).
-     *
-     * @param tn is the node that has just been scheduled.
-     */
-    public void updateSchedulableNodes(TaskNode tn) {
-        schedulableNodes.remove(tn);
 
-        for (TaskEdge e : tn.getOutgoingEdges()) {
-            if (e.getEndNode().isSchedulable()) {
-                schedulableNodes.add(e.getEndNode());
-            }
-        }
-    }
 
     /**
      * Gets all the nodes that have been scheduled on this schedule.
@@ -108,16 +93,39 @@ public class Schedule {
      */
     public void addTask(TaskNode node, Processor processor, int time) {
         processor.addTask(node, time);
-        lastScheduledTask = node;
+        scheduleOrder.add(node);
+
+        // Updates the schedulable nodes.
+        schedulableNodes.remove(node);
+
+        for (TaskEdge e : node.getOutgoingEdges()) {
+            if (e.getEndNode().isSchedulable()) {
+                schedulableNodes.add(e.getEndNode());
+            }
+        }
     }
 
     /**
      * Removes the last scheduled task.
      */
     public void removeLastScheduledTask() {
-        for (Processor processor : processors) {
-            if (processor.getTasks().contains(lastScheduledTask)) {
-                processor.removeTask(lastScheduledTask);
+        TaskNode lastScheduledTask = scheduleOrder.get(scheduleOrder.size() - 1);
+
+        for (Processor p : processors) {
+            if (p.getTasks().contains(lastScheduledTask)) {
+                p.removeTask(lastScheduledTask);
+            }
+        }
+        scheduleOrder.remove(scheduleOrder.size()-1);
+
+        // Updating the schedulable nodes.
+        // Get the last scheduled node, and add it back. Then remove all it's children from schedulable.
+        TaskNode tn = scheduleOrder.get(scheduleOrder.size()-1);
+        schedulableNodes.add(tn);
+
+        for (TaskEdge e : tn.getOutgoingEdges()) {
+            if (e.getEndNode().isSchedulable()) {
+                schedulableNodes.remove(e.getEndNode());
             }
         }
     }

@@ -88,7 +88,6 @@ public class DFBnBScheduler {
                         if (schedule.getScheduledNodes().size() > 0) {
                             schedule.removeLastScheduledTask(); //remove the last scheduled task from the most recent depth
 
-                            schedule.updateSchedulableNodes(nextTask);
 
                             //TODO update bound
                             //TODO get schedulable nodes

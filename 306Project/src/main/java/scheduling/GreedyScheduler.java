@@ -47,7 +47,6 @@ public class GreedyScheduler extends Scheduler {
 
             //add that node to the schedule
             schedule.addTask(nextNode, nextProcessor, nextStartTime);
-            schedule.updateSchedulableNodes(nextNode);
             schedulableNodes = schedule.getSchedulableNodes();
         }
 
