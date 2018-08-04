@@ -11,15 +11,12 @@ import javafx.scene.Scene;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
 import scheduling.GreedyScheduler;
 import scheduling.Schedule;
-import scheduling.SimpleScheduler;
-import scheduling.SolutionTree;
 
 /**
  * Hello world!
@@ -93,8 +90,8 @@ public class App extends Application{
 				TaskGraph graph = loader.load("src/main/resources/DotFiles/" + fileName);
 
 				//Doing the algorithm
-				GreedyScheduler solution = new GreedyScheduler();
-				Schedule finalSolution = solution.createSchedule(graph, processorNumber);
+				GreedyScheduler solution = new GreedyScheduler(graph, processorNumber);
+				Schedule finalSolution = solution.createSchedule();
 
 				//Transporting to output
 				Output.createOutput(finalSolution.getProcessors(), graph, sendToOutputClass);
@@ -110,8 +107,8 @@ public class App extends Application{
 				TaskGraph graph = loader.load("src/main/resources/DotFiles/" + fileName);
 
 				//Doing the algorithm
-				GreedyScheduler solution = new GreedyScheduler();
-				Schedule finalSolution = solution.createSchedule(graph, processorNumber);
+				GreedyScheduler solution = new GreedyScheduler(graph, processorNumber);
+				Schedule finalSolution = solution.createSchedule();
 
 				//Transporting to output
 				Output.createOutput(finalSolution.getProcessors(), graph, sendToOutputClass);
