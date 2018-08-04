@@ -1,4 +1,4 @@
-//package scheduling;
+package scheduling;
 //
 //import graph.TaskEdge;
 //import graph.TaskGraph;
@@ -10,6 +10,20 @@
 //import java.util.List;
 //import java.util.Map;
 //
+public interface SolutionTree {
+
+	public Schedule doSchedule();
+}
+
+
+
+
+
+
+
+
+
+
 ///**
 // * Created by olive on 29/07/2018.
 // */
@@ -210,3 +224,5 @@
 //
 //
 //}
+
+

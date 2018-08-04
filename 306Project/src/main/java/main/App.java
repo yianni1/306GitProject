@@ -1,9 +1,11 @@
+
 package main;
 
 import java.io.IOException;
 
 import graph.TaskGraph;
 import io.GraphLoader;
+import io.Output;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -15,7 +17,9 @@ import org.apache.commons.cli.Options;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import scheduling.GreedyScheduler;
+import scheduling.Schedule;
 import scheduling.SimpleScheduler;
+import scheduling.SolutionTree;
 
 /**
  * Hello world!
@@ -56,7 +60,7 @@ public class App extends Application{
 
 			//default values for optional arguments
 			int numCores = 1;
-			String outputName = fileName + "-output.dot";
+//			String outputName = fileName + "-output.dot";
 
 
             if (cmd.hasOption("p")) {
@@ -64,8 +68,21 @@ public class App extends Application{
             }
 
             if (cmd.hasOption("o")) {
-                outputName = cmd.getOptionValue("o");
-            }
+                String outputName = cmd.getOptionValue("o");
+                if (outputName == null) {
+                	outputName = fileName + "-output.dot";
+				}
+				Output.setOutputFileName(outputName); //Seting the output name
+				GraphLoader loader = new GraphLoader(); //Loading the graph
+				TaskGraph graph = loader.load(fileName);
+
+				//Doing the algorithm
+				GreedyScheduler solution = new GreedyScheduler();
+				Schedule finalSolution = solution.createSchedule(graph, processorNumber);
+
+				//Transporting to output
+				Output.createOutput(finalSolution.getProcessors(), graph);
+			}
             if (cmd.hasOption("v")) {
                 //If visualisation is required, initialise root layout
                 initRootLayout();
@@ -75,8 +92,8 @@ public class App extends Application{
 
 			GraphLoader loader = new GraphLoader();
 			TaskGraph graph = loader.load(fileName);
-			GreedyScheduler scheduler = new GreedyScheduler();
-			scheduler.createSchedule(graph, processorNumber);
+			SimpleScheduler solution = new SimpleScheduler(graph, processorNumber);
+			solution.doSchedule();
 			System.out.println("Done"); // FOR DEBUGGING ON CONSOLE
         }
 	}
