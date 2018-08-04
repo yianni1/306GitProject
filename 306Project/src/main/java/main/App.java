@@ -17,6 +17,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import scheduling.GreedyScheduler;
 import scheduling.Schedule;
+import scheduling.SchedulerI;
 
 /**
  * Hello world!
@@ -44,24 +45,6 @@ public class App extends Application{
 		options.addOption("p", true, "Number of cores to use");
 		options.addOption("v", false, "Use visualisation");
 		options.addOption("o", true, "Output file name" );
-
-		
-		/*String nextPart = null;
-		for (int i = 0; i < args.length; i++) {
-			if (args[i].equals("-o")) {
-				if (i + 1 == args.length) {
-					options.addOption("o", false, "Output file name" );
-					break;
-				}
-				else {
-					nextPart = args[i + 1];
-					if (nextPart.equals("-p") || (nextPart.equals("-v")) ) {
-						options.addOption("o", false, "Output file name" );
-						break;
-					}
-				}
-			}
-		}*/
 		
 		CommandLineParser parser = new DefaultParser();
 		CommandLine cmd = parser.parse(options, args);
@@ -107,7 +90,7 @@ public class App extends Application{
 				TaskGraph graph = loader.load("src/main/resources/DotFiles/" + fileName);
 
 				//Doing the algorithm
-				GreedyScheduler solution = new GreedyScheduler(graph, processorNumber);
+				SchedulerI solution = new GreedyScheduler(graph, processorNumber);
 				Schedule finalSolution = solution.createSchedule();
 
 				//Transporting to output

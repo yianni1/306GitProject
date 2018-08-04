@@ -8,11 +8,11 @@ import graph.TaskGraph;
 import graph.TaskNode;
 import io.Output;
 
-public class SimpleScheduler extends Scheduler {
+public class SimpleScheduler {
 
 
 	public SimpleScheduler(TaskGraph graph, int processors) {
-		super(graph, processors);
+		
 	}
 	
 	
