@@ -44,7 +44,7 @@ public class TestGreedyAlgorithum {
 		//for (String filePath : filePaths) {
 		//	greedySchedule(filePath);
 		//}
-		greedySchedule("src/main/resources/DotFiles/Test1.dot");
+		//greedySchedule("src/main/resources/DotFiles/Test1.dot");
 	}
 
 	private void greedySchedule(String filePath) {
@@ -121,7 +121,7 @@ public class TestGreedyAlgorithum {
 
 	@Test
 	public void testTest1Dot() {
-		GraphLoader loader = new GraphLoader();
+		/*GraphLoader loader = new GraphLoader();
 		TaskGraph graph = loader.load("src/main/resources/DotFiles/Test1.dot");
 
 		GreedyScheduler schedule = new GreedyScheduler();
@@ -140,9 +140,40 @@ public class TestGreedyAlgorithum {
 		p1.addTask(new TaskNode(3, "a"), 0);
 		p1.addTask(new TaskNode(4, "b"), 3);
 		p2.addTask(new TaskNode(6, "c"), 4);
-		p1.addTask(new TaskNode(3, "d"), 14);
+		p1.addTask(new TaskNode(3, "d"), 10);
 
-		Output.createOutput(processes, graph, "CorrectSolution");
+		Output.createOutput(processes, graph, "CorrectSolution");*/
 	}
+	
+	@Test
+	public void testTripleProcessorDot() {
+		GraphLoader loader = new GraphLoader();
+		TaskGraph graph = loader.load("src/main/resources/DotFiles/TripleProcessor.dot");
+		
+		GreedyScheduler schedule = new GreedyScheduler();
+		Schedule solution = schedule.createSchedule(graph, 3);
+		
+		Output.createOutput(solution.getProcessors(), graph, "greedySolutionTripleProcessor");
+		
+		
+		
+		Schedule correctSolution = new Schedule(3, graph);
+		List<Processor> processes = correctSolution.getProcessors();
+		
+		Processor p1 = processes.get(0);
+		Processor p2 = processes.get(1);
+		Processor p3 = processes.get(2);
+		
+		p1.addTask(new TaskNode(2, "d"), 0);
+		p2.addTask(new TaskNode(5, "a"), 0);
+		p3.addTask(new TaskNode(8, "g"), 0);
+		p2.addTask(new TaskNode(4, "b"), 5);
+		p3.addTask(new TaskNode(6, "c"), 8);
+		p3.addTask(new TaskNode(7, "f"), 14);
+		p2.addTask(new TaskNode(4, "e"), 19);
+		
+		Output.createOutput(processes, graph, "CorrectTripleProcessor");
+	}
+	
 	
 }
