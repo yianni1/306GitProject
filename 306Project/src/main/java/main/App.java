@@ -71,14 +71,15 @@ public class App extends Application{
 					String sendToOutputClass = cmd.getOptionValue("o");
 
 					GraphLoader loader = new GraphLoader(); //Loading the graph
-					TaskGraph graph = loader.load("src/main/resources/DotFiles/" + fileName);
+					String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+					TaskGraph graph = loader.load(path + fileName);
 
 					//Doing the algorithm
 					GreedyScheduler solution = new GreedyScheduler(graph, processorNumber);
 					Schedule finalSolution = solution.createSchedule();
 
 					//Transporting to output
-					Output.createOutput(finalSolution.getProcessors(), graph, sendToOutputClass);
+					Output.createOutput(finalSolution.getProcessors(), graph, path + sendToOutputClass + ".dot");
 				} else {
 					//Block for non specified option
 					String outputN = fileName.substring(0, fileName.length() - 4);
@@ -87,14 +88,15 @@ public class App extends Application{
 					String sendToOutputClass = outputN;
 
 					GraphLoader loader = new GraphLoader(); //Loading the graph
-					TaskGraph graph = loader.load("src/main/resources/DotFiles/" + fileName);
+					String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+					TaskGraph graph = loader.load(path + fileName);
 
 					//Doing the algorithm
 					SchedulerI solution = new GreedyScheduler(graph, processorNumber);
 					Schedule finalSolution = solution.createSchedule();
 
 					//Transporting to output
-					Output.createOutput(finalSolution.getProcessors(), graph, sendToOutputClass);
+					Output.createOutput(finalSolution.getProcessors(), graph, path + sendToOutputClass + "-output.dot");
 
 				}
 				if (cmd.hasOption("v")) {
