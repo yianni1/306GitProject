@@ -1,5 +1,6 @@
 package main;
 
+import java.io.File;
 import java.io.IOException;
 
 import graph.TaskGraph;
@@ -70,17 +71,20 @@ public class App extends Application{
 			if (cmd.hasOption("o")) {
 				//Block for user specified opiton
 				String sendToOutputClass = cmd.getOptionValue("o");
-
+				
 				GraphLoader loader = new GraphLoader(); //Loading the graph
 				String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-				TaskGraph graph = loader.load(path + fileName);
+				File parent = new File(path);
+				String parentPath = parent.getParent() + "\\";
+				
+				TaskGraph graph = loader.load(parentPath + fileName);
 
 				//Doing the algorithm
 				GreedyScheduler solution = new GreedyScheduler(graph, processorNumber);
 				Schedule finalSolution = solution.createSchedule();
 
 				//Transporting to output
-				Output.createOutput(finalSolution.getProcessors(), graph, path + sendToOutputClass + ".dot");
+				Output.createOutput(finalSolution.getProcessors(), graph, parentPath + sendToOutputClass + ".dot");
 			} 
 			else {
 				//Block for non specified option
@@ -90,15 +94,19 @@ public class App extends Application{
 				String sendToOutputClass = outputN;
 
 				GraphLoader loader = new GraphLoader(); //Loading the graph
+				
 				String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-				TaskGraph graph = loader.load(path + fileName);
+				File parent = new File(path);
+				String parentPath = parent.getParent() + "\\";
+				
+				TaskGraph graph = loader.load(parentPath + fileName);
 
 				//Doing the algorithm
 				SchedulerI solution = new GreedyScheduler(graph, processorNumber);
 				Schedule finalSolution = solution.createSchedule();
 
 				//Transporting to output
-				Output.createOutput(finalSolution.getProcessors(), graph, path + sendToOutputClass + "-output.dot");
+				Output.createOutput(finalSolution.getProcessors(), graph, parentPath + sendToOutputClass + "-output.dot");
 
 			}
 			if (cmd.hasOption("v")) {
@@ -109,7 +117,7 @@ public class App extends Application{
 			System.out.println("Scheduling on " + processorNumber + " processors using " + numCores + " cores.");
 
 			System.out.println("Done"); // FOR DEBUGGING ON CONSOLE
-
+			System.exit(0);
 		}
 }
 
