@@ -66,84 +66,82 @@ public class App extends Application{
 				if (cmd.hasOption("p")) {
 					numCores = Integer.parseInt(cmd.getOptionValue("p"));
 				}
+			}
+			if (cmd.hasOption("o")) {
+				//Block for user specified opiton
+				String sendToOutputClass = cmd.getOptionValue("o");
 
-				if (cmd.hasOption("o")) {
-					//Block for user specified opiton
-					String sendToOutputClass = cmd.getOptionValue("o");
+				GraphLoader loader = new GraphLoader(); //Loading the graph
+				String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+				TaskGraph graph = loader.load(path + fileName);
 
-					GraphLoader loader = new GraphLoader(); //Loading the graph
-					String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-					TaskGraph graph = loader.load(path + fileName);
+				//Doing the algorithm
+				GreedyScheduler solution = new GreedyScheduler(graph, processorNumber);
+				Schedule finalSolution = solution.createSchedule();
 
-					//Doing the algorithm
-					GreedyScheduler solution = new GreedyScheduler(graph, processorNumber);
-					Schedule finalSolution = solution.createSchedule();
-
-					//Transporting to output
-					Output.createOutput(finalSolution.getProcessors(), graph, path + sendToOutputClass + ".dot");
-				} else {
-					//Block for non specified option
-					String outputN = fileName.substring(0, fileName.length() - 4);
+				//Transporting to output
+				Output.createOutput(finalSolution.getProcessors(), graph, path + sendToOutputClass + ".dot");
+			} 
+			else {
+				//Block for non specified option
+				String outputN = fileName.substring(0, fileName.length() - 4);
 
 
-					String sendToOutputClass = outputN;
+				String sendToOutputClass = outputN;
 
-					GraphLoader loader = new GraphLoader(); //Loading the graph
-					String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-					TaskGraph graph = loader.load(path + fileName);
+				GraphLoader loader = new GraphLoader(); //Loading the graph
+				String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+				TaskGraph graph = loader.load(path + fileName);
 
-					//Doing the algorithm
-					SchedulerI solution = new GreedyScheduler(graph, processorNumber);
-					Schedule finalSolution = solution.createSchedule();
+				//Doing the algorithm
+				SchedulerI solution = new GreedyScheduler(graph, processorNumber);
+				Schedule finalSolution = solution.createSchedule();
 
-					//Transporting to output
-					Output.createOutput(finalSolution.getProcessors(), graph, path + sendToOutputClass + "-output.dot");
-
-				}
-				if (cmd.hasOption("v")) {
-					//If visualisation is required, initialise root layout
-					initRootLayout();
-				}
-
-				System.out.println("Scheduling on " + processorNumber + " processors using " + numCores + " cores.");
-
-				System.out.println("Done"); // FOR DEBUGGING ON CONSOLE
+				//Transporting to output
+				Output.createOutput(finalSolution.getProcessors(), graph, path + sendToOutputClass + "-output.dot");
 
 			}
+			if (cmd.hasOption("v")) {
+				//If visualisation is required, initialise root layout
+				initRootLayout();
+			}
+
+			System.out.println("Scheduling on " + processorNumber + " processors using " + numCores + " cores.");
+
+			System.out.println("Done"); // FOR DEBUGGING ON CONSOLE
 
 		}
+}
 
+/**
+ * Main method. Handles the args
+ * @param args
+ */
+public static void main(String[] args) {
+
+	//setting the GraphViewer to the advanced viewer
+	System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
+	launch(args);
+}
+
+/**
+ * Initializes the root layout for the pane.
+ */
+private void initRootLayout() {
+	try {
+		//Load the root layout from the fxml file
+
+		//printing out the location of the file
+		Parent root = FXMLLoader.load(getClass().getResource("/fxml/RootLayout.fxml"));
+
+		//scene showing the root layout is displayed
+		Scene scene = new Scene(root);
+		primaryStage.setScene(scene);
+		primaryStage.show();
+	} catch (IOException e) {
+		e.printStackTrace();
 	}
 
-	/**
-	 * Main method. Handles the args
-	 * @param args
-	 */
-	public static void main(String[] args) {
-
-		//setting the GraphViewer to the advanced viewer
-		System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
-		launch(args);
-	}
-
-	/**
-	 * Initializes the root layout for the pane.
-	 */
-	private void initRootLayout() {
-		try {
-			//Load the root layout from the fxml file
-
-			//printing out the location of the file
-			Parent root = FXMLLoader.load(getClass().getResource("/fxml/RootLayout.fxml"));
-
-			//scene showing the root layout is displayed
-			Scene scene = new Scene(root);
-			primaryStage.setScene(scene);
-			primaryStage.show();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
+}
 
 }
