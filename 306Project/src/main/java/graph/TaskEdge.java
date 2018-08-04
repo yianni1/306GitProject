@@ -1,9 +1,11 @@
 package graph;
 
+import java.io.Serializable;
+
 /**
  * Created by Dweep on 29/7/2018
  */
-public class TaskEdge {
+public class TaskEdge implements Serializable {
     private TaskNode startNode;
     private TaskNode endNode;
     private int weight;

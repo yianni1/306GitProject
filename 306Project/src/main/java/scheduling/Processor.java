@@ -2,6 +2,7 @@ package scheduling;
 
 import graph.TaskNode;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.Map;
 /**
  * This class represents a processor, with a list of tasks
  */
-public class Processor {
+public class Processor implements Serializable {
 
     private int procID;
     private List<TaskNode> tasks = new ArrayList<TaskNode>();

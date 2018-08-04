@@ -2,11 +2,12 @@ package graph;
 
 import scheduling.Processor;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class TaskNode {
+public class TaskNode implements Serializable {
     private int weight;
     private String name;
     private boolean scheduled;

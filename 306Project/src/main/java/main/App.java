@@ -15,6 +15,7 @@ import org.apache.commons.cli.Options;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import scheduling.DFBnBScheduler;
 import scheduling.GreedyScheduler;
 import scheduling.Schedule;
 import scheduling.SchedulerI;
@@ -90,7 +91,7 @@ public class App extends Application{
 				TaskGraph graph = loader.load("src/main/resources/DotFiles/" + fileName);
 
 				//Doing the algorithm
-				SchedulerI solution = new GreedyScheduler(graph, processorNumber);
+				SchedulerI solution = new DFBnBScheduler(graph, processorNumber);
 				Schedule finalSolution = solution.createSchedule();
 
 				//Transporting to output

@@ -1,11 +1,12 @@
 package graph;
 
+import java.io.Serializable;
 import java.util.HashSet;
 
 /**
  * Created by olive on 29/07/2018.
  */
-public class TaskGraph {
+public class TaskGraph implements Serializable {
 
     private HashSet<TaskEdge> edges; // The edges in the graph
     private HashSet<TaskNode> nodes; // The nodes in the graph

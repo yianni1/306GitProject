@@ -5,6 +5,7 @@ import graph.TaskGraph;
 import graph.TaskNode;
 
 import javax.xml.soap.Node;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
 /**
  * This class shows a partial Schedule to the problem. It will be a node on the Schedule tree
  */
-public class Schedule {
+public class Schedule implements Serializable {
 
     private List<Processor> processors = new ArrayList<Processor>();
     private List<TaskNode> schedulableNodes = new ArrayList<TaskNode>(); // The tasks that can be scheduled.
@@ -141,23 +142,30 @@ public class Schedule {
 
         if (node.isSchedulable()) {
             for (TaskEdge e : node.getIncomingEdges()) {
-                int endTime = e.getStartNode().getEndTime();             
+                int endTime = e.getStartNode().getEndTime();
                 if (endTime > earliestStartTime) {
                     earliestStartTime = endTime;
                 }
                 if (!e.getStartNode().getProcessor().equals(p)) {
-                	
-                    
-                    if (node.getName().equals("f")) {
-                        System.out.println( earliestStartTime + " on "+ p.getID());
-                	}
-                	
-                    earliestStartTime = earliestStartTime + e.getWeight();
+                    if (earliestStartTime <= e.getStartNode().getEndTime()) {
+                        earliestStartTime = earliestStartTime + e.getWeight();
+                    }
                 }
             }
         }
 
         return Math.max(earliestStartTime, p.getBound());
+    }
+
+    public int getBound() {
+        int bound = 0;
+        for (Processor processor: processors) {
+            if (processor.getBound() > bound) {
+                bound = processor.getBound();
+            }
+        }
+
+        return bound;
     }
 
 

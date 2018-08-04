@@ -4,6 +4,10 @@ import graph.TaskGraph;
 import graph.TaskNode;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,8 +15,9 @@ import java.util.List;
  * Created by Ray on 28/07/2018.
  * Written by Kevin & Ray.
  */
-public class DFBnBScheduler {
+public class DFBnBScheduler implements SchedulerI{
 
+        private TaskGraph graph;
         private int upperBound;
         private int depth;
         private Processor currentProcessor;
@@ -27,6 +32,8 @@ public class DFBnBScheduler {
         private List<TaskNode> schedulableNodes;
 
         public DFBnBScheduler(TaskGraph graph, int processors) {
+            this.graph = graph;
+
             nodeIndices = new ArrayList<Integer>();
             processorIndices = new ArrayList<Integer>();
             schedule = new Schedule(processors, graph);
@@ -39,7 +46,7 @@ public class DFBnBScheduler {
         }
 
 
-        public void createSchedule(TaskGraph graph, int processors) {
+        public Schedule createSchedule() {
             //initialize upperBound
             for(TaskNode n: graph.getNodes() ) {
                 upperBound = upperBound + n.getWeight();
@@ -88,37 +95,67 @@ public class DFBnBScheduler {
                         if (schedule.getScheduledNodes().size() > 0) {
                             schedule.removeLastScheduledTask(); //remove the last scheduled task from the most recent depth
 
-
-                            //TODO update bound
-                            //TODO get schedulable nodes
+                            schedulableNodes = schedule.getSchedulableNodes(); //get schedulable nodes
+                            bound = schedule.getBound(); // update current bound
                         }
 
                     }
 
+                    //TODO make better (hypothetical next bound)
                     schedule.addTask(nextTask, nextProcessor, schedule.getEarliestSchedulableTime(nextTask, nextProcessor));
+                    schedulableNodes = schedule.getSchedulableNodes();
+                    bound = schedule.getBound();
+                    nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 
 
+                    // kind of pruning
+                    if (bound > upperBound) {
+                        schedule.removeLastScheduledTask();
+                        schedulableNodes = schedule.getSchedulableNodes();
+                        bound = schedule.getBound();
 
+                        depth--;
+                    } else {
+                        if (schedulableNodes.isEmpty()) {
+                            //TODO clone schedule and set optimal schedule to be this schedule
+                            optimalSchedule = (Schedule) deepClone(schedule);
+                            upperBound = schedule.getBound();
+                            System.out.println("Upper Bound updated to " + upperBound);
 
+                            nodeIndices.set(depth, nodeIndices.get(depth) + 1);
+                            schedule.removeLastScheduledTask();
+                            schedulableNodes = schedule.getSchedulableNodes();
+                            bound = schedule.getBound();
 
-
-
-
-
-
-
+                            depth--;
+                        }
+                    }
                     depth++;
                 }
 
-
-
-
-
-
-
             }
 
+            return optimalSchedule;
+
         }
+
+    /**
+     * This method makes a "deep clone" of any object it is given.
+     */
+    public static Object deepClone(Object object) {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(object);
+            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            return ois.readObject();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 
 
