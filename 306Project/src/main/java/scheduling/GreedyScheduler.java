@@ -38,14 +38,18 @@ public class GreedyScheduler implements SchedulerI {
             //Go through all nodes and check earliest schedulable time on each processor to find next best node to schedule
             for (Processor p : schedule.getProcessors()) {
                 for (TaskNode n: schedulableNodes) {
+                
                     int tentativeStartTime = schedule.getEarliestSchedulableTime(n, p);
                     int tentativeEndTime = tentativeStartTime + n.getWeight();
+                    
                     if (tentativeEndTime < nextEndTime) {
                         nextStartTime = tentativeStartTime;
                         nextEndTime = tentativeEndTime;
                         nextNode = n;
                         nextProcessor = p;
                     }
+                    
+
                 }
             }
 
