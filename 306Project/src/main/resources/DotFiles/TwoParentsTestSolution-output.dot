@@ -1,0 +1,11 @@
+digraph "outputGraph2" {
+  c  [Weight=7,Start=0,Processor=1];
+  e  [Weight=3,Start=7,Processor=1];
+  b  [Weight=100,Start=0,Processor=2];
+  d  [Weight=12,Start=100,Processor=2];
+  f  [Weight=13,Start=112,Processor=2];
+  d->f  [Weight=12];
+  c->e  [Weight=3];
+  b->d  [Weight=67];
+  e->f  [Weight=6];
+}

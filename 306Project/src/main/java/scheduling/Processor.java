@@ -31,12 +31,13 @@ public class Processor {
      * Adds a new task, with the node.
      * Called by TaskNode.
      * @param node The node to be added.
+     * @param startTime The starttime
      */
-    public void addTask(TaskNode node, int time) {
+    public void addTask(TaskNode node, int startTime) {
         tasks.add(node);
 
-        node.schedule(time, this);
-        bound = time + node.getWeight();
+        node.schedule(startTime, this);
+        bound = startTime + node.getWeight();
 
     }
 
