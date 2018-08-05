@@ -46,6 +46,7 @@ public class Processor implements Serializable {
      * @param node
      */
     public void removeTask(TaskNode node) {
+        bound = node.getEndTime() - node.getWeight();
         tasks.remove(node);
         node.deschedule();
     }

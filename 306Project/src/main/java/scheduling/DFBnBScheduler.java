@@ -131,6 +131,7 @@ public class DFBnBScheduler implements SchedulerI{
                         }
                     }
                     depth++;
+                    System.out.println("Searching at depth " + depth + " with bound " + bound);
                 }
 
             }
