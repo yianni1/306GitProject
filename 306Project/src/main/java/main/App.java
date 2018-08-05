@@ -203,7 +203,7 @@ public class App extends Application{
 
 		for (int i = 0; i < args.length; i++) {
 			//Checks for non option argument after processor number input
-			if (args.length > 1) {
+			if (args.length > 2) {
 				if (args[2].charAt(0) != '-') {
 					System.out.println("Superfluous arguments");
 					System.exit(0);
