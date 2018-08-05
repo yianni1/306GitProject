@@ -22,7 +22,11 @@ import scheduling.Schedule;
 import scheduling.SchedulerI;
 
 /**
- * Hello world!
+ * This is the main application, this is written so that it is compatible with Java Fx using the start method account
+ * for the various kinds of inputs that can be parsed into this program which are the following:
+ * -> -p N (Parallelization and the number of cores to be used on the system the program is run in)
+ * -> -v (Visualisation of the algorithm that runs)
+ * -> -o [Name] (this provides an output in the dot file format with the specificied name by the user)
  *
  */
 public class App extends Application{
@@ -44,8 +48,13 @@ public class App extends Application{
 		//Command line options using Apache Commons CLI
 		Options options = new Options();
 
+		//option for the parallelization of the core with an additional argument of how many cores are being used
 		options.addOption("p", true, "Number of cores to use");
+
+		//option for the visualisation of the graph
 		options.addOption("v", false, "Use visualisation");
+
+		//option for the custom output name provided to the user
 		options.addOption("o", true, "Output file name" );
 
 		checkOptions(args);
@@ -54,6 +63,9 @@ public class App extends Application{
 		CommandLine cmd = parser.parse(options, args);
 
 		if (args.length < 2) {
+
+			//checking if the argument len is less than 2 if so in this case it should not allow the program to run which catches
+			//the exception and procedes to provide an error message
 			System.out.println("Insufficient arguments. Please specify input file and number of processors.");
 			System.exit(0);
 		} 
@@ -73,7 +85,7 @@ public class App extends Application{
 
 			//default values for optional arguments
 			int numCores = 1;
-			//			String outputName = fileName + "-output.dot";
+
 
 
 			if (cmd.hasOption("p")) {
@@ -90,7 +102,7 @@ public class App extends Application{
 
 			}
 			if (cmd.hasOption("o")) {
-				//Block for user specified opiton
+				//Block for the user specificed option
 				String sendToOutputClass = cmd.getOptionValue("o");
 
 				GraphLoader loader = new GraphLoader(); //Loading the graph
@@ -141,7 +153,7 @@ public class App extends Application{
 
 			}
 			if (cmd.hasOption("v")) {
-				//If visualisation is required, initialise root layout
+				//If visualisation is required, initialise root layout.
 				initRootLayout();
 			}
 
