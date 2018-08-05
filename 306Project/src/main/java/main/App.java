@@ -96,7 +96,7 @@ public class App extends Application{
 				GraphLoader loader = new GraphLoader(); //Loading the graph
 				String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
 				File parent = new File(path);
-				String parentPath = parent.getParent() + "\\";
+				String parentPath = parent.getParent() + File.separator;
 
 				TaskGraph graph = loader.load(parentPath + fileName);
 
@@ -122,7 +122,7 @@ public class App extends Application{
 
 					String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
 					File parent = new File(path);
-					String parentPath = parent.getParent() + "\\";
+					String parentPath = parent.getParent() + File.separator;
 
 					TaskGraph graph = loader.load(parentPath + fileName);
 
@@ -191,8 +191,8 @@ public class App extends Application{
 
 			String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
 			File parent = new File(path);
-			String parentPath = parent.getParent() + "\\";
-
+			String parentPath = parent.getParent() + File.separator;
+			
 			File tmpDir = new File(parentPath + args[0]);
 			boolean exists = tmpDir.exists();
 			if (exists == false) {
