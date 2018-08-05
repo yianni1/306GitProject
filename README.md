@@ -1,6 +1,6 @@
 # 306Project
 
-## Contributers
+## Contributors
 Name: Yianni Bares, Username: ybar417, ID: 533468329,  GitHub name: yianni1
 
 Name: Raymond Young, Username: ryou681, ID: 564122195,  GitHub name: rayyoung122
