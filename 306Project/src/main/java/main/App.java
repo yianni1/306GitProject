@@ -200,15 +200,21 @@ public class App extends Application{
 				System.exit(0);
 			}
 		}
+		
+		if (args.length > 1) {
+			int processorNumber = 0;
+
+			try{
+				processorNumber = Integer.parseInt(args[1]);
+			}
+			catch (NumberFormatException ex) {
+				System.out.println("Please enter a positive integer for the processor number");
+				System.exit(0);
+			}
+		}
+		
 
 		for (int i = 0; i < args.length; i++) {
-			//Checks for non option argument after processor number input
-			if (args.length > 2) {
-				if (args[2].charAt(0) != '-') {
-					System.out.println("Superfluous arguments");
-					System.exit(0);
-				}
-			}
 
 			//Checks all arguments for options (indicated by -)
 			if (args[i].charAt(0) == '-') {
@@ -251,17 +257,17 @@ public class App extends Application{
 						System.out.println("Please enter a valid input for the option(s)");
 						System.exit(0);
 					}
+					else if (args[i + 1].charAt(0) == '-') {
+						System.out.println("Please enter a valid input for the option(s)");
+						System.exit(0);
+
+					}
 					//Checks for additional unwanted args in input
 					else if (i + 2 < args.length) {
 						if (args[i + 2].charAt(0) != '-') {
 							System.out.println("Superfluous arguments");
 							System.exit(0);
 						}
-					}
-					else if (args[i + 1].charAt(0) == '-') {
-						System.out.println("Please enter a valid input for the option(s)");
-						System.exit(0);
-
 					}
 					//EveryThing OK if passes this if statement
 				}
@@ -283,6 +289,14 @@ public class App extends Application{
 			else if (pCount > 1) {
 				System.out.println("Repeated -p options");
 				System.exit(0);
+			}
+			
+			//Checks for non option argument after processor number input
+			if (args.length > 2) {
+				if (args[2].charAt(0) != '-') {
+					System.out.println("Superfluous arguments");
+					System.exit(0);
+				}
 			}
 			
 		}
