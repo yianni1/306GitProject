@@ -22,7 +22,7 @@ Download the jar, then place it in a desired directory. This program is designed
 In order to run the program, place the input .dot file into the same directory as the jar. Then navigate into the directory from the terminal, and type in the following command:
 
 ```
-java -jar [JAR-NAME].jar [INPUT-NAME].jar [NUMBER]
+java -jar [JAR-NAME].jar [INPUT-NAME].dot [NUMBER]
 ```
 where [JAR-NAME] is the name of the jar, [INPUT-NAME] is the name of the input file, and [NUMBER] is the number of processors. The output file should then be generated, which should be named [INPUT-NAME]-output.dot. Please make sure the format of your input is correct.
 
