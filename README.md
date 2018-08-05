@@ -31,13 +31,13 @@ where [JAR-NAME] is the name of the jar, [INPUT-NAME] is the name of the input f
 Some options are available for use in the program. Right now, the only option that is done right now is the -o option, which allows the user to specify the name of the output file. This should be used thus:
 
 ```
-java -jar [JAR-NAME].jar [INPUT-NAME].jar [NUMBER] -o [DESIRED-OUTPUT-NAME]
+java -jar [JAR-NAME].jar [INPUT-NAME].dot [NUMBER] -o [DESIRED-OUTPUT-NAME]
 ```
 where [DESIRED-OUTPUT-NAME] is, as the name suggests, the output name which you want. The output file generated should thus have the name [DESIRED-OUTPUT-NAME].dot.
 
 An example use would be 
 
 ```
-java -jar program.jar sample-input.jar 3 -o OUTPUT
+java -jar program.jar sample-input.dot 3 -o OUTPUT
 ```
 which will create a file called OUTPUT.dot
