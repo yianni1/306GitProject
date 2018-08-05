@@ -1,15 +1,15 @@
-# 306Project
+# 306 Scheduling Project
 
 ## Contributors
-Name: Yianni Bares, Username: ybar417, ID: 533468329,  GitHub name: yianni1
+Name: Yianni Bares,   Username: ybar417,  ID: 533468329,  GitHub name: yianni1
 
-Name: Raymond Young, Username: ryou681, ID: 564122195,  GitHub name: rayyoung122
+Name: Raymond Young,  Username: ryou681,  ID: 564122195,  GitHub name: rayyoung122
 
-Name: Kevin Manson, Username: kman756, ID: 978326868,  GitHub name: kevinalexandermanson
+Name: Kevin Manson,   Username: kman756,  ID: 978326868,  GitHub name: kevinalexandermanson
 
-Name: Dweep Kapadia, Username: dkap813, ID: 559875934,  GitHub name: DweeDog
+Name: Dweep Kapadia,  Username: dkap813,  ID: 559875934,  GitHub name: DweeDog
 
-Name: Oliver Li, Username: mli730, ID: 939043857,  GitHub name: nolatos
+Name: Oliver Li,      Username: mli730,   ID: 939043857,  GitHub name: nolatos
 
 
 
@@ -17,7 +17,7 @@ Name: Oliver Li, Username: mli730, ID: 939043857,  GitHub name: nolatos
 
 ## Installation and Running
 
-Download the jar, then place it in a desired directory. This program is designed to be run from the command line from a Linux machine, though it is platform-independent.
+Download the scheduler.jar, then place it in a desired directory. This program is designed to be run from the command line from a Linux machine, though it is platform-independent.
 
 In order to run the program, place the input .dot file into the same directory as the jar. Then navigate into the directory from the terminal, and type in the following command:
 
