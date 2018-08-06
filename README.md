@@ -41,3 +41,13 @@ An example use would be
 java -jar program.jar sample-input.dot 3 -o OUTPUT
 ```
 which will create a file called OUTPUT.dot
+
+## External Libraries
+
+Apache Commons CLI for command line parsing (The Apache Software License - Version 2.0)
+
+GraphStream for .dot file processing and visualisation (LGPL V3)
+
+JavaFX & jFoenix for GUI (The Apache Software License - Version 2.0)
+
+
