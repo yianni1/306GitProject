@@ -270,7 +270,7 @@ public class AllTests extends testCases.CompareOutput {
     }
 
     /**
-     * Tests a grpah with three parents.
+     * Tests a graph with three parents.
      *
      * @throws Exception
      */
@@ -321,7 +321,7 @@ public class AllTests extends testCases.CompareOutput {
 		 	/*GraphLoader loader = new GraphLoader();
 	        String outputFileName = "Nodes7";
 	        TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_7_OutTree.dot");
-	        SchedulerI scheduler = new GreedyScheduler(graph, 2);
+	        Scheduler scheduler = new GreedyScheduler(graph, 2);
 	        Schedule solution = scheduler.createSchedule();
 
 	        Output.createOutput(solution.getProcessors(), graph, outputFileName + "TestSolution");

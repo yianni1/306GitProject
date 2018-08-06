@@ -19,7 +19,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import scheduling.GreedyScheduler;
 import scheduling.Schedule;
-import scheduling.SchedulerI;
+import scheduling.Scheduler;
 
 /**
  * This is the main application, this is written so that it is compatible with Java Fx using the start method account
@@ -139,7 +139,7 @@ public class App extends Application{
 					TaskGraph graph = loader.load(parentPath + fileName);
 
 					//Doing the algorithm
-					SchedulerI solution = new GreedyScheduler(graph, processorNumber);
+					Scheduler solution = new GreedyScheduler(graph, processorNumber);
 					Schedule finalSolution = solution.createSchedule();
 
 					//Transporting to output
