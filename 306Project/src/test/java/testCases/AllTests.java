@@ -51,7 +51,8 @@ public class AllTests extends testCases.CompareOutput {
         filePaths.addAll(Arrays.asList("src/main/resources/DotFiles/Nodes_7_OutTree.dot", "src/main/resources/DotFiles/Test1.dot",
                 "src/main/resources/DotFiles/TestTwoParents.dot", "src/main/resources/DotFiles/Nodes_10_Random.dot",
                 "src/main/resources/DotFiles/Nodes_9_SeriesParallel.dot", "src/main/resources/DotFiles/Nodes_11_OutTree.dot",
-                "src/main/resources/DotFiles/Nodes_8_Random.dot"));
+                "src/main/resources/DotFiles/Nodes_8_Random.dot", "src/main/resources/DotFiles/TripleProcessor.dot", 
+                "src/main/resources/DotFiles/threeParents.dot", "src/main/resources/DotFiles/CustomTest.dot"));
     }
 
     /**
@@ -61,8 +62,8 @@ public class AllTests extends testCases.CompareOutput {
     public void testGreedySchedule() {
         for (String filePath : filePaths) {
             greedySchedule(filePath);
-        }
-        //greedySchedule("src/main/resources/DotFiles/Test1.dot");
+     }
+      //  greedySchedule("src/main/resources/DotFiles/CustomTest.dot");
     }
 
     private void greedySchedule(String filePath) {
@@ -81,15 +82,29 @@ public class AllTests extends testCases.CompareOutput {
 
                 for (TaskEdge edge : node.getIncomingEdges()) {
                     TaskNode parentNode = edge.getStartNode();
-                    int parentStart = parentNode.getEndTime();
-                    int nodeStart = node.getEndTime();
+                    int parentEnd = parentNode.getEndTime();
+                    int nodeStart = node.getStartTime();
 
-                    //System.out.println(parentNode.getName() + " " + parentStart + " " + node.getName() + " " + nodeStart);
+                    //Checks if the current node is schedule on a different processor to its parent, it is 
+                    // scheduled after the parent node + edge weight
+                    if (!parentNode.getProcessor().equals(node.getProcessor())) {
+                    	assertTrue(node.getStartTime() >= parentNode.getEndTime() + edge.getWeight());
+                    }
+                    
                     //Checks that the current node is scheduled later than its parents
-                    assertTrue(parentStart <= nodeStart);
+                    assertTrue(parentEnd <= nodeStart);
 
                 }
+                
+                //Checks for overlap on processors
+                for (TaskNode otherNodes : processor.getTasks()) {
+                	if ( (otherNodes.getStartTime() > node.getStartTime()) && (otherNodes.getEndTime() < node.getEndTime()) ) {
+                		fail();
+                	}
+                }
                 nodeNum++;
+                
+                
             }
 
             //Checks each node is only schedule once, i.e. no duplicate nodes in any processor

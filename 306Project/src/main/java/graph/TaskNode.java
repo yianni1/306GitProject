@@ -74,6 +74,10 @@ public class TaskNode {
     public int getEndTime() {
         return this.startTime + this.weight;
     }
+    
+    public int getStartTime() {
+    	return this.startTime;
+    }
 
     /**
      * Adds an incoming edge to this node.

@@ -138,7 +138,7 @@ public class Schedule {
                     earliestStartTime = endTime;
                 }
                 if (!e.getStartNode().getProcessor().equals(p)) {
-                    if (earliestStartTime <= e.getStartNode().getEndTime()) {
+                    if (earliestStartTime < e.getStartNode().getEndTime() + e.getWeight()) {
                         earliestStartTime = earliestStartTime + e.getWeight();
                     }
                 }
