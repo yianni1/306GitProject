@@ -11,7 +11,7 @@ import java.util.List;
  * Created by Ray on 28/07/2018.
  * Written by Kevin & Ray.
  */
-public class DFBnB {
+public class DFBnB{
 
         private int upperBound;
         private int depth;

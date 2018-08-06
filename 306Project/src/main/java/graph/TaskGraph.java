@@ -4,6 +4,8 @@ import java.util.HashSet;
 
 /**
  * Created by olive on 29/07/2018.
+ * This is the TaskGraph class which stores an Hashset of all the available edges and Nodes and there respective connections
+ * to create the representation of the graph to be delievered to the Scheduler and algo components of the project.
  */
 public class TaskGraph {
 
@@ -34,14 +36,26 @@ public class TaskGraph {
         this.nodes.add(node);
     }
 
+    /**
+     * Returns a Hashset of all the available nodes
+     * @return
+     */
     public HashSet<TaskNode> getNodes() {
         return this.nodes;
     }
 
+    /**
+     * Returns a Hashset of all the avilable edges
+     * @return
+     */
     public HashSet<TaskEdge> getEdges() {
         return this.edges;
     }
 
+    /**
+     * Gets the title of the graph
+     * @return
+     */
     public String getTitle() {
         return title;
     }

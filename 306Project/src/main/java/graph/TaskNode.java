@@ -6,6 +6,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+/**
+ * Created by Dweep on 26/07/2018
+ *The TaskNode Class works as our data structure representation of a node, with the properties of the particular nodes
+ * weight, its name whether it has already been scheduled, the start time and the processor the node has been scheduled to which
+ * provide the fundamental basis for our scheduler and algo implemenation.
+ */
 public class TaskNode {
     private int weight;
     private String name;
@@ -22,16 +28,19 @@ public class TaskNode {
         this.scheduled = false;
         this.startTime = -1;
         this.processor = null;
+
+        //storing the incoming edges and outgoing edges of the graph which makes it easier to understand the
+        //parent and child relationship between the nodes
         incomingEdges = new HashSet<TaskEdge>();
         outgoingEdges = new HashSet<TaskEdge>();
     }
 
     /**
      *
-     * Sets the status of this node to scheduled, assigning a start time and a processor.
+     * The Status of the node is set to scheduled which assigns the attributes of start time and a processor.
      *
-     * @param startTime the time at which the node is scheduled
-     * @param processor the processor that this node has been scheduled on
+     * @param startTime The time that the node is scheduled in the scheduler
+     * @param processor the processor that the particular node is scheduled on
      * @return
      */
     public boolean schedule(int startTime, Processor processor) {
@@ -64,6 +73,10 @@ public class TaskNode {
      */
     public int getEndTime() {
         return this.startTime + this.weight;
+    }
+    
+    public int getStartTime() {
+    	return this.startTime;
     }
 
     /**
@@ -143,6 +156,10 @@ public class TaskNode {
         return name;
     }
 
+    /**
+     * Returns the processor that the node is currently on.
+     * @return
+     */
     public Processor getProcessor() {
         return processor;
     }

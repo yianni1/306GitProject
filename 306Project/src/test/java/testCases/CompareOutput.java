@@ -5,14 +5,15 @@ import java.io.FileReader;
 import java.io.IOException;
 
 /**
- * Created by olive on 4/08/2018.
+ * Written by Ray on 4/08/2018.
  */
 public class CompareOutput {
 
     /**
-     * Compares 2 text files
-     * @param file1
-     * @param file2
+     * Compares 2 text files to see if they are the same.
+     * Used to compare the outputs files to make unit tests more effective.
+     * @param file1 the filepath of the first file
+     * @param file2 the filepath of the second file
      * @return true if they're the same, false if not the same.
      * @throws IOException
      */
@@ -20,17 +21,15 @@ public class CompareOutput {
         boolean areEqual = true;
 
         int lineNum1 = 1;
-        int lineNum2 = 2;
+        int lineNum2 = 1;
 
         BufferedReader reader1 = new BufferedReader(new FileReader(file1));
         String line1 = reader1.readLine();
         while (line1 != null) {
-            //System.out.println("TextA: Reading line " + lineNum1);
             BufferedReader reader2 = new BufferedReader(new FileReader(file2));
             String line2 = reader2.readLine();
             lineNum2 = 1;
             while (line2 != null) {
-                //   System.out.println("TextB: Reading line " + lineNum2);
                 if(!line1.equals(line2)) {
                     line2 = reader2.readLine();
                     lineNum2++;
@@ -40,7 +39,7 @@ public class CompareOutput {
                         break;
                     }
                 } else {
-                    //System.out.println("Line " + lineNum1 + " appears in line " + lineNum2 + " of TextB.");
+                    //System.out.println("Line " + lineNum1 + " appears in line " + lineNum2 + " of the second file.");
                     break;
                 }
             }
@@ -56,6 +55,7 @@ public class CompareOutput {
             return true;
         }
         else {
+            //System.out.println("Two files do not have same content.");
             return false;
         }
     }
