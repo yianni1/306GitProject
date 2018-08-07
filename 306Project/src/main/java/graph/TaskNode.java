@@ -29,10 +29,10 @@ public class TaskNode implements Serializable {
 
     /**
      *
-     * Sets the status of this node to scheduled, assigning a start time and a processor.
+     * The Status of the node is set to scheduled which assigns the attributes of start time and a processor.
      *
-     * @param startTime the time at which the node is scheduled
-     * @param processor the processor that this node has been scheduled on
+     * @param startTime The time that the node is scheduled in the scheduler
+     * @param processor the processor that the particular node is scheduled on
      * @return
      */
     public boolean schedule(int startTime, Processor processor) {
@@ -65,6 +65,10 @@ public class TaskNode implements Serializable {
      */
     public int getEndTime() {
         return this.startTime + this.weight;
+    }
+
+    public int getStartTime() {
+    	return this.startTime;
     }
 
     /**
@@ -144,6 +148,10 @@ public class TaskNode implements Serializable {
         return name;
     }
 
+    /**
+     * Returns the processor that the node is currently on.
+     * @return
+     */
     public Processor getProcessor() {
         return processor;
     }

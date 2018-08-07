@@ -142,12 +142,12 @@ public class Schedule implements Serializable {
 
         if (node.isSchedulable()) {
             for (TaskEdge e : node.getIncomingEdges()) {
-                int endTime = e.getStartNode().getEndTime();
+                int endTime = e.getStartNode().getEndTime();             
                 if (endTime > earliestStartTime) {
                     earliestStartTime = endTime;
                 }
                 if (!e.getStartNode().getProcessor().equals(p)) {
-                    if (earliestStartTime <= e.getStartNode().getEndTime()) {
+                    if (earliestStartTime < e.getStartNode().getEndTime() + e.getWeight()) {
                         earliestStartTime = earliestStartTime + e.getWeight();
                     }
                 }

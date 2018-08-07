@@ -9,7 +9,7 @@ import java.util.List;
  * Created on 3/0/8/2018 by Ray and Kevin
  */
 
-public class GreedyScheduler implements SchedulerI {
+public class GreedyScheduler implements Scheduler {
 
 	private List<TaskNode> schedulableNodes;
 	private Schedule schedule;
@@ -48,7 +48,6 @@ public class GreedyScheduler implements SchedulerI {
                         nextNode = n;
                         nextProcessor = p;
                     }
-                    
 
                 }
             }

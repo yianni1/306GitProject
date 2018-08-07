@@ -8,7 +8,7 @@ import graph.TaskGraph;
 import graph.TaskNode;
 import io.Output;
 
-public class SimpleScheduler {
+public class SimpleScheduler implements Scheduler{
 
 
 	public SimpleScheduler(TaskGraph graph, int processors) {

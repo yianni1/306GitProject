@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 /**
  * Created by Dweep on 29/7/2018
+ * This is the class which creates a the Edge data structure which stores the startNode , EndNode and the weight of the
+ * Edge which will later be delivered into the scheduler class and the algorithim iteration.
  */
 public class TaskEdge implements Serializable {
     private TaskNode startNode;
