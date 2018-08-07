@@ -144,7 +144,7 @@ public class Schedule implements Serializable {
 
         if (node.isSchedulable()) {
             for (TaskEdge e : node.getIncomingEdges()) {
-                int endTime = e.getStartNode().getEndTime();             
+                int endTime = e.getStartNode().getEndTime();
                 if (endTime > earliestStartTime) {
                     earliestStartTime = endTime;
                 }
@@ -154,9 +154,10 @@ public class Schedule implements Serializable {
                     }
                 }
             }
+            earliestStartTime = Math.max(earliestStartTime, p.getBound());
         }
 
-        return Math.max(earliestStartTime, p.getBound());
+        return earliestStartTime;
     }
 
     public int getBound() {
