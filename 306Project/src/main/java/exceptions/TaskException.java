@@ -1,4 +1,4 @@
-package scheduling;
+package exceptions;
 
 /**
  * Created by olive on 7/08/2018.

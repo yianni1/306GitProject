@@ -2,13 +2,12 @@ package scheduling;
 
 import exceptions.NotSchedulableException;
 import exceptions.NotDeschedulableException;
+import exceptions.TaskException;
 import graph.TaskNode;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This class represents a processor, with a list of tasks

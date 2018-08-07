@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import scheduling.Processor;
-import scheduling.TaskException;
+import exceptions.TaskException;
 
 /**
  * Created by olive on 7/08/2018.
