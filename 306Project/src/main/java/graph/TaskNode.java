@@ -39,7 +39,7 @@ public class TaskNode implements Serializable {
      */
     public boolean schedule(int startTime, Processor processor) throws NotSchedulableException {
         if (!this.isSchedulable()) {
-            System.out.println("Scheduling task " + this.name + " is invalid.");
+            // System.out.println("Scheduling task " + this.name + " is invalid.");
             throw new NotSchedulableException();
         }
         this.startTime = startTime;
@@ -54,7 +54,7 @@ public class TaskNode implements Serializable {
      */
     public boolean deschedule() throws NotScheduledException {
         if (this.isSchedulable()) {
-            System.out.println("Unscheduled node attempted to be dscheduled.");
+            // System.out.println("Unscheduled node attempted to be dscheduled.");
             throw new NotScheduledException();
         }
         this.startTime = -1;

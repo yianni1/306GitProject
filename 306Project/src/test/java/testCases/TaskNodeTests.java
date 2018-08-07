@@ -76,7 +76,7 @@ public class TaskNodeTests {
         try {
             child2.schedule(5,p1);
         } catch (NotSchedulableException e) {
-            e.printStackTrace();
+            // Expected
         }
         assertFalse(child2.isScheduled());
 
