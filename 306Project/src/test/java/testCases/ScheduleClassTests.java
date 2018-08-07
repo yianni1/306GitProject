@@ -1,5 +1,6 @@
 package testCases;
 
+import exceptions.NotSchedulableException;
 import graph.TaskEdge;
 import graph.TaskGraph;
 import graph.TaskNode;
@@ -17,7 +18,7 @@ public class ScheduleClassTests {
      * Should add the input node to the input processor at a certain time
      */
     @Test
-    public void testScheduleAddTask() {
+    public void testScheduleAddTask() throws NotSchedulableException {
 
         //Sets up a simple TaskGraph
         TaskNode nodeA = new TaskNode(5, "a");
@@ -55,7 +56,7 @@ public class ScheduleClassTests {
      * i.e. nodes scheduled on any processor
      */
     @Test
-    public void testScheduleGetScheduledNodes() {
+    public void testScheduleGetScheduledNodes() throws NotSchedulableException {
 
         //Sets up a simple TaskGraph
         TaskNode nodeA = new TaskNode(5, "a");
@@ -142,7 +143,7 @@ public class ScheduleClassTests {
      * Should return the bound of the maximal processor in the schedule
      */
     @Test
-    public void testScheduleGetBound() {
+    public void testScheduleGetBound() throws NotSchedulableException {
         //Sets up a simple TaskGraph
         TaskNode nodeA = new TaskNode(5, "a");
         TaskNode nodeB = new TaskNode(8, "b");

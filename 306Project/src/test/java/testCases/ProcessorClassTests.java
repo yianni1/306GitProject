@@ -1,5 +1,7 @@
 package testCases;
 
+import exceptions.NotSchedulableException;
+import exceptions.NotScheduledException;
 import graph.TaskNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +26,7 @@ public class ProcessorClassTests {
      * Tests that adding a task actually adds the task, and that the bound is correct
      *
      */
-    public void testAddTask() {
+    public void testAddTask() throws NotSchedulableException {
         TaskNode node1 = new TaskNode(12, "nani");
         TaskNode node2 = new TaskNode(3002, "he");
         processor.addTask(node1, 0);
@@ -39,7 +41,7 @@ public class ProcessorClassTests {
      * Tests that processor throws an exception when the
      * starttime is less than the bound
      */
-    public void testExceptionHandlingInAddTask() {
+    public void testExceptionHandlingInAddTask() throws NotSchedulableException {
         try {
             TaskNode node1 = new TaskNode(12, "nani");
             TaskNode node2 = new TaskNode(3002, "he");
@@ -53,7 +55,7 @@ public class ProcessorClassTests {
     }
 
     @Test
-    public void testRemoveTask() {
+    public void testRemoveTask() throws NotSchedulableException, NotScheduledException {
 
         //Adding and removing one task
         TaskNode node1 = new TaskNode(12, "nani");
@@ -74,7 +76,7 @@ public class ProcessorClassTests {
     }
 
     @Test
-    public void testAddTaskWithGap() {
+    public void testAddTaskWithGap() throws NotSchedulableException {
         TaskNode node1 = new TaskNode(12, "nani");
         TaskNode node2 = new TaskNode(3002, "he");
         processor.addTask(node1, 0);
