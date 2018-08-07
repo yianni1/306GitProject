@@ -42,6 +42,9 @@ public class Processor implements Serializable {
     public void addTask(TaskNode node, int startTime) {
         tasks.add(node);
 
+        if (startTime < bound) {
+            throw new TaskException("The startTime cannot be lower than the bound");
+        }
         node.schedule(startTime, this);
         bound = startTime + node.getWeight();
 
