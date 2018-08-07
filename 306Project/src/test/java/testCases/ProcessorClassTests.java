@@ -10,7 +10,7 @@ import scheduling.TaskException;
 /**
  * Created by olive on 7/08/2018.
  */
-public class TestProcessor {
+public class ProcessorClassTests {
 
     private Processor processor;
 

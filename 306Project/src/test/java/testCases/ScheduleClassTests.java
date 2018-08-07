@@ -10,7 +10,7 @@ import scheduling.Schedule;
 
 import java.util.List;
 
-public class UnitTesting {
+public class ScheduleClassTests {
 
     /**
      * Tests the addTask method in schedule
