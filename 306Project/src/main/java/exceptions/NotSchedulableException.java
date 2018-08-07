@@ -1,5 +1,11 @@
 package exceptions;
 
-public class NotSchedulableException extends Exception{
+public class NotSchedulableException extends RuntimeException{
+
+    public NotSchedulableException() {super(); }
+
+    public NotSchedulableException(String message) {
+        super(message);
+    }
 
 }
