@@ -7,7 +7,7 @@ Name: Raymond Young,  Username: ryou681,  ID: 564122195,  GitHub name: rayyoung1
 
 Name: Kevin Manson,   Username: kman756,  ID: 978326868,  GitHub name: kevinalexandermanson
 
-Name: Dweep Kapadia,  Username: dkap813,  ID: 559875934,  GitHub name: DweeDog
+Name: Dweep Kapadia,  Username: dkap813,  ID: 559875934,  GitHub name: Cy3b3rZ3r0 & DweeDog
 
 Name: Oliver Li,      Username: mli730,   ID: 939043857,  GitHub name: nolatos
 
