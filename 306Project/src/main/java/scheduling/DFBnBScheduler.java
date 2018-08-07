@@ -115,24 +115,26 @@ public class DFBnBScheduler implements SchedulerI{
                         bound = schedule.getBound();
 
                         depth--;
-                    } else {
-                        if (schedulableNodes.isEmpty()) {
-                            //TODO clone schedule and set optimal schedule to be this schedule
-                            optimalSchedule = (Schedule) deepClone(schedule);
-                            upperBound = schedule.getBound();
-                            System.out.println("Upper Bound updated to " + upperBound);
-
-                            nodeIndices.set(depth, nodeIndices.get(depth) + 1);
-                            schedule.removeLastScheduledTask();
-                            schedulableNodes = schedule.getSchedulableNodes();
-                            bound = schedule.getBound();
-
-                            depth--;
-                        }
                     }
+
                     depth++;
                     System.out.println("Searching at depth " + depth + " with bound " + bound);
                 }
+
+                depth--; //go to previous depth
+
+                //TODO clone schedule and set optimal schedule to be this schedule
+                optimalSchedule = (Schedule) deepClone(schedule);
+                upperBound = schedule.getBound();
+                System.out.println("Upper Bound updated to " + upperBound);
+
+
+                schedule.removeLastScheduledTask();
+                schedulableNodes = schedule.getSchedulableNodes();
+                bound = schedule.getBound();
+
+
+                nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 
             }
 
