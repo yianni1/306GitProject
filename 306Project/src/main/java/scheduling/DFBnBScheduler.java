@@ -15,7 +15,7 @@ import java.util.List;
  * Created by Ray on 28/07/2018.
  * Written by Kevin & Ray.
  */
-public class DFBnBScheduler implements SchedulerI{
+public class DFBnBScheduler implements Scheduler{
 
         private TaskGraph graph;
         private int upperBound;
