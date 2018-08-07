@@ -1,5 +1,6 @@
 package scheduling;
 
+import exceptions.NotSchedulableException;
 import graph.TaskGraph;
 import graph.TaskNode;
 
@@ -24,7 +25,7 @@ public class GreedyScheduler implements Scheduler {
     	schedulableNodes = schedule.getSchedulableNodes();
     }
 
-    public Schedule createSchedule() {
+    public Schedule createSchedule() throws NotSchedulableException {
     	
         //While there are still nodes to schedule
         while (schedulableNodes.size() > 0) {

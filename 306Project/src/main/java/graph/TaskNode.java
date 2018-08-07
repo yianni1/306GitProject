@@ -1,5 +1,7 @@
 package graph;
 
+import exceptions.NotSchedulableException;
+import exceptions.NotScheduledException;
 import scheduling.Processor;
 
 import java.io.Serializable;
@@ -35,9 +37,10 @@ public class TaskNode implements Serializable {
      * @param processor the processor that the particular node is scheduled on
      * @return
      */
-    public boolean schedule(int startTime, Processor processor) {
+    public boolean schedule(int startTime, Processor processor) throws NotSchedulableException {
         if (!this.isSchedulable()) {
-            return false;
+            System.out.println("Scheduling task " + this.name + " is invalid.");
+            throw new NotSchedulableException();
         }
         this.startTime = startTime;
         this.processor = processor;
@@ -49,9 +52,10 @@ public class TaskNode implements Serializable {
      * Resets this node to its unscheduled state.
      * @return
      */
-    public boolean deschedule() {
+    public boolean deschedule() throws NotScheduledException {
         if (this.isSchedulable()) {
-            return false;
+            System.out.println("Unscheduled node attempted to be dscheduled.");
+            throw new NotScheduledException();
         }
         this.startTime = -1;
         this.processor = null;
@@ -117,10 +121,6 @@ public class TaskNode implements Serializable {
      */
     public boolean isScheduled() {
         return scheduled;
-    }
-    
-    public void schedule() {
-    	scheduled = true;
     }
 
     /**

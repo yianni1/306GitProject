@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+import exceptions.NotSchedulableException;
+import exceptions.NotScheduledException;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
@@ -59,14 +61,14 @@ public class AllTests extends testCases.CompareOutput {
      *  Tests the greedy schedule on whether it gains a output based upon the greedy rule of weights.
      */
     @Test
-    public void testGreedySchedule() {
+    public void testGreedySchedule() throws NotSchedulableException {
         for (String filePath : filePaths) {
             greedySchedule(filePath);
      }
       //  greedySchedule("src/main/resources/DotFiles/CustomTest.dot");
     }
 
-    private void greedySchedule(String filePath) {
+    private void greedySchedule(String filePath) throws NotSchedulableException {
 
         GraphLoader loader = new GraphLoader();
         TaskGraph graph = loader.load(filePath);
@@ -123,7 +125,7 @@ public class AllTests extends testCases.CompareOutput {
      * @throws URISyntaxException
      */
     @Test
-    public void testTest1Dot() throws IOException, URISyntaxException {
+    public void testTest1Dot() throws IOException, URISyntaxException, NotSchedulableException {
         GraphLoader loader = new GraphLoader();
         TaskGraph graph = loader.load("src/main/resources/DotFiles/Test1.dot");
 
@@ -161,7 +163,7 @@ public class AllTests extends testCases.CompareOutput {
      * @throws URISyntaxException
      */
     @Test
-    public void testTripleProcessorDot() throws IOException, URISyntaxException {
+    public void testTripleProcessorDot() throws IOException, URISyntaxException, NotSchedulableException, NotScheduledException {
         GraphLoader loader = new GraphLoader();
         TaskGraph graph = loader.load("src/main/resources/DotFiles/TripleProcessor.dot");
 
@@ -252,7 +254,7 @@ public class AllTests extends testCases.CompareOutput {
      * @throws URISyntaxException
      */
     @Test
-    public void testTwoEntryNodes() throws IOException, URISyntaxException {
+    public void testTwoEntryNodes() throws IOException, URISyntaxException, NotSchedulableException, NotScheduledException {
         GraphLoader loader = new GraphLoader();
         TaskGraph graph = loader.load("src/main/resources/DotFiles/TestTwoParents.dot");
 
