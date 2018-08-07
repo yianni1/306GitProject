@@ -140,7 +140,7 @@ public class App extends Application{
 					TaskGraph graph = loader.load(parentPath + fileName);
 
 					//Doing the algorithm
-					Scheduler solution = new GreedyScheduler(graph, processorNumber);
+					Scheduler solution = new DFBnBScheduler(graph, processorNumber);
 					Schedule finalSolution = solution.createSchedule();
 
 					//Transporting to output
