@@ -1,5 +1,6 @@
 package testCases;
 
+import exceptions.NotSchedulableException;
 import graph.TaskGraph;
 import graph.TaskNode;
 import io.GraphLoader;
@@ -12,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 public class GetEarliestSchedulableTimeTests extends testCases.CompareOutput {
 
     @Test
-    public void testGetEarliestSchedulableTime() {
+    public void testGetEarliestSchedulableTime() throws NotSchedulableException {
         GraphLoader loader = new GraphLoader();
         TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_7_OutTree.dot");
         Schedule schedule = new Schedule(2, graph);
