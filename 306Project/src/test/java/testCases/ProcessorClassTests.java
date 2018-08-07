@@ -1,7 +1,7 @@
 package testCases;
 
 import exceptions.NotSchedulableException;
-import exceptions.NotScheduledException;
+import exceptions.NotDeschedulableException;
 import graph.TaskNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +55,7 @@ public class ProcessorClassTests {
     }
 
     @Test
-    public void testRemoveTask() throws NotSchedulableException, NotScheduledException {
+    public void testRemoveTask() throws NotSchedulableException, NotDeschedulableException {
 
         //Adding and removing one task
         TaskNode node1 = new TaskNode(12, "nani");

@@ -1,7 +1,7 @@
 package graph;
 
 import exceptions.NotSchedulableException;
-import exceptions.NotScheduledException;
+import exceptions.NotDeschedulableException;
 import scheduling.Processor;
 
 import java.io.Serializable;
@@ -52,10 +52,10 @@ public class TaskNode implements Serializable {
      * Resets this node to its unscheduled state.
      * @return
      */
-    public boolean deschedule() throws NotScheduledException {
-        if (this.isSchedulable()) {
-            // System.out.println("Unscheduled node attempted to be dscheduled.");
-            throw new NotScheduledException();
+    public boolean deschedule() throws NotDeschedulableException {
+        if (!this.isDeschedulable()) {
+            // System.out.println("Unscheduled node attempted to be descheduled.");
+            throw new NotDeschedulableException();
         }
         this.startTime = -1;
         this.processor = null;
@@ -134,6 +134,22 @@ public class TaskNode implements Serializable {
 
         for (TaskEdge e : incomingEdges) {
             if (!e.getStartNode().isScheduled()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Checks if the node is deschedulable (it's children are not scheduled).
+     */
+    public boolean isDeschedulable() {
+        if (!this.isScheduled()) {
+            return false;
+        }
+
+        for (TaskEdge e: outgoingEdges) {
+            if (e.getEndNode().isScheduled()) {
                 return false;
             }
         }

@@ -1,7 +1,7 @@
 package scheduling;
 
 import exceptions.NotSchedulableException;
-import exceptions.NotScheduledException;
+import exceptions.NotDeschedulableException;
 import graph.TaskNode;
 
 import java.io.Serializable;
@@ -56,7 +56,7 @@ public class Processor implements Serializable {
      * Removes a task from this node.
      * @param node
      */
-    public void removeTask(TaskNode node) throws NotScheduledException {
+    public void removeTask(TaskNode node) throws NotDeschedulableException {
         bound = node.getEndTime() - node.getWeight();
         tasks.remove(node);
         node.deschedule();

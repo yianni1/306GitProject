@@ -1,9 +1,10 @@
 package scheduling;
 
+import exceptions.NotDeschedulableException;
 import exceptions.NotSchedulableException;
-import exceptions.NotScheduledException;
+import exceptions.NotDeschedulableException;
 
 public interface Scheduler {
 
-	 Schedule createSchedule() throws NotSchedulableException, NotScheduledException;
+	 Schedule createSchedule() throws NotSchedulableException, NotDeschedulableException, NotDeschedulableException;
 }

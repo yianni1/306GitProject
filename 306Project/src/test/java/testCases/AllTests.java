@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import exceptions.NotSchedulableException;
-import exceptions.NotScheduledException;
+import exceptions.NotDeschedulableException;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
@@ -163,7 +163,7 @@ public class AllTests extends testCases.CompareOutput {
      * @throws URISyntaxException
      */
     @Test
-    public void testTripleProcessorDot() throws IOException, URISyntaxException, NotSchedulableException, NotScheduledException {
+    public void testTripleProcessorDot() throws IOException, URISyntaxException, NotSchedulableException, NotDeschedulableException {
         GraphLoader loader = new GraphLoader();
         TaskGraph graph = loader.load("src/main/resources/DotFiles/TripleProcessor.dot");
 
@@ -254,7 +254,7 @@ public class AllTests extends testCases.CompareOutput {
      * @throws URISyntaxException
      */
     @Test
-    public void testTwoEntryNodes() throws IOException, URISyntaxException, NotSchedulableException, NotScheduledException {
+    public void testTwoEntryNodes() throws IOException, URISyntaxException, NotSchedulableException, NotDeschedulableException {
         GraphLoader loader = new GraphLoader();
         TaskGraph graph = loader.load("src/main/resources/DotFiles/TestTwoParents.dot");
 

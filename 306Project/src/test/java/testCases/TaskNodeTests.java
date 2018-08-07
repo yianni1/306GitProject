@@ -1,6 +1,7 @@
 package testCases;
 
 import exceptions.NotSchedulableException;
+import exceptions.NotDeschedulableException;
 import graph.TaskEdge;
 import graph.TaskNode;
 import org.junit.Test;
@@ -116,6 +117,67 @@ public class TaskNodeTests {
         assertFalse(child1.isScheduled());
 
 
+    }
+
+    /**
+     * Tests that the schedule method works correctly.
+     */
+    @Test
+    public void deScheduleMethodTest() throws NotSchedulableException, NotDeschedulableException {
+        TaskNode parent1 = new TaskNode(5, "p1");
+        TaskNode parent2 = new TaskNode(5, "p2");
+        TaskNode child1 = new TaskNode(5, "c1");
+        TaskNode child2 = new TaskNode(5, "c2");
+
+        TaskEdge e1 = new TaskEdge(parent1,child2,5);
+        TaskEdge e2 = new TaskEdge(parent2,child1,5);
+        TaskEdge e3 = new TaskEdge(child1,child2,5);
+
+        Processor p1 = new Processor(1);
+        Processor p2 = new Processor(2);
+
+        parent1.addOutgoingEdge(e1);
+        child2.addIncomingEdge(e1);
+
+        parent2.addOutgoingEdge(e2);
+        child1.addIncomingEdge(e2);
+
+        child1.addOutgoingEdge(e3);
+        child2.addIncomingEdge(e3);
+
+        parent1.schedule(0,p1);
+        parent2.schedule(0,p2);
+        child1.schedule(5, p1);
+
+        assertTrue(parent1.isScheduled());
+        assertTrue(parent1.isScheduled());
+        assertTrue(child1.isScheduled());
+
+        // Basic deschedule.
+        child1.deschedule();
+        parent2.deschedule();
+        assertFalse(child1.isScheduled());
+        assertFalse(parent2.isScheduled());
+
+        // Attempt to deschedule an unscheduled task.
+        try {
+            child2.deschedule();
+        } catch (NotDeschedulableException e) {
+            // Expected
+        }
+
+        assertFalse(child2.isScheduled());
+
+        parent2.schedule(0,p2);
+        child1.schedule(5, p1);
+
+        try{
+            parent2.deschedule();
+        } catch (NotDeschedulableException e) {
+            // Expected
+        }
+
+        assertTrue(parent2.isScheduled());
     }
 
 }

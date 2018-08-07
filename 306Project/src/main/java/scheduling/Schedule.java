@@ -1,7 +1,7 @@
 package scheduling;
 
+import exceptions.NotDeschedulableException;
 import exceptions.NotSchedulableException;
-import exceptions.NotScheduledException;
 import graph.TaskEdge;
 import graph.TaskGraph;
 import graph.TaskNode;
@@ -111,7 +111,7 @@ public class Schedule implements Serializable {
     /**
      * Removes the last scheduled task.
      */
-    public void removeLastScheduledTask() throws NotScheduledException {
+    public void removeLastScheduledTask() throws NotDeschedulableException {
         TaskNode lastScheduledTask = scheduleOrder.get(scheduleOrder.size() - 1);
 
         for (Processor p : processors) {

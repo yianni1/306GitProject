@@ -1,7 +1,7 @@
 package scheduling;
 
 import exceptions.NotSchedulableException;
-import exceptions.NotScheduledException;
+import exceptions.NotDeschedulableException;
 import graph.TaskGraph;
 import graph.TaskNode;
 
@@ -48,7 +48,7 @@ public class DFBnBScheduler implements Scheduler{
         }
 
 
-        public Schedule createSchedule() throws NotScheduledException, NotSchedulableException {
+        public Schedule createSchedule() throws NotDeschedulableException, NotSchedulableException {
             //initialize upperBound
             for(TaskNode n: graph.getNodes() ) {
                 upperBound = upperBound + n.getWeight();
