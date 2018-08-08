@@ -16,7 +16,6 @@ public class Processor implements Serializable {
 
     private int procID;
     private List<TaskNode> tasks = new ArrayList<TaskNode>();
-    private int bound;
 
     /**
      * The processor with a number
@@ -41,13 +40,13 @@ public class Processor implements Serializable {
      * @param startTime The starttime
      */
     public void addTask(TaskNode node, int startTime) throws NotSchedulableException {
-        tasks.add(node);
-
-        if (startTime < bound) {
+        if (startTime < this.getBound()) {
             throw new TaskException("The startTime cannot be lower than the bound");
         }
+
+        tasks.add(node);
+
         node.schedule(startTime, this);
-        bound = startTime + node.getWeight();
 
     }
 
@@ -56,7 +55,6 @@ public class Processor implements Serializable {
      * @param node
      */
     public void removeTask(TaskNode node) throws NotDeschedulableException {
-        bound = node.getEndTime() - node.getWeight();
         tasks.remove(node);
         node.deschedule();
     }
@@ -66,6 +64,13 @@ public class Processor implements Serializable {
      * @return
      */
     public int getBound() {
+        int bound = 0;
+        for (TaskNode node : tasks) {
+            if (node.getEndTime() > bound) {
+                bound = node.getEndTime();
+            }
+        }
+
         return bound;
     }
 

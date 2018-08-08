@@ -119,18 +119,19 @@ public class Schedule implements Serializable {
                 p.removeTask(lastScheduledTask);
             }
         }
-        scheduleOrder.remove(scheduleOrder.size()-1);
 
         // Updating the schedulable nodes.
         // Get the last scheduled node, and add it back. Then remove all it's children from schedulable.
-        TaskNode tn = scheduleOrder.get(scheduleOrder.size()-1);
-        schedulableNodes.add(tn);
+//        TaskNode tn = scheduleOrder.get(scheduleOrder.size()-1);
+        schedulableNodes.add(lastScheduledTask);
 
-        for (TaskEdge e : tn.getOutgoingEdges()) {
-            if (e.getEndNode().isSchedulable()) {
+        for (TaskEdge e : lastScheduledTask.getOutgoingEdges()) {
+//            if (e.getEndNode().isSchedulable()) {
                 schedulableNodes.remove(e.getEndNode());
-            }
+//            }
         }
+
+        scheduleOrder.remove(scheduleOrder.size()-1);
     }
 
     /**

@@ -23,7 +23,6 @@ public class DFBnBScheduler implements Scheduler{
         private int upperBound;
         private int depth;
         private Processor currentProcessor;
-        private int bound;
 
         // Index of the children of the schedule.
         private List<Integer> nodeIndices;
@@ -44,7 +43,6 @@ public class DFBnBScheduler implements Scheduler{
             //initialize depth, upperBound, and current time of the schedule
             depth = 0;
             upperBound = 0;
-            bound = 0;
         }
 
 
@@ -62,6 +60,7 @@ public class DFBnBScheduler implements Scheduler{
             //while there are branches to explore from depth 0, keep looping through all branches
             while (depth >= 0) {
                 while (schedulableNodes.size() > 0) { //while there are still nodes to schedule
+                    System.out.println("Searching at depth " + depth + " with bound " + schedule.getBound());
                     //if the depth is less than the size of nodeIndices then the depth has been reached before
                     if (depth < nodeIndices.size()) {
                         nodeIndex = nodeIndices.get(depth); //get the index of the next node at that depth
@@ -89,57 +88,72 @@ public class DFBnBScheduler implements Scheduler{
                     } else { //otherwise no more nodes can be scheduled at this depth
                         nodeIndices.set(depth, 0); //reset node index for that depth
                         processorIndices.set(depth, 0);
-                        bound = 0;
 
                         depth--; //go to previous depth
+
+                        if (depth < 0) {
+                            break;
+                        }
 
                         //if there are scheduled nodes
                         if (schedule.getScheduledNodes().size() > 0) {
                             schedule.removeLastScheduledTask(); //remove the last scheduled task from the most recent depth
 
                             schedulableNodes = schedule.getSchedulableNodes(); //get schedulable nodes
-                            bound = schedule.getBound(); // update current bound
                         }
-
+                        continue;
                     }
 
                     //TODO make better (hypothetical next bound)
                     schedule.addTask(nextTask, nextProcessor, schedule.getEarliestSchedulableTime(nextTask, nextProcessor));
                     schedulableNodes = schedule.getSchedulableNodes();
-                    bound = schedule.getBound();
                     nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 
 
                     // kind of pruning
-                    if (bound > upperBound) {
+                    if (schedule.getBound() > upperBound) {
                         schedule.removeLastScheduledTask();
                         schedulableNodes = schedule.getSchedulableNodes();
-                        bound = schedule.getBound();
 
                         depth--;
+
+                        if (depth < 0) {
+                            break;
+                        }
+
                     }
 
                     depth++;
-                    System.out.println("Searching at depth " + depth + " with bound " + bound);
+                }
+
+                if (depth < 0) {
+                    break;
                 }
 
                 depth--; //go to previous depth
 
+
                 //TODO clone schedule and set optimal schedule to be this schedule
-                optimalSchedule = (Schedule) deepClone(schedule);
-                upperBound = schedule.getBound();
-                System.out.println("Upper Bound updated to " + upperBound);
+                if (schedule.getBound() <= upperBound) {
+                    optimalSchedule = (Schedule) deepClone(schedule);
+                    upperBound = schedule.getBound();
+                    System.out.println("Upper Bound updated to " + upperBound);
+                }
 
+                if (schedule.getScheduledNodes().size() > 0) {
+                    schedule.removeLastScheduledTask();
+                }
 
-                schedule.removeLastScheduledTask();
                 schedulableNodes = schedule.getSchedulableNodes();
-                bound = schedule.getBound();
+
 
 
                 nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 
+
             }
 
+            System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
             return optimalSchedule;
 
         }
