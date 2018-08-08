@@ -42,15 +42,20 @@ public class DFBnBScheduler implements Scheduler{
 
             //initialize depth, upperBound, and current time of the schedule
             depth = 0;
-            upperBound = 0;
+
+            Schedule greedySchedule = new GreedyScheduler(graph, processors).createSchedule();
+
+            upperBound = greedySchedule.getBound();
+
+            while (greedySchedule.getScheduledNodes().size() > 0) {
+                greedySchedule.removeLastScheduledTask();
+            }
+
         }
 
 
         public Schedule createSchedule() throws NotDeschedulableException, NotSchedulableException {
             //initialize upperBound
-            for(TaskNode n: graph.getNodes() ) {
-                upperBound = upperBound + n.getWeight();
-            }
 
             TaskNode nextTask = null;
             Processor nextProcessor = null;
