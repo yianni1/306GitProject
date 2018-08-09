@@ -1,0 +1,59 @@
+package testCases;
+
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.List;
+
+import org.junit.Test;
+
+import graph.TaskGraph;
+import graph.TaskNode;
+import io.GraphLoader;
+import io.Output;
+import main.App;
+import scheduling.DFBnBScheduler;
+import scheduling.GreedyScheduler;
+import scheduling.Processor;
+import scheduling.Schedule;
+import scheduling.Scheduler;
+
+public class OptimalTestCase extends CompareOutput {
+
+	@Test
+	public void test() throws IOException, URISyntaxException {
+		GraphLoader loader = new GraphLoader();
+		TaskGraph graph = loader.load("src/main/resources/DotFiles/OptimalTest.dot");
+
+		String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+		File parent = new File(path);
+		String parentPath = parent.getParent() + "\\";
+
+		Scheduler schedule = new DFBnBScheduler(graph, 2);
+		Schedule solution = schedule.createSchedule();
+
+		Output.createOutput(solution.getProcessors(), graph, parentPath + "optimalSolution.dot");
+
+
+		Schedule correctSolution = new Schedule(2, graph);
+		List<Processor> processes = correctSolution.getProcessors();
+
+		Processor p1 = processes.get(0);
+		Processor p2 = processes.get(1);
+
+		p1.addTask(new TaskNode(2, "a"), 0);
+		p2.addTask(new TaskNode(3, "b"), 3);
+		p1.addTask(new TaskNode(4, "c"), 2);
+		p1.addTask(new TaskNode(5, "d"), 6);
+
+		
+		Output.createOutput(processes, graph, parentPath + "optimalSolutionCorrectSolution.dot");
+
+		boolean same = compareTextFiles(parentPath + "optimalSolution.dot", parentPath + "optimalSolutionCorrectSolution.dot");
+		assertTrue(same);
+	}
+
+}
