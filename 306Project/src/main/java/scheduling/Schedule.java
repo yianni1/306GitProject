@@ -74,12 +74,7 @@ public class Schedule implements Serializable {
      * @return scheduledNodes: all the nodes that have been scheduled.
      */
     public List<TaskNode> getScheduledNodes() {
-        List<TaskNode> scheduledNodes = new ArrayList<TaskNode>();
-        for (Processor processor : processors) {
-            scheduledNodes.addAll(processor.getTasks());
-        }
-
-        return scheduledNodes;
+        return scheduleOrder;
     }
 
     /**
