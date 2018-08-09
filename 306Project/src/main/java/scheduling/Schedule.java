@@ -5,12 +5,15 @@ import exceptions.NotSchedulableException;
 import graph.TaskEdge;
 import graph.TaskGraph;
 import graph.TaskNode;
+import javafx.concurrent.Task;
 
 import javax.xml.soap.Node;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
+import static java.util.Collections.sort;
 
 /**
  * This class shows a partial Schedule to the problem. It will be a node on the Schedule tree
@@ -85,6 +88,29 @@ public class Schedule implements Serializable {
      * @return schedulableNodes
      */
     public List<TaskNode> getSchedulableNodes() {
+
+        // Sort the tasknodes aphabetically.
+        List<String> taskNames = new ArrayList<String>();
+        for(TaskNode tn: schedulableNodes) {
+           taskNames.add(tn.getName());
+        }
+        sort(taskNames);
+
+        List<TaskNode> sortedTN = new ArrayList<TaskNode>();
+        for(String s: taskNames) {
+            for(TaskNode tn: schedulableNodes ) {
+                if (s.equals(tn.getName())) {
+                    sortedTN.add(tn);
+                }
+            }
+        }
+
+        this.schedulableNodes = sortedTN;
+
+//        System.out.print("Schedulable nodes are: ");
+//        for(TaskNode tn: schedulableNodes) {
+//            System.out.print(tn.getName() + ", ");
+//        }
         return this.schedulableNodes;
     }
 
