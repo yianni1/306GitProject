@@ -65,7 +65,7 @@ public class DFBnBScheduler implements Scheduler{
             //while there are branches to explore from depth 0, keep looping through all branches
             while (depth >= 0) {
                 while (schedulableNodes.size() > 0) { //while there are still nodes to schedule
-                    System.out.println("Searching at depth " + depth + " with bound " + schedule.getBound());
+                   // System.out.println("Searching at depth " + depth + " with bound " + schedule.getBound());
                     //if the depth is less than the size of nodeIndices then the depth has been reached before
                     if (depth < nodeIndices.size()) {
                         nodeIndex = nodeIndices.get(depth); //get the index of the next node at that depth
@@ -142,7 +142,7 @@ public class DFBnBScheduler implements Scheduler{
                 if (schedule.getBound() <= upperBound) {
                     optimalSchedule = (Schedule) deepClone(schedule);
                     upperBound = schedule.getBound();
-                    System.out.println("Upper Bound updated to " + upperBound);
+              //      System.out.println("Upper Bound updated to " + upperBound);
                 }
 
                 if (schedule.getScheduledNodes().size() > 0) {
@@ -158,7 +158,7 @@ public class DFBnBScheduler implements Scheduler{
 
             }
 
-            System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
+          //  System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
             return optimalSchedule;
 
         }
