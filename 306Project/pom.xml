@@ -88,6 +88,15 @@
 	  </dependency>
 
 
+	  <dependency>
+		  <groupId>com.sample</groupId>
+		  <artifactId>sample</artifactId>
+		  <version>1.0</version>
+		  <scope>system</scope>
+		  <systemPath>${project.basedir}/src/main/resources/jars/PTRuntime.jar</systemPath>
+	  </dependency>
+
+
 
 
   </dependencies>
