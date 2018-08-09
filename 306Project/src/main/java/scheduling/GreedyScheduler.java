@@ -36,7 +36,7 @@ public class GreedyScheduler implements Scheduler {
             int nextEndTime = nextStartTime + nextNode.getWeight();
 
 
-            //Go through all nodes and check earliest schedulable time on each processor to find next best node to schedule
+            //checking the earliest end time and then picks the node to schedule based on that
             for (Processor p : schedule.getProcessors()) {
                 for (TaskNode n: schedulableNodes) {
                 

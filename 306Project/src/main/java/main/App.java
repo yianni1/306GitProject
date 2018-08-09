@@ -18,7 +18,6 @@ import org.apache.commons.cli.Options;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import scheduling.DFBnBScheduler;
-import scheduling.GreedyScheduler;
 import scheduling.Schedule;
 import scheduling.Scheduler;
 
@@ -161,7 +160,7 @@ public class App extends Application{
 			System.out.println("Scheduling on " + processorNumber + " processors using " + numCores + " cores.");
 
 			System.out.println("Finished!"); // FOR DEBUGGING ON CONSOLE
-			System.exit(0);
+			//System.exit(0);
 		}
 	}
 
@@ -334,7 +333,7 @@ public class App extends Application{
 	 */
 	private void initRootLayout() {
 		try {
-			//Load the root layout from the fxml file
+
 
 			//printing out the location of the file
 			Parent root = FXMLLoader.load(getClass().getResource("/fxml/RootLayout.fxml"));

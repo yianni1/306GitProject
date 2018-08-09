@@ -55,6 +55,9 @@ public class ProcessorClassTests {
     }
 
     @Test
+    /**
+     * Tests that the processor is able to remove a specific tasks from itself
+     */
     public void testRemoveTask() throws NotSchedulableException, NotDeschedulableException {
 
         //Adding and removing one task
@@ -76,6 +79,10 @@ public class ProcessorClassTests {
     }
 
     @Test
+    /**
+     * This test adds another task with a gap between the tasks, so that the secondary task
+     * doesn't come straight after the first task
+     */
     public void testAddTaskWithGap() throws NotSchedulableException {
         TaskNode node1 = new TaskNode(12, "nani");
         TaskNode node2 = new TaskNode(3002, "he");

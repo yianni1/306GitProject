@@ -84,7 +84,7 @@ public class TaskNodeTests {
     }
 
     /**
-     * Tests that the schedule method works correctly.
+     * Tests that the schedule method works correctly, able to schedule graph elements.
      */
     @Test
     public void scheduleMethodTest() throws NotSchedulableException {
