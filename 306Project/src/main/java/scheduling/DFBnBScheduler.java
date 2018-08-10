@@ -4,7 +4,7 @@ import exceptions.NotSchedulableException;
 import exceptions.NotDeschedulableException;
 import graph.TaskGraph;
 import graph.TaskNode;
-
+import pt.runtime.TaskID;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -151,11 +151,11 @@ public class DFBnBScheduler implements Scheduler{
 
                 schedulableNodes = schedule.getSchedulableNodes();
 
-
-
+                
+                	
                 nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 
-
+                
             }
 
           //  System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");

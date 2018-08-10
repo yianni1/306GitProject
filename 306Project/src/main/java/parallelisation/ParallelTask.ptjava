@@ -1,0 +1,65 @@
+package parallelisation;
+
+import pt.runtime.CurrentTask;
+import pt.runtime.TaskID;
+import pt.runtime.TaskIDGroup;
+import scheduling.*;
+import main.App;
+import io.*;
+import graph.*;
+import java.io.File;
+
+
+public class ParallelTask {
+
+	IO_TASK public static int buildSingleTask() {
+		return build();
+	}
+	
+	public static void main(String[] args) {
+		try {
+
+	        
+	        buildSingleTask();
+	        
+	        
+	        List<TaskID> ids = new ArrayList<TaskID>();
+	        for (int i = 0; i < 1000; i++) {
+	        	ids.add(buildSingleTask());
+	        }
+
+	        
+	        TaskIDGroup g = new TaskIDGroup(10);
+	        
+	         for (int i = 0; i < 1000; i++) {
+	        	g.add(ids.get(i));
+	        	System.out.println(ids.get(i).getProgress());
+	        }
+	        
+	         
+	        
+	        System.out.println("** Going to wait for the tasks...");
+	        
+	        g.waitTillFinished();
+	        System.out.println("Finished");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	
+	public static int build(){
+	
+		GraphLoader loader = new GraphLoader();
+		TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_10_Random.dot");
+
+	    Scheduler schedule = new DFBnBScheduler(graph, 2);
+		Schedule solution = schedule.createSchedule();
+		
+		
+		//-------AFTER EACH LEAF COMPUTATION, CAN BE COMPARRED TO AN OPTIMAL BOUND HERE------
+		return solution.getBound();
+	}
+}
