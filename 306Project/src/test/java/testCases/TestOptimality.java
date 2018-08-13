@@ -4,6 +4,7 @@ import graph.TaskGraph;
 import io.GraphLoader;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.rules.Stopwatch;
 import scala.util.parsing.combinator.testing.Str;
 import scheduling.DFBnBScheduler;
 import scheduling.Schedule;
@@ -13,6 +14,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Timer;
 
 import static org.junit.Assert.*;
 
@@ -28,7 +30,7 @@ public class TestOptimality {
         File folder = new File("src/main/resources/DotFiles/");
         File[] paths = folder.listFiles();
         for (File file : paths) {
-            if (file.getName().startsWith("2p") ||
+            if (//file.getName().startsWith("2p") ||
                     file.getName().startsWith("4p") ||
                     file.getName().startsWith("8p")) {
                 files.add(file);
@@ -42,12 +44,17 @@ public class TestOptimality {
 
         for (File file : files) {
             System.out.println(file.getName());
+            long startTime = System.nanoTime();
             //Loading the file
             GraphLoader loader = new GraphLoader();
             TaskGraph graph = loader.load("src/main/resources/DotFiles/" + file.getName());
-            Scheduler schedule = new DFBnBScheduler(graph, 2);
+
+            //Getting filename
+            String fileName = file.getName();
+            int processors = Integer.parseInt(Character.toString(fileName.charAt(0)));
+
+            Scheduler schedule = new DFBnBScheduler(graph, processors);
             Schedule solution = schedule.createSchedule();
-            System.out.println("Algorithm done");
 
             //Finding the optimal
             int optimal = 0;
@@ -60,8 +67,11 @@ public class TestOptimality {
                     optimal = Integer.parseInt(number);
                 }
             }
+
+            long endTime = System.nanoTime();
+            System.out.println("Time elapsed is " + ((endTime - startTime) / 1000000000) + " seconds");
+
             assertEquals(solution.getBound(), optimal);
-            System.out.println("passed");
         }
     }
 }
