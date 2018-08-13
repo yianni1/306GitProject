@@ -139,10 +139,10 @@ public class DFBnBScheduler implements Scheduler{
 
 
                 //TODO clone schedule and set optimal schedule to be this schedule
-                if (schedule.getBound() <= upperBound) {
+                if (schedule.getBound() < upperBound || optimalSchedule == null) {
                     optimalSchedule = (Schedule) deepClone(schedule);
                     upperBound = schedule.getBound();
-              //      System.out.println("Upper Bound updated to " + upperBound);
+//                    System.out.println("Upper Bound updated to " + upperBound);
                 }
 
                 if (schedule.getScheduledNodes().size() > 0) {
@@ -158,7 +158,7 @@ public class DFBnBScheduler implements Scheduler{
 
             }
 
-          //  System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
+//            System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
             return optimalSchedule;
 
         }
