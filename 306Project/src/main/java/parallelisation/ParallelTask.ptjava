@@ -8,57 +8,133 @@ import main.App;
 import io.*;
 import graph.*;
 import java.io.File;
+import java.util.*;
+
+import scheduling.*;
 
 
 public class ParallelTask {
 
-	IO_TASK public static int buildSingleTask() {
-		return build();
+	private static int depth;
+	private static ArrayList<Integer> nodeIndex = new ArrayList<Integer>();
+
+	TASK public static int buildSingleTask(TaskGraph graph) {
+		return build(graph);
 	}
-	
+
 	public static void main(String[] args) {
 		try {
 
-	        
-	        buildSingleTask();
-	        
-	        
-	        List<TaskID> ids = new ArrayList<TaskID>();
-	        for (int i = 0; i < 1000; i++) {
-	        	ids.add(buildSingleTask());
-	        }
 
-	        
-	        TaskIDGroup g = new TaskIDGroup(10);
-	        
-	         for (int i = 0; i < 1000; i++) {
-	        	g.add(ids.get(i));
-	        	System.out.println(ids.get(i).getProgress());
-	        }
-	        
-	         
-	        
-	        System.out.println("** Going to wait for the tasks...");
-	        
-	        g.waitTillFinished();
-	        System.out.println("Finished");
+			GraphLoader loader = new GraphLoader();
+			TaskGraph graph = loader.load("src/main/resources/DotFiles/1.dot");
+
+			depth = graph.getNodes().size() - 1;
+
+			List<TaskGraph> graphs = new ArrayList<TaskGraph>();
+
+			List<TaskNode> nodes = new ArrayList<TaskNode>();
+
+			for (TaskNode node : graph.getNodes()) {
+				if (node.getIncomingEdges().size() == 0) {
+					nodes.add(node);
+				}
+			}
+
+			int currentNode = 0;
+			while (nodes.size() > 0) {
+				currentNode = 0;
+				TaskNode initialNode = nodes.get(currentNode);
+				TaskGraph newGraph = graph.clone();
+
+				for(TaskEdge edge : initialNode.getOutgoingEdges()) {
+					newGraph.removeEdge(edge);
+				}
+
+				newGraph.removeNode(initialNode);
+				nodes.remove(initialNode);
+
+
+
+				graphs.add(newGraph);
+			}
+
+			List<TaskNode> path = null;
+			for (TaskGraph tempGraph : graphs) {
+				for (TaskNode node : tempGraph.getNodes()) {
+					if (node.getIncomingEdges().size() == 0) {
+						path = dfs(node);	
+					}
+				}
+
+
+				if (path != null) {
+					for (TaskNode node : tempGraph.getNodes()) {
+						if (!path.contains(node)) {
+							tempGraph.getNodes().remove(node);
+						}
+					}
+				}
+
+			}
+
+
+
+
+
+
+			List<TaskID> ids = new ArrayList<TaskID>();
+			for (TaskGraph tempGraph : graphs) {
+				ids.add(buildSingleTask(tempGraph));
+			}
+
+
+			TaskIDGroup g = new TaskIDGroup(10);
+
+			for (int i = 0; i < nodes.size(); i++) {
+				g.add(ids.get(i));
+			}
+
+			System.out.println("** Going to wait for the tasks...");
+
+			g.waitTillFinished();
+			System.out.println("Finished");
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
-	
-	
-	public static int build(){
-	
-		GraphLoader loader = new GraphLoader();
-		TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_10_Random.dot");
 
-	    Scheduler schedule = new DFBnBScheduler(graph, 2);
-		Schedule solution = schedule.createSchedule();
-		
-		
+	private static List<TaskNode> dfs(TaskNode node) {
+
+		List<TaskNode> path = new ArrayList<TaskNode>();
+		Stack<TaskNode> stack = new  Stack<TaskNode>();
+		stack.add(node);
+		path.add(node);
+
+		while (!stack.isEmpty())
+		{
+			TaskNode element = stack.pop();
+
+			for (TaskEdge edge : element.getOutgoingEdges()) {
+				TaskNode child = edge.getEndNode();
+				stack.add(child);
+				path.add(child);
+
+			}
+		}
+
+		return path;
+	}
+
+
+	public static int build(TaskGraph graph){
+
+		DFBnBParrallel schedule = new DFBnBParrallel(graph, 2);
+		Schedule solution = schedule.createSchedule(depth, nodeIndex);
+
+
 		//-------AFTER EACH LEAF COMPUTATION, CAN BE COMPARRED TO AN OPTIMAL BOUND HERE------
 		return solution.getBound();
 	}

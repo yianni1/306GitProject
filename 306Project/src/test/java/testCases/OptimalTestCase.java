@@ -137,7 +137,7 @@ public class OptimalTestCase extends CompareOutput {
 		Scheduler schedule = new DFBnBScheduler(graph, 2);
 		Schedule solution = schedule.createSchedule();
 		
-		//assertTrue(solution.getBound() == 50);
+		assertTrue(solution.getBound() == 50);
 	}
 	
 	@Test

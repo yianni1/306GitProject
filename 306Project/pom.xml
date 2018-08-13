@@ -87,7 +87,6 @@
 		  <version>1.4</version>
 	  </dependency>
 
-
 	  <dependency>
 		  <groupId>com.sample</groupId>
 		  <artifactId>sample</artifactId>
@@ -96,7 +95,7 @@
 		  <systemPath>${project.basedir}/src/main/resources/jars/PTRuntime.jar</systemPath>
 	  </dependency>
 
-
+	
 
 
   </dependencies>

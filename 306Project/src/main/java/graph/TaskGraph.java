@@ -8,12 +8,29 @@ import java.util.HashSet;
  * This is the TaskGraph class which stores an Hashset of all the available edges and Nodes and there respective connections
  * to create the representation of the graph to be delievered to the Scheduler and algo components of the project.
  */
-public class TaskGraph implements Serializable {
+public class TaskGraph implements Serializable, Cloneable {
 
     private HashSet<TaskEdge> edges; // The edges in the graph
     private HashSet<TaskNode> nodes; // The nodes in the graph
     private String title;
 
+
+    @Override
+    public TaskGraph clone() throws CloneNotSupportedException {
+    	
+    	TaskGraph graph = new TaskGraph(this.title);
+    	  
+    	for (TaskNode node : nodes) {
+    		graph.addNode(node);
+    	}
+    	for (TaskEdge edge : edges) {
+    		graph.addEdge(edge);
+    	}
+    	
+        return graph;
+    }
+
+    
 
     public TaskGraph(String title) {
         edges = new HashSet<TaskEdge>();
@@ -37,6 +54,22 @@ public class TaskGraph implements Serializable {
         this.nodes.add(node);
     }
 
+    /**
+     * Remove a node
+     * @param node
+     */
+    public void removeNode(TaskNode node) {
+        this.nodes.remove(node);
+    }
+    
+    /**
+     * Remove an edge
+     * @param node
+     */
+    public void removeEdge(TaskEdge edge) {
+        this.edges.remove(edge);
+    }
+    
     /**
      * Returns a Hashset of all the available nodes
      * @return
