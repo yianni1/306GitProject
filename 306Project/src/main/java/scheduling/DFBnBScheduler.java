@@ -31,10 +31,13 @@ public class DFBnBScheduler implements Scheduler{
         private Schedule optimalSchedule;
         private Schedule schedule;
         private List<TaskNode> schedulableNodes;
+        
+        private List<TaskNode> initialNodes;
 
         public DFBnBScheduler(TaskGraph graph, int processors) {
             this.graph = graph;
 
+            initialNodes = new ArrayList<TaskNode>();
             nodeIndices = new ArrayList<Integer>();
             processorIndices = new ArrayList<Integer>();
             schedule = new Schedule(processors, graph);
@@ -61,12 +64,51 @@ public class DFBnBScheduler implements Scheduler{
             Processor nextProcessor = null;
             int nodeIndex = 0;
             int processorIndex = 0;
+            
+            //Variables to know when all initial nodes have been looped through
+            boolean finished = false;
+            
+            //Used to not break on first iteration
+            boolean initialIteration = true;
 
             //while there are branches to explore from depth 0, keep looping through all branches
             while (depth >= 0) {
+
                 while (schedulableNodes.size() > 0) { //while there are still nodes to schedule
                    // System.out.println("Searching at depth " + depth + " with bound " + schedule.getBound());
                     //if the depth is less than the size of nodeIndices then the depth has been reached before
+                	
+                	//Block for determining if initial nodes have been seen
+                	if ((depth == 0) && (initialIteration == false) ) {
+                		
+                		boolean addedNode = false;
+                		int index = 0;
+                		//Loop through initial nodes
+                		while (addedNode == false) {
+                			TaskNode node = schedulableNodes.get(index);
+                			//If initalNode not been seen, add it to list 
+                			// Then break to look through all of its children 
+                			if (!initialNodes.contains(node)) {
+                        		initialNodes.add(node);
+                        		addedNode = true;
+                			}
+                			index++;
+                		}
+                		//If all initial nodes have been seen, set finished to true to finish the algorithum
+                		//As the optimal solution has been found
+                		if (initialNodes.equals(schedulableNodes)) {
+                			finished = true;
+                		}
+                		
+                	}
+                	
+                	initialIteration = false;
+                	
+                	if (finished) {
+                		break;
+                	}
+                	
+                	
                     if (depth < nodeIndices.size()) {
                         nodeIndex = nodeIndices.get(depth); //get the index of the next node at that depth
                         processorIndex = processorIndices.get(depth); //get the index of the processor to schedule on
@@ -74,7 +116,10 @@ public class DFBnBScheduler implements Scheduler{
                         nodeIndex = 0;
                         processorIndex = 0;
                         nodeIndices.add(depth, nodeIndex);
+
                         processorIndices.add(depth, processorIndex);
+                        
+
                     }
 
                     if (nodeIndex < schedulableNodes.size()) { //if there is still schedulable nodes
@@ -137,9 +182,11 @@ public class DFBnBScheduler implements Scheduler{
 
                 depth--; //go to previous depth
 
-
+            	if (finished) {
+            		break;
+            	}
                 //TODO clone schedule and set optimal schedule to be this schedule
-                if (schedule.getBound() <= upperBound) {
+                if (schedule.getBound() < upperBound || optimalSchedule == null) {
                     optimalSchedule = (Schedule) deepClone(schedule);
                     upperBound = schedule.getBound();
               //      System.out.println("Upper Bound updated to " + upperBound);
