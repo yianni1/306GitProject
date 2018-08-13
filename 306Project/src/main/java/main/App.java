@@ -18,9 +18,9 @@ import org.apache.commons.cli.Options;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import scheduling.DFBnBScheduler;
-import scheduling.GreedyScheduler;
 import scheduling.Schedule;
 import scheduling.Scheduler;
+import view.RootLayout;
 
 /**
  * This is the main application, this is written so that it is compatible with Java Fx using the start method account
@@ -87,8 +87,6 @@ public class App extends Application{
 			//default values for optional arguments
 			int numCores = 1;
 
-
-
 			if (cmd.hasOption("p")) {
 
 
@@ -102,66 +100,84 @@ public class App extends Application{
 
 
 			}
-			if (cmd.hasOption("o")) {
-				//Block for the user specificed option
-				String sendToOutputClass = cmd.getOptionValue("o");
 
-				GraphLoader loader = new GraphLoader(); //Loading the graph
-				String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-				File parent = new File(path);
-				String parentPath = parent.getParent() + File.separator;
-
-				TaskGraph graph = loader.load(parentPath + fileName);
-
-				//Doing the algorithm
-				Scheduler solution = new DFBnBScheduler(graph, processorNumber);
-				Schedule finalSolution = solution.createSchedule();
-
-				//Transporting to output
-				Output.createOutput(finalSolution.getProcessors(), graph, parentPath + sendToOutputClass + ".dot");
-			} 
-			else {
-
-				boolean inputOk = checkArgs(args);
-
-				if (inputOk) {
-					//Block for non specified option
-					String outputN = fileName.substring(0, fileName.length() - 4);
-
-
-					String sendToOutputClass = outputN;
-
-					GraphLoader loader = new GraphLoader(); //Loading the graph
-
-					String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-					File parent = new File(path);
-					String parentPath = parent.getParent() + File.separator;
-
-					TaskGraph graph = loader.load(parentPath + fileName);
-
-					//Doing the algorithm
-					Scheduler solution = new DFBnBScheduler(graph, processorNumber);
-					Schedule finalSolution = solution.createSchedule();
-
-					//Transporting to output
-					Output.createOutput(finalSolution.getProcessors(), graph, parentPath + sendToOutputClass + "-output.dot");
-				}
-				else {
-					System.out.println("Incorrect argument format");
-					System.exit(0);
-				}
-
-
-			}
 			if (cmd.hasOption("v")) {
-				//If visualisation is required, initialise root layout.
-				initRootLayout();
-			}
+				try {
+					//Load the root layout from the fxml file
+					FXMLLoader fxmlLoader = new FXMLLoader();
+					Parent root = fxmlLoader.load(getClass().getResource("/view/RootLayout.fxml").openStream());
+
+					RootLayout controller = (RootLayout) fxmlLoader.getController();
+
+					controller.setFileName(fileName);
+					controller.setProcessorNumber(processorNumber);
+
+					//scene showing the root layout is displayed
+					Scene scene = new Scene(root);
+					primaryStage.setScene(scene);
+					primaryStage.show();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			} else {
+                if (cmd.hasOption("o")) {
+                    //Block for the user specificed option
+                    String sendToOutputClass = cmd.getOptionValue("o");
+
+                    GraphLoader loader = new GraphLoader(); //Loading the graph
+                    String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+                    File parent = new File(path);
+                    String parentPath = parent.getParent() + File.separator;
+
+                    TaskGraph graph = loader.load(parentPath + fileName);
+
+                    //Doing the algorithm
+                    Scheduler solution = new DFBnBScheduler(graph, processorNumber);
+                    Schedule finalSolution = solution.createSchedule();
+
+                    //Transporting to output
+                    Output.createOutput(finalSolution.getProcessors(), graph, parentPath + sendToOutputClass + ".dot");
+                }
+                else {
+
+                    boolean inputOk = checkArgs(args);
+
+                    if (inputOk) {
+                        //Block for non specified option
+                        String outputN = fileName.substring(0, fileName.length() - 4);
+
+
+                        String sendToOutputClass = outputN;
+
+                        GraphLoader loader = new GraphLoader(); //Loading the graph
+
+                        String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+                        File parent = new File(path);
+                        String parentPath = parent.getParent() + File.separator;
+
+                        TaskGraph graph = loader.load(parentPath + fileName);
+
+                        //Doing the algorithm
+                        Scheduler solution = new DFBnBScheduler(graph, processorNumber);
+                        Schedule finalSolution = solution.createSchedule();
+
+                        //Transporting to output
+                        Output.createOutput(finalSolution.getProcessors(), graph, parentPath + sendToOutputClass + "-output.dot");
+                    }
+                    else {
+                        System.out.println("Incorrect argument format");
+                        System.exit(0);
+                    }
+
+
+                }
+            }
+
+
 
 			System.out.println("Scheduling on " + processorNumber + " processors using " + numCores + " cores.");
 
 			System.out.println("Finished!"); // FOR DEBUGGING ON CONSOLE
-			System.exit(0);
 		}
 	}
 
@@ -327,26 +343,6 @@ public class App extends Application{
 		//setting the GraphViewer to the advanced viewer
 		System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
 		launch(args);
-	}
-
-	/**
-	 * Initializes the root layout for the pane.
-	 */
-	private void initRootLayout() {
-		try {
-			//Load the root layout from the fxml file
-
-			//printing out the location of the file
-			Parent root = FXMLLoader.load(getClass().getResource("/fxml/RootLayout.fxml"));
-
-			//scene showing the root layout is displayed
-			Scene scene = new Scene(root);
-			primaryStage.setScene(scene);
-			primaryStage.show();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 	}
 
 }

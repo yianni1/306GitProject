@@ -4,6 +4,7 @@ import exceptions.NotSchedulableException;
 import exceptions.NotDeschedulableException;
 import graph.TaskGraph;
 import graph.TaskNode;
+import view.RootLayout;
 
 
 import java.io.ByteArrayInputStream;
@@ -31,6 +32,8 @@ public class DFBnBScheduler implements Scheduler{
         private Schedule optimalSchedule;
         private Schedule schedule;
         private List<TaskNode> schedulableNodes;
+
+        private RootLayout scheduleListener;
 
         public DFBnBScheduler(TaskGraph graph, int processors) {
             this.graph = graph;
@@ -143,6 +146,10 @@ public class DFBnBScheduler implements Scheduler{
                     optimalSchedule = (Schedule) deepClone(schedule);
                     upperBound = schedule.getBound();
                     System.out.println("Upper Bound updated to " + upperBound);
+
+                    if (scheduleListener != null) { //update visualisation with new optimal schedule
+                        scheduleListener.update(optimalSchedule);
+                    }
                 }
 
                 if (schedule.getScheduledNodes().size() > 0) {
@@ -179,6 +186,10 @@ public class DFBnBScheduler implements Scheduler{
             e.printStackTrace();
             return null;
         }
+    }
+
+    public void setScheduleListener(RootLayout listener) {
+        this.scheduleListener = listener;
     }
 
 

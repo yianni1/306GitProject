@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.StackedBarChart?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane id="rootPane" fx:id="rootPane" prefHeight="600.0" prefWidth="800.0" stylesheets="@../../resources/css/app.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.RootLayout">
+   <children>
+      <AnchorPane id="chartPane" fx:id="chartPane" layoutX="71.0" layoutY="100.0" prefHeight="400.0" prefWidth="550.0" style="-fx-background-color: #EEEEEE;" stylesheets="@../../resources/css/app.css" AnchorPane.leftAnchor="50.0">
+         <children>
+            <StackedBarChart fx:id="stackedBarChart" layoutX="6.0" stylesheets="@/css/app.css" title="Current Optimal Schedule" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+              <yAxis>
+                <CategoryAxis fx:id="yAxis" label="Processors" side="LEFT" />
+              </yAxis>
+              <xAxis>
+                <NumberAxis label="Time" side="BOTTOM" fx:id="xAxis" />
+              </xAxis>
+            </StackedBarChart>
+         </children>
+      </AnchorPane>
+      <JFXButton fx:id="btnStart" layoutX="380.0" layoutY="50.0" onAction="#btnStartHandler" text="Start" />
+   </children>
+</AnchorPane>

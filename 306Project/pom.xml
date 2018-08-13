@@ -15,6 +15,15 @@
   </properties>
 
 	<build>
+		<resources>
+			<resource>
+				<filtering>false</filtering>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/*.fxml</include>
+				</includes>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>com.zenjava</groupId>
@@ -86,8 +95,6 @@
 		  <artifactId>commons-cli</artifactId>
 		  <version>1.4</version>
 	  </dependency>
-
-
 
 
   </dependencies>
