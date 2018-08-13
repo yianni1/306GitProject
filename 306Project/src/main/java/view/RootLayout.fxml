@@ -4,11 +4,13 @@
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.chart.StackedBarChart?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane id="rootPane" fx:id="rootPane" prefHeight="600.0" prefWidth="800.0" stylesheets="@../../resources/css/app.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.RootLayout">
+<AnchorPane id="rootPane" fx:id="rootPane" prefHeight="600.0" prefWidth="800.0" stylesheets="@/css/app.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.RootLayout">
    <children>
-      <AnchorPane id="chartPane" fx:id="chartPane" layoutX="71.0" layoutY="100.0" prefHeight="400.0" prefWidth="550.0" style="-fx-background-color: #EEEEEE;" stylesheets="@../../resources/css/app.css" AnchorPane.leftAnchor="50.0">
+      <AnchorPane id="chartPane" fx:id="chartPane" layoutY="100.0" prefHeight="400.0" style="-fx-background-color: #EEEEEE;" stylesheets="@/css/app.css" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
          <children>
             <StackedBarChart fx:id="stackedBarChart" layoutX="6.0" stylesheets="@/css/app.css" title="Current Optimal Schedule" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
               <yAxis>
@@ -20,6 +22,15 @@
             </StackedBarChart>
          </children>
       </AnchorPane>
-      <JFXButton fx:id="btnStart" layoutX="380.0" layoutY="50.0" onAction="#btnStartHandler" text="Start" />
+      <AnchorPane fx:id="topPane" prefHeight="100.0" styleClass="top-pane" stylesheets="@/css/app.css" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <JFXButton fx:id="btnStart" layoutX="712.0" layoutY="38.0" onAction="#btnStartHandler" styleClass="btn-start" stylesheets="@../../resources/css/app.css" text="Start" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="600.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0" />
+            <Label layoutX="53.0" layoutY="32.0" text="Optimal Task Scheduling on Multiple Processors">
+               <font>
+                  <Font size="25.0" />
+               </font>
+            </Label>
+         </children></AnchorPane>
+      <AnchorPane fx:id="bottomPane" layoutX="10.0" layoutY="10.0" prefHeight="100.0" styleClass="bottom-pane" stylesheets="@/css/app.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
    </children>
 </AnchorPane>

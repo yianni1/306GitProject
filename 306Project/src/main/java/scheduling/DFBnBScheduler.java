@@ -13,6 +13,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Ray on 28/07/2018.
@@ -142,13 +143,18 @@ public class DFBnBScheduler implements Scheduler{
 
 
                 //TODO clone schedule and set optimal schedule to be this schedule
-                if (schedule.getBound() <= upperBound) {
+                if (schedule.getBound() < upperBound || optimalSchedule == null) {
                     optimalSchedule = (Schedule) deepClone(schedule);
                     upperBound = schedule.getBound();
                     System.out.println("Upper Bound updated to " + upperBound);
 
                     if (scheduleListener != null) { //update visualisation with new optimal schedule
                         scheduleListener.update(optimalSchedule);
+                        try {
+                            TimeUnit.MILLISECONDS.sleep(800);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
 

@@ -5,11 +5,13 @@ import graph.TaskGraph;
 import graph.TaskNode;
 import io.GraphLoader;
 import io.Output;
+import javafx.application.Platform;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedBarChart;
@@ -42,6 +44,12 @@ public class RootLayout implements Initializable{
     private AnchorPane rootPane;
 
     @FXML
+    private AnchorPane topPane;
+
+    @FXML
+    private AnchorPane bottomPane;
+
+    @FXML
     private AnchorPane chartPane;
 
     @FXML
@@ -62,56 +70,77 @@ public class RootLayout implements Initializable{
 
 
     public void initialize(URL url, ResourceBundle rb) {
+        JFXDepthManager.setDepth(topPane, -1);
+        JFXDepthManager.setDepth(bottomPane, -1);
         JFXDepthManager.setDepth(chartPane, 5);
 
-        XYChart.Series series = new XYChart.Series();
+        stackedBarChart.setLegendVisible(false);
+        stackedBarChart.setVisible(false);
 
     }
 
 
     public void update(Schedule schedule) {
+        final Schedule test = schedule;
+        Platform.runLater(new Runnable() {
+            public void run() {
+                stackedBarChart.getData().clear();
 
-        stackedBarChart.getData().clear();
+                // translates schedule to series to show on stacked bar chart
+                for (Processor processor : test.getProcessors()) {
+                    int time = 0;
+                    for (TaskNode task : processor.getTasks()) {
+                        XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
+                        series.setName("Task " + task.getName());
+                        if (time < task.getStartTime()) {
+                            XYChart.Series<String, Number> idle = new XYChart.Series<String, Number>();
+                            idle.getData().add(new XYChart.Data(task.getStartTime() - time, "Processor " + processor.getID()));
+                            idle.setName("Idle time");
+                            stackedBarChart.getData().add(idle);
+                        }
+                        series.getData().add(new XYChart.Data(task.getWeight(), "Processor " + processor.getID()));
+                        stackedBarChart.getData().add(series);
+                        time = task.getEndTime();
 
-        for (Processor processor : schedule.getProcessors()) {
-            int time = 0;
-            for (TaskNode task : processor.getTasks()) {
-                XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
-                series.setName("Task " + task.getName());
-                if (time < task.getStartTime()) {
-                    XYChart.Series<String, Number> idle = new XYChart.Series<String, Number>();
-                    idle.getData().add(new XYChart.Data(task.getStartTime() - time, "Processor " + processor.getID()));
-                    idle.setName("Idle time");
-                    stackedBarChart.getData().add(idle);
+                    }
                 }
-                series.getData().add(new XYChart.Data(task.getWeight(), "Processor " + processor.getID()));
-                stackedBarChart.getData().add(series);
-                time = task.getEndTime();
 
+                //Shows any idle time as a transparent block
+                for (Object series : stackedBarChart.getData()) {
+                    for (Object data : ((XYChart.Series)series).getData()) {
+                        if (((XYChart.Series) series).getName().equals("Idle time")) {
+                            ((XYChart.Data) data).getNode().setStyle("-fx-bar-fill: transparent; -fx-border-width: 0px;");
+                        } else {
+//                    ((XYChart.Data) data).getNode().setStyle("-fx-bar-fill: grey; -fx-border-width: 1px;; fx-border-color: black");
+                        }
+                    }
+                }
             }
-        }
+        });
 
-//        stackedBarChart.getData().clear();
-//        XYChart.Series tasks = new XYChart.Series();
-//        XYChart.Series idle = new XYChart.Series();
-//        for (Processor processor : schedule.getProcessors()) {
-//            int time = 0;
-//            for (TaskNode task : processor.getTasks()) {
-//                time = time + task.getWeight();
-//                if (time < task.getStartTime()) {
-//                    idle.getData().add(new XYChart.Data(task.getStartTime() - time, "idle"));
-//                    stackedBarChart.getData().add(idle);
-//
-//                }
-//                tasks.getData().add(new XYChart.Data(task.getWeight(), "processor " + processor.getID()));
-//                stackedBarChart.getData().add(tasks);
-//
-//            }
-//        }
+
     }
 
     @FXML
     private void btnStartHandler(ActionEvent event) throws IOException {
+        stackedBarChart.setVisible(true);
+        startTask();
+
+    }
+
+    private void startTask() {
+        Runnable task = new Runnable() {
+            public void run() {
+                runTask();
+            }
+        };
+
+        Thread backgroundThread = new Thread(task);
+        backgroundThread.setDaemon(true);
+        backgroundThread.start();
+    }
+
+    private void runTask() {
         try {
             String outputN = fileName.substring(0, fileName.length() - 4);
 
@@ -133,7 +162,6 @@ public class RootLayout implements Initializable{
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-
     }
 
     public void setFileName(String fileName) {
