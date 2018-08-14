@@ -172,4 +172,13 @@ public class TaskNode implements Serializable {
     public Processor getProcessor() {
         return processor;
     }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object instanceof TaskNode) {
+            TaskNode node = (TaskNode) object;
+            return (node.getName().equals(this.getName()));
+        }
+        return false;
+    }
 }

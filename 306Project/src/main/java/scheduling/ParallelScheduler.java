@@ -26,7 +26,7 @@ public class ParallelScheduler implements Scheduler {
      * @param taskGraph
      * @param coreNumber
      */
-    public ParallelScheduler(TaskGraph taskGraph, int coreNumber, int processors) {
+    public ParallelScheduler(TaskGraph taskGraph, int processors, int coreNumber) {
 //        this.taskGraph = taskGraph;
         this.coreNumber = coreNumber;
         this.processors = processors;
@@ -56,18 +56,21 @@ public class ParallelScheduler implements Scheduler {
     public Schedule createSchedule() {
         runBFS(); //Rn bfs to get all the threads initialised
 
-        System.out.println("finished bfs");
         for (ParallelSchedule schedule : parallelSchedules) {
             schedule.run();
         }
 
+
+        //Continuously looping through until everything has finished
         boolean finished = false;
         while (!finished) {
             finished = true;
             for (ParallelSchedule schedule : parallelSchedules) {
                 if (!schedule.getFinished()) {
                     finished = false;
-
+//                    if (schedule.getScheduledNodes().size() != 4) {
+//                        System.out.println("not finished " + schedule.getScheduledNodes().size());
+//                    }
                 }
             }
         }
@@ -86,33 +89,39 @@ public class ParallelScheduler implements Scheduler {
         int numberOverMaxCoreNumber = 0; //The number of more schedules at a depth than core number
         //Cutting tree in half
         for (TaskNode node : schedulableNodes) {
-            System.out.println("hi");
             numberOfSchedules++; //INcreasing the number of schedules
             ParallelSchedule schedule = (ParallelSchedule) DFBnBScheduler.deepClone(parallelSchedules.get(0));
-            System.out.println("hi2");
             schedule.addTask(node, schedule.getProcessors().get(0), 0);
-            System.out.println("hi3");
             if (!(numberOfSchedules <= coreNumber)) { //If there are now more threads than max cores
                 schedule.setThread(temporarySchedulers.get(numberOverMaxCoreNumber)); //We give it the same thread
                 numberOverMaxCoreNumber++;
 
             }
             temporarySchedulers.add(schedule);
-            System.out.println("hi4");
 
         }
 
         //Updating the list of schedules to make memory easier
         clearLists(temporarySchedulers);
 
+        int depth = 0;
+
         while (numberOfSchedules < coreNumber) {
+            depth++;
             numberOfSchedules = 0;
             numberOverMaxCoreNumber = 0;
+//
+//            System.out.println("number of schedules is " + numberOfSchedules);
+//            System.out.println("number of cores is " + coreNumber);
+//            System.out.println("depth is "+ depth);
+
 
             //Looping through all schedules at every level
             for (ParallelSchedule schedule : parallelSchedules) {
                 for (int i = 0; i < schedule.getProcessors().size(); i++) {
+//                    System.out.println("i is " + i);
                     for (TaskNode node : schedule.getSchedulableNodes()) {
+//                        System.out.println(node.getName());
                         TaskNode nodeClone = (TaskNode) DFBnBScheduler.deepClone(node);
                         numberOfSchedules++; //INcreasing the number of schedules
                         ParallelSchedule scheduleClone = (ParallelSchedule) DFBnBScheduler.deepClone(schedule);//Deep cloning old schedule

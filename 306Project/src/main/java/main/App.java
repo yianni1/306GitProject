@@ -37,7 +37,7 @@ public class App extends Application{
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("Graph view");
 
-		System.out.println("Starting Algorithum"); // FOR DEBUGGING ON CONSOLE
+		System.out.println("Starting Algorithm"); // FOR DEBUGGING ON CONSOLE
 
 		Parameters params = getParameters(); 
 		int size = params.getRaw().size();
@@ -106,6 +106,7 @@ public class App extends Application{
 					TaskGraph graph = loader.load(parentPath + fileName);
 
 					//Doing the algorithm
+					System.out.println("number of cores is "+ numCores);
 					Scheduler solution = new ParallelScheduler(graph, processorNumber, numCores);
 					Schedule finalSolution = solution.createSchedule();
 

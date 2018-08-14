@@ -22,7 +22,7 @@ public class Schedule implements Serializable {
 
     private List<Processor> processors = new ArrayList<Processor>();
     private List<TaskNode> schedulableNodes = new ArrayList<TaskNode>(); // The tasks that can be scheduled.
-//    private TaskGraph graph;
+    private TaskGraph graph;
     private List<TaskNode> scheduleOrder; // The order in which the tasks have been scheduled.
 
     public Schedule(int numberOfProcessors, TaskGraph graph) {
@@ -32,7 +32,7 @@ public class Schedule implements Serializable {
         }
 
         this.processors = processors;
-//        this.graph = graph;
+        this.graph = graph;
         this.scheduleOrder = new ArrayList<TaskNode>();
 
         initializeSchedulableNodes(graph);
@@ -86,6 +86,7 @@ public class Schedule implements Serializable {
 
         // Sort the tasknodes aphabetically.
         List<String> taskNames = new ArrayList<String>();
+        int count = 0;
         for(TaskNode tn: schedulableNodes) {
            taskNames.add(tn.getName());
         }
@@ -122,11 +123,17 @@ public class Schedule implements Serializable {
         // Updates the schedulable nodes.
         schedulableNodes.remove(node);
 
+//        System.out.println("~");
         for (TaskEdge e : node.getOutgoingEdges()) {
             if (e.getEndNode().isSchedulable()) {
                 schedulableNodes.add(e.getEndNode());
+//                System.out.println("name is " + e.getEndNode().getName());
             }
+//            if (schedulableNodes.size() > graph.getNodes().size()) {
+//                throw new NullPointerException("Something went badly wrong");
+//            }
         }
+//        System.out.println("/~");
     }
 
     /**
@@ -178,7 +185,7 @@ public class Schedule implements Serializable {
             }
             earliestStartTime = Math.max(earliestStartTime, p.getBound());
         }
-
+//        System.out.println(earliestStartTime);
         return earliestStartTime;
     }
 

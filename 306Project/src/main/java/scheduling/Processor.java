@@ -41,6 +41,7 @@ public class Processor implements Serializable {
      */
     public void addTask(TaskNode node, int startTime) throws NotSchedulableException {
         if (startTime < this.getBound()) {
+//            System.out.println("this is the bad bound " + this.getBound() + " starttime was " + startTime);
             throw new TaskException("The startTime cannot be lower than the bound");
         }
 
