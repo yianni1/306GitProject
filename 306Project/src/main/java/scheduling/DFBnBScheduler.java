@@ -6,10 +6,7 @@ import graph.TaskGraph;
 import graph.TaskNode;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,9 +14,9 @@ import java.util.List;
  * Created by Ray on 28/07/2018.
  * Written by Kevin & Ray.
  */
-public class DFBnBScheduler implements Scheduler{
+public class DFBnBScheduler implements Scheduler, Serializable {
 
-        private TaskGraph graph;
+//        private TaskGraph graph;
         private int upperBound;
         private int depth;
         private Processor currentProcessor;
@@ -35,7 +32,7 @@ public class DFBnBScheduler implements Scheduler{
         private List<TaskNode> initialNodes;
 
         public DFBnBScheduler(TaskGraph graph, int processors) {
-            this.graph = graph;
+//            this.graph = graph;
 
             initialNodes = new ArrayList<TaskNode>();
             nodeIndices = new ArrayList<Integer>();
@@ -54,6 +51,23 @@ public class DFBnBScheduler implements Scheduler{
                 greedySchedule.removeLastScheduledTask();
             }
 
+        }
+
+
+    /**
+     * Alternative constructor for parallelisation
+     * @param partialSchedule
+     * @param upperBound
+     */
+    public DFBnBScheduler(Schedule partialSchedule, int upperBound) {
+            this.schedule = partialSchedule;
+            initialNodes = new ArrayList<TaskNode>();
+            nodeIndices = new ArrayList<Integer>();
+            processorIndices = new ArrayList<Integer>();
+            partialSchedule.getProcessors().size();
+            schedulableNodes = partialSchedule.getSchedulableNodes();
+            this.upperBound = upperBound;
+            depth = partialSchedule.getSchedulableNodes().size();
         }
 
 

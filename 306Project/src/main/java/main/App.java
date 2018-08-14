@@ -17,10 +17,7 @@ import org.apache.commons.cli.Options;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import scheduling.DFBnBScheduler;
-import scheduling.GreedyScheduler;
-import scheduling.Schedule;
-import scheduling.Scheduler;
+import scheduling.*;
 
 /**
  * This is the main application, this is written so that it is compatible with Java Fx using the start method account
@@ -94,6 +91,27 @@ public class App extends Application{
 
 				try{
 					numCores = Integer.parseInt(cmd.getOptionValue("p"));
+					//Block for non specified option
+					String outputN = fileName.substring(0, fileName.length() - 4);
+
+
+					String sendToOutputClass = outputN;
+
+					GraphLoader loader = new GraphLoader(); //Loading the graph
+
+					String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+					File parent = new File(path);
+					String parentPath = parent.getParent() + File.separator;
+
+					TaskGraph graph = loader.load(parentPath + fileName);
+
+					//Doing the algorithm
+					Scheduler solution = new ParallelScheduler(graph, processorNumber, numCores);
+					Schedule finalSolution = solution.createSchedule();
+
+					//Transporting to output
+					Output.createOutput(finalSolution.getProcessors(), graph, parentPath + sendToOutputClass + "-output.dot");
+
 				}
 				catch (NumberFormatException ex) {
 					System.out.println("Please enter a positive integer for the core number");

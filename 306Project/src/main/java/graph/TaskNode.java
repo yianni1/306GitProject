@@ -135,6 +135,7 @@ public class TaskNode implements Serializable {
         for (TaskEdge e : incomingEdges) {
             if (!e.getStartNode().isScheduled()) {
                 return false;
+
             }
         }
         return true;

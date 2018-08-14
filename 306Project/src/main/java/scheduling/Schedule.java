@@ -22,7 +22,7 @@ public class Schedule implements Serializable {
 
     private List<Processor> processors = new ArrayList<Processor>();
     private List<TaskNode> schedulableNodes = new ArrayList<TaskNode>(); // The tasks that can be scheduled.
-    private TaskGraph graph;
+//    private TaskGraph graph;
     private List<TaskNode> scheduleOrder; // The order in which the tasks have been scheduled.
 
     public Schedule(int numberOfProcessors, TaskGraph graph) {
@@ -32,7 +32,7 @@ public class Schedule implements Serializable {
         }
 
         this.processors = processors;
-        this.graph = graph;
+//        this.graph = graph;
         this.scheduleOrder = new ArrayList<TaskNode>();
 
         initializeSchedulableNodes(graph);
