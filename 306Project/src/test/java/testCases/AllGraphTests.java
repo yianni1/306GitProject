@@ -28,6 +28,7 @@ import graph.TaskNode;
 import io.GraphLoader;
 import io.Output;
 import main.App;
+import scheduling.DFBnBScheduler;
 import scheduling.GreedyScheduler;
 import scheduling.Processor;
 import scheduling.Schedule;
@@ -62,10 +63,10 @@ public class AllGraphTests extends testCases.CompareOutput {
      */
     @Test
     public void testGreedySchedule() throws NotSchedulableException {
-     //   for (String filePath : filePaths) {
-     //       greedySchedule(filePath);
-   //  }
-        greedySchedule("src/main/resources/DotFiles/CustomTest.dot");
+        for (String filePath : filePaths) {
+            greedySchedule(filePath);
+     }
+    //    greedySchedule("src/main/resources/DotFiles/CustomTest.dot");
     }
 
     private void greedySchedule(String filePath) throws NotSchedulableException {
@@ -73,7 +74,8 @@ public class AllGraphTests extends testCases.CompareOutput {
         GraphLoader loader = new GraphLoader();
         TaskGraph graph = loader.load(filePath);
 
-        GreedyScheduler schedule = new GreedyScheduler(graph, processorNum);
+        //GreedyScheduler schedule = new GreedyScheduler(graph, processorNum);
+        Scheduler schedule = new DFBnBScheduler(graph, processorNum);
         Schedule solution = schedule.createSchedule();
 
         int nodeNum = 0;
