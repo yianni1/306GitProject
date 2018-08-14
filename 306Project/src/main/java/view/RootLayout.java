@@ -9,6 +9,7 @@ import javafx.application.Platform;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -16,7 +17,11 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
 import main.App;
 import scheduling.DFBnBScheduler;
 import scheduling.Processor;
@@ -74,6 +79,7 @@ public class RootLayout implements Initializable{
         JFXDepthManager.setDepth(bottomPane, -1);
         JFXDepthManager.setDepth(chartPane, 5);
 
+        stackedBarChart.setAnimated(false);
         stackedBarChart.setLegendVisible(false);
         stackedBarChart.setVisible(false);
 
@@ -91,7 +97,7 @@ public class RootLayout implements Initializable{
                     int time = 0;
                     for (TaskNode task : processor.getTasks()) {
                         XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
-                        series.setName("Task " + task.getName());
+                        series.setName(task.getName());
                         if (time < task.getStartTime()) {
                             XYChart.Series<String, Number> idle = new XYChart.Series<String, Number>();
                             idle.getData().add(new XYChart.Data(task.getStartTime() - time, "Processor " + processor.getID()));
@@ -106,17 +112,19 @@ public class RootLayout implements Initializable{
                 }
 
                 //Shows any idle time as a transparent block
-                for (Object series : stackedBarChart.getData()) {
-                    for (Object data : ((XYChart.Series)series).getData()) {
+                for (final Object series : stackedBarChart.getData()) {
+                    for (final Object data : ((XYChart.Series)series).getData()) {
                         if (((XYChart.Series) series).getName().equals("Idle time")) {
                             ((XYChart.Data) data).getNode().setStyle("-fx-bar-fill: transparent; -fx-border-width: 0px;");
                         } else {
-//                    ((XYChart.Data) data).getNode().setStyle("-fx-bar-fill: grey; -fx-border-width: 1px;; fx-border-color: black");
+                            StackPane bar = (StackPane) ((XYChart.Data) data).getNode();
+                            final Text dataText = new Text(((XYChart.Series) series).getName());
+                            bar.getChildren().add(dataText);
                         }
                     }
                 }
-            }
-        });
+                }
+            });
 
 
     }

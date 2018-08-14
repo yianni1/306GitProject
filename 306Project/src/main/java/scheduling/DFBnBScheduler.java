@@ -151,12 +151,15 @@ public class DFBnBScheduler implements Scheduler{
                     if (scheduleListener != null) { //update visualisation with new optimal schedule
                         scheduleListener.update(optimalSchedule);
                         try {
-                            TimeUnit.MILLISECONDS.sleep(800);
+                            TimeUnit.MILLISECONDS.sleep(100);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
                 }
+
+
+
 
                 if (schedule.getScheduledNodes().size() > 0) {
                     schedule.removeLastScheduledTask();
@@ -164,9 +167,6 @@ public class DFBnBScheduler implements Scheduler{
 
                 schedulableNodes = schedule.getSchedulableNodes();
 
-
-
-                nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 
 
             }

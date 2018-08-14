@@ -12,7 +12,7 @@
    <children>
       <AnchorPane id="chartPane" fx:id="chartPane" layoutY="100.0" prefHeight="400.0" style="-fx-background-color: #EEEEEE;" stylesheets="@/css/app.css" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
          <children>
-            <StackedBarChart fx:id="stackedBarChart" layoutX="6.0" stylesheets="@/css/app.css" title="Current Optimal Schedule" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+            <StackedBarChart fx:id="stackedBarChart" layoutX="6.0" stylesheets="@/css/app.css" title="Current Best Schedule" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
               <yAxis>
                 <CategoryAxis fx:id="yAxis" label="Processors" side="LEFT" />
               </yAxis>
