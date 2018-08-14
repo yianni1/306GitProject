@@ -224,6 +224,10 @@ public class DFBnBScheduler implements Scheduler, Serializable {
 
         }
 
+        public Schedule createParallelSchedule() {
+        return  null;
+        }
+
     /**
      * This method makes a "deep clone" of any object it is given.
      */

@@ -43,7 +43,9 @@ public class ParallelSchedule extends Schedule implements Serializable {
 
 
     public void run() {
-        thread.start();
+        if (!thread.isAlive()) {
+            thread.start();
+        }
     }
 
     void setFinishedDFS() {

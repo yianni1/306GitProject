@@ -111,16 +111,18 @@ public class ParallelScheduler implements Scheduler {
 
             //Looping through all schedules at every level
             for (ParallelSchedule schedule : parallelSchedules) {
-                for (Processor processor : schedule.getProcessors()) {
+                for (int i = 0; i < schedule.getProcessors().size(); i++) {
                     for (TaskNode node : schedule.getSchedulableNodes()) {
+                        TaskNode nodeClone = (TaskNode) DFBnBScheduler.deepClone(node);
                         numberOfSchedules++; //INcreasing the number of schedules
-                        ParallelSchedule newSchedule = (ParallelSchedule) DFBnBScheduler.deepClone(schedule);//Deep cloning old schedule
+                        ParallelSchedule scheduleClone = (ParallelSchedule) DFBnBScheduler.deepClone(schedule);//Deep cloning old schedule
+                        Processor processor = scheduleClone.getProcessors().get(i);
 
                         //Figuring out the earliest time to be scheduled
-                        int earliestSchedulableTime = newSchedule.getEarliestSchedulableTime(node, processor);
-                        newSchedule.addTask(node, processor, earliestSchedulableTime); //Adding time to new processor
+                        int earliestSchedulableTime = scheduleClone.getEarliestSchedulableTime(nodeClone, processor);
+                        scheduleClone.addTask(nodeClone, processor, earliestSchedulableTime); //Adding time to new processor
                         if (!(numberOfSchedules <= coreNumber)) { //If there are now more threads than max cores
-                            newSchedule.setThread(temporarySchedulers.get(numberOverMaxCoreNumber)); //We give it the same thread
+                            scheduleClone.setThread(temporarySchedulers.get(numberOverMaxCoreNumber)); //We give it the same thread
                             numberOverMaxCoreNumber++;
                         }
                         temporarySchedulers.add(schedule);
