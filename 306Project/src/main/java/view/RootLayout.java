@@ -2,7 +2,6 @@ package view;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.effects.JFXDepthManager;
-import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import graph.TaskGraph;
 import graph.TaskNode;
 import io.GraphLoader;
@@ -10,29 +9,23 @@ import io.Output;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import main.App;
+import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
-import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.Viewer;
 import scheduling.DFBnBScheduler;
 import scheduling.Processor;
@@ -48,18 +41,17 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 
+/**
+ * Written by Kevin.
+ */
 public class RootLayout implements Initializable{
-
-    /**this is the Root Layout controller for the visualisation which would involve multiple visualisation aspects\
-     * -> Statistics for the graph as the algorithm traverses through the graph
-     * -> Live Visualisation of the algorithm traversing through the solution tree
-     * -> Zoom and drag properties
-     * Probably need some sort of adapter class in order to adapt out own data structures to that of the graphstream datastructures
-     */
 
 
     @FXML
     private JFXButton btnStart;
+
+    @FXML
+    private Label lblTitle;
 
     @FXML
     private Label lblStart;
@@ -98,6 +90,8 @@ public class RootLayout implements Initializable{
 
     private int processorNumber;
 
+    private int coreNumber;
+
     private Timeline timeline;
 
     private int mins = 0;
@@ -116,7 +110,7 @@ public class RootLayout implements Initializable{
         JFXDepthManager.setDepth(numPathsPane, 1);
 
         chartPane.setOpacity(0.7);
-        graphPane.setOpacity(0.7);
+        graphPane.setOpacity(0.6);
 
         stackedBarChart.setAnimated(false);
         stackedBarChart.setLegendVisible(false);
@@ -143,6 +137,7 @@ public class RootLayout implements Initializable{
     }
 
     public void createGraph() {
+        lblTitle.setText("Scheduling on " + processorNumber + " processor(s) with " + coreNumber + " core(s)");
         GraphLoader loader = new GraphLoader(); //Loading the graph
 
         String path = null;
@@ -154,6 +149,36 @@ public class RootLayout implements Initializable{
         File parent = new File(path);
         String parentPath = parent.getParent() + File.separator;
         Graph graph = loader.loadGraph(parentPath + fileName);
+
+        for (Node node : graph.getNodeSet()) {
+            node.addAttribute("ui.label", node.toString() + " : " + node.getAttribute("Weight").toString());
+        }
+
+        for (Edge edge: graph.getEdgeSet()) {
+            edge.addAttribute("ui.label", edge.getAttribute("Weight").toString());
+        }
+
+        graph.addAttribute("ui.stylesheet",
+                "node { " +
+                        "shape: box; " +
+                        "stroke-mode: plain; " +
+                        "size-mode: fit; " +
+                        "text-mode: normal; " +
+                        "text-background-mode: rounded-box; " +
+                        "text-background-color: black; " +
+                        "text-color: white; " +
+                        "text-style: normal; " +
+                        "text-alignment: center; " +
+                        "text-padding: 3px; " +
+                        "text-size: 12px; " +
+                        " }" +
+                        "edge { " +
+                        "arrow-size: 20px, 5px; " +
+                        "text-alignment: under; " +
+                        "text-size: 12px; " +
+                        " }");
+
+
 
 
         SwingUtilities.invokeLater(new Runnable() {
@@ -222,10 +247,10 @@ public class RootLayout implements Initializable{
                     for (Processor processor : test.getProcessors()) {
                         int time = 0;
                         for (TaskNode task : processor.getTasks()) {
-                            XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
+                            XYChart.Series series = new XYChart.Series<String, Number>();
                             series.setName(task.getName());
                             if (time < task.getStartTime()) {
-                                XYChart.Series<String, Number> idle = new XYChart.Series<String, Number>();
+                                XYChart.Series idle = new XYChart.Series<String, Number>();
                                 idle.getData().add(new XYChart.Data(task.getStartTime() - time, "" + processor.getID()));
                                 idle.setName("Idle time");
                                 stackedBarChart.getData().add(idle);
@@ -262,7 +287,7 @@ public class RootLayout implements Initializable{
     }
 
     @FXML
-    private void btnStartHandler(ActionEvent event) throws IOException {
+    private void btnStartHandler(ActionEvent event) {
         btnStart.setDisable(true);
         stackedBarChart.setVisible(true);
         lblStart.setText("Running...");
@@ -317,6 +342,10 @@ public class RootLayout implements Initializable{
 
     public void setProcessorNumber(int processorNumber) {
         this.processorNumber = processorNumber;
+    }
+
+    public void setCoreNumber(int coreNumber) {
+        this.coreNumber = coreNumber;
     }
 
 

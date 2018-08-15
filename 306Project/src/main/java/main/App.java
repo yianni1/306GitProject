@@ -11,7 +11,9 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
@@ -117,36 +119,16 @@ public class App extends Application{
 					FXMLLoader fxmlLoader = new FXMLLoader();
 					Parent root = fxmlLoader.load(getClass().getResource("/view/RootLayout.fxml").openStream());
 
-					RootLayout controller = (RootLayout) fxmlLoader.getController();
+					RootLayout controller = fxmlLoader.getController();
 
 					controller.setFileName(fileName);
 					controller.setProcessorNumber(processorNumber);
-
-					root.setOnMousePressed(new EventHandler<MouseEvent>() {
-						@Override
-						public void handle(MouseEvent event) {
-							xOffset = event.getSceneX();
-							yOffset = event.getSceneY();
-						}
-					});
-					root.setOnMouseDragged(new EventHandler<MouseEvent>() {
-						@Override
-						public void handle(MouseEvent event) {
-							primaryStage.setX(event.getScreenX() - xOffset);
-							primaryStage.setY(event.getScreenY() - yOffset);
-						}
-					});
-
-                    primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                        public void handle(WindowEvent we) {
-                            controller.closeViewer();
-                            System.exit(0);
-                        }
-                    });
+					controller.setCoreNumber(numCores);
 
 					//scene showing the root layout is displayed
 					Scene scene = new Scene(root);
 					primaryStage.setScene(scene);
+					primaryStage.getIcons().add(new Image(App.class.getResourceAsStream("/background/icon.png")));
 					primaryStage.setResizable(false);
 					primaryStage.sizeToScene();
 					controller.createGraph();

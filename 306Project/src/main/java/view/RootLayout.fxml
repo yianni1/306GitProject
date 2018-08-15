@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="rootPane" fx:id="rootPane" prefHeight="800.0" prefWidth="1280.0" stylesheets="@/css/app.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.RootLayout">
+<AnchorPane id="rootPane" prefHeight="800.0" prefWidth="1280.0" stylesheets="@/css/app.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.RootLayout">
    <children>
       <ImageView fitHeight="800.0" fitWidth="1280.0" pickOnBounds="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <image>
@@ -20,19 +20,19 @@
       </ImageView>
       <AnchorPane id="chartPane" fx:id="chartPane" layoutX="529.0" layoutY="301.0" prefHeight="450.0" prefWidth="700.0" styleClass="chart-pane" stylesheets="@/css/app.css" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="26.7">
          <children>
-            <StackedBarChart fx:id="stackedBarChart" layoutX="6.0" stylesheets="@/css/app.css" title="Current Best Schedule" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="10.0">
+            <StackedBarChart fx:id="stackedBarChart" layoutX="6.0" stylesheets="@/css/app.css" title="Current Best Schedule" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <yAxis>
-                <CategoryAxis fx:id="yAxis" label="Processors" side="LEFT" />
+                <CategoryAxis label="Processors" side="LEFT" />
               </yAxis>
               <xAxis>
-                <NumberAxis label="Time" side="BOTTOM" fx:id="xAxis" />
+                <NumberAxis label="Time" side="BOTTOM" />
               </xAxis>
             </StackedBarChart>
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="topPane" prefHeight="40.0" prefWidth="1024.0" styleClass="top-pane" stylesheets="@/css/app.css" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <AnchorPane prefHeight="40.0" prefWidth="1024.0" styleClass="top-pane" stylesheets="@/css/app.css" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label layoutX="49.0" layoutY="7.0" text="Task Scheduler - Team K.O.D.Y.R" textFill="WHITE" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="8.0">
+            <Label fx:id="lblTitle" layoutX="49.0" layoutY="7.0" textFill="WHITE" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="8.0">
                <font>
                   <Font name="Roboto Light" size="18.0" />
                </font>
@@ -48,7 +48,7 @@
                   <Font name="Roboto Light" size="36.0" />
                </font>
             </Label>
-            <Label layoutX="14.0" layoutY="58.0" text="click panel to start" textFill="WHITE" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="90.0">
+            <Label layoutX="14.0" layoutY="58.0" text="click to start" textFill="WHITE" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="90.0">
                <font>
                   <Font name="Roboto Light" size="14.0" />
                </font></Label>
