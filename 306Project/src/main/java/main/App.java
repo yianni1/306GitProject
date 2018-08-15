@@ -25,6 +25,7 @@ import org.apache.commons.cli.Options;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import scheduling.DFBnBScheduler;
+import scheduling.GreedyScheduler;
 import scheduling.Schedule;
 import scheduling.Scheduler;
 import view.RootLayout;
@@ -41,8 +42,6 @@ public class App extends Application{
 
 	//private variables for the panes
 	private Stage primaryStage;
-	private double xOffset = 0;
-	private double yOffset = 0;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {

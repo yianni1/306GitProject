@@ -171,8 +171,8 @@ public class Schedule implements Serializable {
                     earliestStartTime = endTime;
                 }
                 if (!e.getStartNode().getProcessor().equals(p)) {
-                    if (earliestStartTime < e.getStartNode().getEndTime() + e.getWeight()) {
-                        earliestStartTime = earliestStartTime + e.getWeight();
+                    if (earliestStartTime < endTime + e.getWeight()) {
+                        earliestStartTime = endTime + e.getWeight();
                     }
                 }
             }
@@ -191,6 +191,21 @@ public class Schedule implements Serializable {
         }
 
         return bound;
+    }
+
+    public void printSchedule(){
+        for(Processor p: processors){
+            System.out.println("Processor " + p.getID() + ":");
+            for (TaskNode tn: p.getTasks()) {
+                System.out.println(tn.getName() + ", start time " + tn.getStartTime());
+            }
+        }
+
+        System.out.println("In the order: ");
+        for(TaskNode tn: scheduleOrder) {
+            System.out.print( tn.getName() + " ");
+        }
+        System.out.println();
     }
 
 
