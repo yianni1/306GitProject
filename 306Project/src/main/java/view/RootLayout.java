@@ -1,5 +1,6 @@
 package view;
 
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.effects.JFXDepthManager;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import graph.TaskGraph;
@@ -51,6 +52,9 @@ public class RootLayout implements Initializable{
 
 
     @FXML
+    private JFXButton btnStart;
+
+    @FXML
     private MaterialDesignIconView icnClose;
 
     @FXML
@@ -64,6 +68,9 @@ public class RootLayout implements Initializable{
 
     @FXML
     private Label lblTime;
+
+    @FXML
+    private Label lblNumPaths;
 
     @FXML
     private AnchorPane rootPane;
@@ -85,6 +92,9 @@ public class RootLayout implements Initializable{
 
     @FXML
     private AnchorPane statsPane;
+
+    @FXML
+    private AnchorPane numPathsPane;
 
     @FXML
     private StackedBarChart stackedBarChart;
@@ -114,6 +124,7 @@ public class RootLayout implements Initializable{
         JFXDepthManager.setDepth(startPane, 1);
         JFXDepthManager.setDepth(timePane, 1);
         JFXDepthManager.setDepth(statsPane, 1);
+        JFXDepthManager.setDepth(numPathsPane, 1);
 
         stackedBarChart.setAnimated(false);
         stackedBarChart.setLegendVisible(false);
@@ -149,7 +160,15 @@ public class RootLayout implements Initializable{
     }
 
 
-    public void update(Schedule schedule, boolean done) {
+    public void updateNumPaths(int numPaths) {
+        Platform.runLater(new Runnable() {
+            public void run() {
+                lblNumPaths.setText("" + numPaths);
+            }
+        });
+    }
+
+    public void updateSchedule(Schedule schedule, boolean done) {
         final Schedule test = schedule;
         Platform.runLater(new Runnable() {
             public void run() {
@@ -164,11 +183,11 @@ public class RootLayout implements Initializable{
                             series.setName(task.getName());
                             if (time < task.getStartTime()) {
                                 XYChart.Series<String, Number> idle = new XYChart.Series<String, Number>();
-                                idle.getData().add(new XYChart.Data(task.getStartTime() - time, "No. " + processor.getID()));
+                                idle.getData().add(new XYChart.Data(task.getStartTime() - time, "" + processor.getID()));
                                 idle.setName("Idle time");
                                 stackedBarChart.getData().add(idle);
                             }
-                            series.getData().add(new XYChart.Data(task.getWeight(), "No. " + processor.getID()));
+                            series.getData().add(new XYChart.Data(task.getWeight(), "" + processor.getID()));
                             stackedBarChart.getData().add(series);
                             time = task.getEndTime();
 
@@ -181,6 +200,7 @@ public class RootLayout implements Initializable{
                             if (((XYChart.Series) series).getName().equals("Idle time")) {
                                 ((XYChart.Data) data).getNode().setStyle("-fx-bar-fill: transparent; -fx-border-width: 0px;");
                             } else {
+                                ((XYChart.Data) data).getNode().setStyle("-fx-bar-fill: #CFD8DC; -fx-border-width: 1px; -fx-border-color: #607D8B;");
                                 StackPane bar = (StackPane) ((XYChart.Data) data).getNode();
                                 final Text dataText = new Text(((XYChart.Series) series).getName());
                                 bar.getChildren().add(dataText);
@@ -189,6 +209,7 @@ public class RootLayout implements Initializable{
                     }
                 } else {
                     lblStart.setText("Done!");
+                    btnStart.setDisable(false);
                     timeline.pause();
                 }
             }
@@ -199,6 +220,7 @@ public class RootLayout implements Initializable{
 
     @FXML
     private void btnStartHandler(ActionEvent event) throws IOException {
+        btnStart.setDisable(true);
         stackedBarChart.setVisible(true);
         lblStart.setText("Running...");
         lblTime.setText("00:00:000");

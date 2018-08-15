@@ -25,6 +25,10 @@
     -fx-background-color: #2dabe5;
 }
 
+.num-paths-pane {
+    -fx-background-color: #fe7675;
+}
+
 .chart {
-    -fx-font-family: "Robot Thin";
+    -fx-font-family: "Roboto Light";
 }

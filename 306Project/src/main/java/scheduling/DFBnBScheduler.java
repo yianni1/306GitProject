@@ -24,6 +24,7 @@ public class DFBnBScheduler implements Scheduler{
         private TaskGraph graph;
         private int upperBound;
         private int depth;
+        private int numPaths;
         private Processor currentProcessor;
 
         // Index of the children of the schedule.
@@ -44,7 +45,8 @@ public class DFBnBScheduler implements Scheduler{
             schedule = new Schedule(processors, graph);
             schedulableNodes = schedule.getSchedulableNodes();
 
-            //initialize depth, upperBound, and current time of the schedule
+            numPaths = 0;
+            //initialize depth, upperBound
             depth = 0;
 
             Schedule greedySchedule = new GreedyScheduler(graph, processors).createSchedule();
@@ -149,7 +151,7 @@ public class DFBnBScheduler implements Scheduler{
                     System.out.println("Upper Bound updated to " + upperBound);
 
                     if (scheduleListener != null) { //update visualisation with new optimal schedule
-                        updateGUI(optimalSchedule, false);
+                        updateGUISchedule(optimalSchedule, false);
                     }
                 }
 
@@ -158,6 +160,8 @@ public class DFBnBScheduler implements Scheduler{
 
                 if (schedule.getScheduledNodes().size() > 0) {
                     schedule.removeLastScheduledTask();
+                    numPaths++;
+                    scheduleListener.updateNumPaths(numPaths);
                 }
 
                 schedulableNodes = schedule.getSchedulableNodes();
@@ -167,7 +171,7 @@ public class DFBnBScheduler implements Scheduler{
             }
 
             System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
-            updateGUI(optimalSchedule, true);
+            updateGUISchedule(optimalSchedule, true);
             return optimalSchedule;
 
         }
@@ -194,8 +198,8 @@ public class DFBnBScheduler implements Scheduler{
         this.scheduleListener = listener;
     }
 
-    public void updateGUI (Schedule schedule, boolean done) {
-        scheduleListener.update(optimalSchedule, done);
+    public void updateGUISchedule (Schedule schedule, boolean done) {
+        scheduleListener.updateSchedule(optimalSchedule, done);
         try {
             TimeUnit.MILLISECONDS.sleep(100);
         } catch (InterruptedException e) {
