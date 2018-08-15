@@ -14,6 +14,7 @@ import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
 import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -44,12 +45,12 @@ public class App extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle("Graph view");
+		this.primaryStage.setTitle("Task Scheduler - Team K.O.D.Y.R");
 
 		Font.loadFont(getClass().getResourceAsStream("/fonts/Roboto-Thin.ttf"), 12);
 		Font.loadFont(getClass().getResourceAsStream("/fonts/Roboto-Light.ttf"), 12);
 
-		System.out.println("Starting Algorithum"); // FOR DEBUGGING ON CONSOLE
+		System.out.println("Starting Algorithm"); // FOR DEBUGGING ON CONSOLE
 
 		Parameters params = getParameters(); 
 		int size = params.getRaw().size();
@@ -116,8 +117,6 @@ public class App extends Application{
 					FXMLLoader fxmlLoader = new FXMLLoader();
 					Parent root = fxmlLoader.load(getClass().getResource("/view/RootLayout.fxml").openStream());
 
-					primaryStage.initStyle(StageStyle.UNDECORATED);
-
 					RootLayout controller = (RootLayout) fxmlLoader.getController();
 
 					controller.setFileName(fileName);
@@ -138,9 +137,19 @@ public class App extends Application{
 						}
 					});
 
+                    primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                        public void handle(WindowEvent we) {
+                            controller.closeViewer();
+                            System.exit(0);
+                        }
+                    });
+
 					//scene showing the root layout is displayed
 					Scene scene = new Scene(root);
 					primaryStage.setScene(scene);
+					primaryStage.setResizable(false);
+					primaryStage.sizeToScene();
+					controller.createGraph();
 					primaryStage.show();
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -202,8 +211,6 @@ public class App extends Application{
 
 
 			System.out.println("Scheduling on " + processorNumber + " processors using " + numCores + " cores.");
-
-			System.out.println("Finished!"); // FOR DEBUGGING ON CONSOLE
 		}
 	}
 

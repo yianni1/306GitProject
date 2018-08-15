@@ -12,6 +12,7 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -29,11 +30,17 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import main.App;
+import org.graphstream.graph.Graph;
+import org.graphstream.graph.implementations.MultiGraph;
+import org.graphstream.ui.view.View;
+import org.graphstream.ui.view.Viewer;
 import scheduling.DFBnBScheduler;
 import scheduling.Processor;
 import scheduling.Schedule;
 import scheduling.Scheduler;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -55,12 +62,6 @@ public class RootLayout implements Initializable{
     private JFXButton btnStart;
 
     @FXML
-    private MaterialDesignIconView icnClose;
-
-    @FXML
-    private MaterialDesignIconView icnMinimize;
-
-    @FXML
     private Label lblStart;
 
     @FXML
@@ -71,12 +72,6 @@ public class RootLayout implements Initializable{
 
     @FXML
     private Label lblNumPaths;
-
-    @FXML
-    private AnchorPane rootPane;
-
-    @FXML
-    private AnchorPane topPane;
 
     @FXML
     private AnchorPane graphPane;
@@ -99,23 +94,17 @@ public class RootLayout implements Initializable{
     @FXML
     private StackedBarChart stackedBarChart;
 
-    @FXML
-    private CategoryAxis yAxis;
-
-    @FXML
-    private NumberAxis xAxis;
-
     private String fileName;
 
     private int processorNumber;
 
-    private Service<Void> backgroundThread;
-
-    Timeline timeline;
+    private Timeline timeline;
 
     private int mins = 0;
     private int secs = 0;
     private int millis = 0;
+
+    private Viewer viewer;
 
 
     public void initialize(URL url, ResourceBundle rb) {
@@ -125,6 +114,9 @@ public class RootLayout implements Initializable{
         JFXDepthManager.setDepth(timePane, 1);
         JFXDepthManager.setDepth(statsPane, 1);
         JFXDepthManager.setDepth(numPathsPane, 1);
+
+        chartPane.setOpacity(0.7);
+        graphPane.setOpacity(0.7);
 
         stackedBarChart.setAnimated(false);
         stackedBarChart.setLegendVisible(false);
@@ -140,11 +132,62 @@ public class RootLayout implements Initializable{
         timeline.setAutoReverse(false);
 
 
+
+        Graph graph = new MultiGraph("embedded");
+        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+
+
+
 //        stackedBarChart.setVisible(false);
 
     }
 
-    public void updateTimer() {
+    public void createGraph() {
+        GraphLoader loader = new GraphLoader(); //Loading the graph
+
+        String path = null;
+        try {
+            path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        File parent = new File(path);
+        String parentPath = parent.getParent() + File.separator;
+        Graph graph = loader.loadGraph(parentPath + fileName);
+
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+                JPanel view = viewer.addDefaultView(false);
+                view.setPreferredSize(new Dimension(500, 450));
+
+                viewer.enableAutoLayout();
+
+                javafx.application.Platform.runLater(new Runnable() {
+                    @Override public void run() {
+                        SwingNode swingNode = new SwingNode();
+                        swingNode.setContent(view);
+                        graphPane.getChildren().add(swingNode);
+                        graphPane.requestLayout();
+                    }
+                });
+
+            }
+        });
+    }
+
+    public void closeViewer() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                viewer.close();
+            }
+        });
+    }
+
+    private void updateTimer() {
         if(millis == 1000) {
             secs++;
             millis = 0;
