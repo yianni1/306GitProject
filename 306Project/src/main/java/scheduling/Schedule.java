@@ -20,7 +20,7 @@ import static java.util.Collections.sort;
  */
 public class Schedule implements Serializable {
 
-    private List<Processor> processors = new ArrayList<Processor>();
+    private List<Processor> processors;
     private List<TaskNode> schedulableNodes = new ArrayList<TaskNode>(); // The tasks that can be scheduled.
     private TaskGraph graph;
     private List<TaskNode> scheduleOrder; // The order in which the tasks have been scheduled.
@@ -84,9 +84,13 @@ public class Schedule implements Serializable {
      */
     public List<TaskNode> getSchedulableNodes() {
 
-        // Sort the schedulable nodes
-//        this.schedulableNodes = sortSchedulableNodesAlphabetically();
-        this.schedulableNodes=sortSchedulableNodesByEET();
+        // Sort the schedulable nodes. Decide which sorting to use based on how many processors (and nodes).
+        // TODO: Optimise the conditions for choosing the sorting mothod.
+        if ((this.processors.size() > 2) && (graph.getNodes().size()>=11)) {
+            this.schedulableNodes=sortSchedulableNodesByEET();
+        } else {
+            this.schedulableNodes = sortSchedulableNodesAlphabetically();
+        }
 
 //        System.out.print("Schedulable nodes are: ");
 //        for(TaskNode tn: schedulableNodes) {
@@ -100,17 +104,17 @@ public class Schedule implements Serializable {
      * Sorts nodes according to earliest end times (ONLY CONSIDERING p0 for the sake of speed).
      * @return ArrayList<TaskNode> sorted by end time
      */
-    public List<TaskNode> sortSchedulableNodesByEET() {
+    private List<TaskNode> sortSchedulableNodesByEET() {
         List<TaskNode> schedCopy = schedulableNodes;
         List<TaskNode> sorted = new ArrayList<TaskNode>();
 
         TaskNode nextNode;
-        Processor nextProcessor;
+        Processor nextProcessor = this.getProcessors().get(0);
+        // The processor to be scheduled on. (We're only considering P0 for this sorting method).
 
         while (schedCopy.size() > 0) {
             // Adapated from GreedyScheduler
             nextNode = schedCopy.get(0);
-            nextProcessor = this.getProcessors().get(0);
             int nextStartTime = this.getEarliestSchedulableTime(nextNode, nextProcessor);
             int nextEndTime = nextStartTime + nextNode.getWeight();
 
@@ -124,7 +128,6 @@ public class Schedule implements Serializable {
 //                        nextStartTime = tentativeStartTime;
                     nextEndTime = tentativeEndTime;
                     nextNode = n;
-//                        nextProcessor = p;
                 }
 
             }
@@ -137,9 +140,9 @@ public class Schedule implements Serializable {
 
     /**
      * Sorts the schedulable nodes by the earliest end time (over all processors)
-     * @return
+     * @return List<TaskNode> sorted by all earliest end times
      */
-    public List<TaskNode> sortSchedulableNodesByAllEET () {
+    private List<TaskNode> sortSchedulableNodesByAllEET () {
         List<TaskNode> schedCopy = schedulableNodes;
         List<TaskNode> sorted = new ArrayList<TaskNode>();
 
@@ -161,10 +164,10 @@ public class Schedule implements Serializable {
                     int tentativeEndTime = tentativeStartTime + n.getWeight();
 
                     if (tentativeEndTime < nextEndTime) {
-                        nextStartTime = tentativeStartTime;
+//                        nextStartTime = tentativeStartTime;
                         nextEndTime = tentativeEndTime;
                         nextNode = n;
-                        nextProcessor = p;
+//                        nextProcessor = p;
                     }
 
                 }
@@ -176,7 +179,7 @@ public class Schedule implements Serializable {
         return sorted;
     }
 
-    public List<TaskNode> sortSchedulableNodesAlphabetically() {
+    private List<TaskNode> sortSchedulableNodesAlphabetically() {
 
         // Sort the tasknodes aphabetically.
         List<String> taskNames = new ArrayList<String>();
@@ -247,7 +250,7 @@ public class Schedule implements Serializable {
      * This should only be run if the task is schedulable.
      * It should return the earliest schedulable time.
      *
-     * @return
+     * @return An int with the earliest schedulable time for that node on that processor
      */
     public int getEarliestSchedulableTime(TaskNode node, Processor p) {
         int earliestStartTime = -1;
