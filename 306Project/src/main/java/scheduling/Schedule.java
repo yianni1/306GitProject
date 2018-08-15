@@ -39,6 +39,11 @@ public class Schedule implements Serializable {
 
     }
 
+    public void calculateCostFunction() {
+    	
+    }
+    
+    
     /**
      * Initialises the 'schedulable nodes' list. (i.e. the entry nodes)
      * In the beginning, the only schedulable nodes will be the entry nodes.

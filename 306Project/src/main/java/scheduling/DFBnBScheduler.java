@@ -74,7 +74,7 @@ public class DFBnBScheduler implements Scheduler{
 
 		//while there are branches to explore from depth 0, keep looping through all branches
 		while (depth >= 0) {
-
+			
 			while (schedulableNodes.size() > 0) { //while there are still nodes to schedule
 				// System.out.println("Searching at depth " + depth + " with bound " + schedule.getBound());
 				
@@ -86,7 +86,6 @@ public class DFBnBScheduler implements Scheduler{
 				if (finished) {
 					break;
 				}
-
 
 				if (depth < nodeIndices.size()) {
 					nodeIndex = nodeIndices.get(depth); //get the index of the next node at that depth
@@ -147,7 +146,47 @@ public class DFBnBScheduler implements Scheduler{
 				schedulableNodes = schedule.getSchedulableNodes();
 				nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 
-
+				for (TaskEdge edges : nextTask.getOutgoingEdges()) {
+					TaskNode child = edges.getEndNode();
+					
+					//COST FUNCTION CODE---------------------------------------------
+					int totalCostOfNodes = 0;
+					for (TaskNode node : graph.getNodes()) {
+						totalCostOfNodes = totalCostOfNodes + node.getWeight();
+					}
+					
+					
+					int totalIdleTime = 0;
+					for (Processor p : schedule.getProcessors()) {
+						int totalTime = p.getBound();
+						int totalTaskWeight = 0;
+						for (TaskNode tasks : p.getTasks()) {
+							totalTaskWeight = totalTaskWeight + tasks.getWeight();
+						}
+						totalIdleTime = totalIdleTime + totalTime - totalTaskWeight;
+					}
+					
+					int fIdle = (totalCostOfNodes + totalIdleTime) / schedule.getProcessors().size();
+					
+					int bottomLevelPath = 0;
+					bottomLevelPath = criticalPath(child) + child.getWeight();
+					
+					int fbl = bottomLevelPath + child.getStartTime();
+					 
+					int heuristic = 0;
+					if (fbl > fIdle) {
+						heuristic = fbl;
+					}
+					else {
+						heuristic = fIdle;
+					}
+					
+					int costFunction = heuristic + nextProcessor.getBound();
+					child.setCostFunction(costFunction);
+				}
+				
+				
+				
 				// kind of pruning
 				if ((schedule.getBound() > upperBound) || (skip == true)){
 					schedule.removeLastScheduledTask();
@@ -216,7 +255,33 @@ public class DFBnBScheduler implements Scheduler{
 			return null;
 		}
 	}
+	
+	/**
+	 * Calculates the longest path from the current node to an end node
+	 * @param node
+	 * @return
+	 */
+	private int criticalPath(TaskNode node) {
+		
+		TaskNode maxChildNode = null;
+		int maxChildWeight = 0;
+		for (TaskEdge edges : node.getOutgoingEdges()) {
+			TaskNode child = edges.getEndNode();
 
+			if (maxChildWeight < child.getWeight()) {
+				maxChildNode = child;
+				maxChildWeight = child.getWeight();
+			}
+		}
+		if (maxChildNode != null) {
+			maxChildWeight = maxChildWeight + criticalPath(maxChildNode);
+		}
+		
+		return maxChildWeight;
+	}
+	
+	
+	
 	/**
 	 * This method removes replciated parts of the tree depending on the number of initial nodes
 	 * @param initialIteration

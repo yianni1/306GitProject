@@ -15,6 +15,7 @@ public class TaskNode implements Serializable {
     private boolean scheduled;
     private int startTime;
     private Processor processor;
+    private int costFunction;
 
     private HashSet<TaskEdge> incomingEdges;
     private HashSet<TaskEdge> outgoingEdges;
@@ -48,6 +49,14 @@ public class TaskNode implements Serializable {
         return true;
     }
 
+    public void setCostFunction(int costFunction) {
+    	this.costFunction = costFunction;
+    }
+    
+    public int getCostFunction() {
+    	return this.costFunction;
+    }
+    
     /**
      * Resets this node to its unscheduled state.
      * @return
