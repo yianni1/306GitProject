@@ -2,6 +2,7 @@ package scheduling;
 
 import exceptions.NotSchedulableException;
 import exceptions.NotDeschedulableException;
+import graph.TaskEdge;
 import graph.TaskGraph;
 import graph.TaskNode;
 
@@ -122,9 +123,53 @@ public class DFBnBScheduler implements Scheduler{
 
                     }
 
+                    boolean skip = false;
                     if (nodeIndex < schedulableNodes.size()) { //if there is still schedulable nodes
                         nextTask = schedulableNodes.get(nodeIndex); //get the next available one
                         nextProcessor = schedule.getProcessors().get(processorIndex); //get the processor to schedule on
+                   
+                        boolean parentsOnSameProcessor = true;
+    					for (TaskEdge edge : nextTask.getIncomingEdges()) {
+    						TaskNode parent = edge.getStartNode();
+
+    						if (!parent.getProcessor().equals(nextProcessor)) {
+    							parentsOnSameProcessor = false;
+    						}
+    						else {
+    							parentsOnSameProcessor = true;
+    							break;
+    						}
+    					}
+
+    					boolean duplicate = false;
+    					for (Processor p : schedule.getProcessors()) {
+    						if (!p.equals(nextProcessor)) {
+    							if (p.getTasks().size() > 0) {
+    								TaskNode latestTask = p.getTasks().get(p.getTasks().size() - 1);
+
+    								for (TaskEdge edge : nextTask.getIncomingEdges()) {
+    									TaskNode parent = edge.getStartNode();                            	
+    									if (latestTask.equals(parent)) {
+    										duplicate = true;
+    										break;
+    									}
+    								}
+    							}
+    						}
+    					}
+
+    					if ( (parentsOnSameProcessor == false) && (duplicate == true) ){
+    						skip = true;
+    					}
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
                     } else if (processorIndex < schedule.getProcessors().size() - 1){ //if there is still a processor that we haven't tried to schedule this node on
                         nodeIndices.set(depth, 0); //reset the node index
                         processorIndices.set(depth, processorIndices.get(depth) + 1); //increment the processor index
@@ -161,7 +206,7 @@ public class DFBnBScheduler implements Scheduler{
 
 
                     // kind of pruning
-                    if (schedule.getBound() > upperBound) {
+                    if ((schedule.getBound() > upperBound) || (skip == true)){
                         schedule.removeLastScheduledTask();
                         schedulableNodes = schedule.getSchedulableNodes();
 

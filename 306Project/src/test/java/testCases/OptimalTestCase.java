@@ -204,18 +204,18 @@ public class OptimalTestCase extends CompareOutput {
 	
 	@Test
 	public void testNode11OptimalTwoProcesses() throws URISyntaxException {
-//		GraphLoader loader = new GraphLoader();
-//		TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_11_OutTree.dot");
-//
-//		String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-//		File parent = new File(path);
-//		String parentPath = parent.getParent() + "\\";
-//
-//		Scheduler schedule = new DFBnBScheduler(graph, 2);
-//		Schedule solution = schedule.createSchedule();
-//		
-//		System.out.println(solution.getBound());
-//		assertTrue(solution.getBound() == 350);
+		GraphLoader loader = new GraphLoader();
+		TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_11_OutTree.dot");
+
+		String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+		File parent = new File(path);
+		String parentPath = parent.getParent() + "\\";
+
+		Scheduler schedule = new DFBnBScheduler(graph, 2);
+		Schedule solution = schedule.createSchedule();
+		
+		System.out.println(solution.getBound());
+		assertTrue(solution.getBound() == 350);
 	}
 	
 	@Test
