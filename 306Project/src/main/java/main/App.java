@@ -40,7 +40,7 @@ public class App extends Application{
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("Graph view");
 
-		System.out.println("Starting Algorithum"); // FOR DEBUGGING ON CONSOLE
+		System.out.println("Starting Algorithm"); // FOR DEBUGGING ON CONSOLE
 
 		Parameters params = getParameters(); 
 		int size = params.getRaw().size();
@@ -158,7 +158,7 @@ public class App extends Application{
 				initRootLayout();
 			}
 
-			System.out.println("Scheduling on " + processorNumber + " processors using " + numCores + " cores.");
+			System.out.println("Scheduled on " + processorNumber + " processors using " + numCores + " cores.");
 
 			System.out.println("Finished!"); // FOR DEBUGGING ON CONSOLE
 			System.exit(0);

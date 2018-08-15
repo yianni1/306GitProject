@@ -171,36 +171,12 @@ public class Schedule implements Serializable {
                     earliestStartTime = endTime;
                 }
                 if (!e.getStartNode().getProcessor().equals(p)) {
-                    if (earliestStartTime < e.getStartNode().getEndTime() + e.getWeight()) {
+                    if (earliestStartTime < endTime + e.getWeight()) {
                         earliestStartTime = endTime + e.getWeight();
                     }
                 }
             }
             earliestStartTime = Math.max(earliestStartTime, p.getBound());
-        }
-
-        if (node.getName().equals("c") && p.getID()== 1 && ( earliestStartTime==11 || earliestStartTime==10)) {
-            //System.out.println("Task C on p1: EST is " + earliestStartTime);
-            earliestStartTime = -1;
-            if (node.isSchedulable()) {
-                for (TaskEdge e : node.getIncomingEdges()) {
-                    int endTime = e.getStartNode().getEndTime();
-                    System.out.print(e.getStartNode().getName() + " ");
-                    System.out.print("End time: " + endTime + ", EST: " + earliestStartTime + ". ");
-
-                    if (endTime > earliestStartTime) {
-                        earliestStartTime = endTime;
-                    }
-                    if (!e.getStartNode().getProcessor().equals(p)) {
-                        if (earliestStartTime < endTime + e.getWeight()) {
-                            earliestStartTime = endTime + e.getWeight();
-                        }
-                    }
-                    System.out.print("EST2: " + earliestStartTime + ". \t");
-                }
-                earliestStartTime = Math.max(earliestStartTime, p.getBound());
-                System.out.println("EST2: " + earliestStartTime + ". ");
-            }
         }
 
         return earliestStartTime;
