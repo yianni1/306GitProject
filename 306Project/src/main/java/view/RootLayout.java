@@ -137,7 +137,7 @@ public class RootLayout implements Initializable{
     }
 
     public void createGraph() {
-        lblTitle.setText("Scheduling on " + processorNumber + " processor(s) with " + coreNumber + " core(s)");
+        lblTitle.setText("Scheduling on " + processorNumber + " processor(s) with " + coreNumber + " core(s) - " + fileName);
         GraphLoader loader = new GraphLoader(); //Loading the graph
 
         String path = null;
