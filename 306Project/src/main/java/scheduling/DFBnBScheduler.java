@@ -200,12 +200,13 @@ public class DFBnBScheduler implements Scheduler{
 
 
 
-                nodeIndices.set(depth, nodeIndices.get(depth) + 1);
+//                nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 
 
             }
 
-//            System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
+            System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
+            //optimalSchedule.printSchedule();
             return optimalSchedule;
 
         }

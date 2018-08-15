@@ -137,7 +137,7 @@ public class OptimalTestCase extends CompareOutput {
 		Scheduler schedule = new DFBnBScheduler(graph, 2);
 		Schedule solution = schedule.createSchedule();
 		
-		//assertTrue(solution.getBound() == 50);
+		assertTrue(solution.getBound() == 50);
 	}
 	
 	@Test
@@ -185,21 +185,21 @@ public class OptimalTestCase extends CompareOutput {
 		
 		assertTrue(solution.getBound() == 55);
 	}
-	
+
 	@Test
 	public void testNode10Optimal4Processes() throws URISyntaxException {
-		GraphLoader loader = new GraphLoader();
-		TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_10_Random.dot");
+			GraphLoader loader = new GraphLoader();
+			TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_10_Random.dot");
 
-		String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-		File parent = new File(path);
-		String parentPath = parent.getParent() + "\\";
+			String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+			File parent = new File(path);
+			String parentPath = parent.getParent() + "\\";
 
-		Scheduler schedule = new DFBnBScheduler(graph, 4);
-		Schedule solution = schedule.createSchedule();
-		
-		//System.out.println(solution.getBound());
-		//assertTrue(solution.getBound() == 50);
+			Scheduler schedule = new DFBnBScheduler(graph, 4);
+			Schedule solution = schedule.createSchedule();
+
+			System.out.println(solution.getBound());
+		assertTrue(solution.getBound() == 50);
 	}
 	
 	@Test
