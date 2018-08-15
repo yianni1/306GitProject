@@ -5,6 +5,7 @@ import exceptions.NotDeschedulableException;
 import graph.TaskEdge;
 import graph.TaskGraph;
 import graph.TaskNode;
+import view.RootLayout;
 
 
 import java.io.ByteArrayInputStream;
@@ -13,6 +14,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Ray on 28/07/2018.
@@ -20,10 +22,12 @@ import java.util.List;
  */
 public class DFBnBScheduler implements Scheduler{
 
+	private RootLayout scheduleListener;
+
 	private TaskGraph graph;
 	private int upperBound;
 	private int depth;
-	private Processor currentProcessor;
+	private int numPaths;
 
 	// Index of the children of the schedule.
 	private List<Integer> nodeIndices;
@@ -46,6 +50,7 @@ public class DFBnBScheduler implements Scheduler{
 
 		//initialize depth, upperBound, and current time of the schedule
 		depth = 0;
+		numPaths = 0;
 
 		Schedule greedySchedule = new GreedyScheduler(graph, processors).createSchedule();
 
@@ -177,11 +182,16 @@ public class DFBnBScheduler implements Scheduler{
 			if (schedule.getBound() < upperBound || optimalSchedule == null) {
 				optimalSchedule = (Schedule) deepClone(schedule);
 				upperBound = schedule.getBound();
-				//                    System.out.println("Upper Bound updated to " + upperBound);
-			}
+				if (scheduleListener != null) { //update visualisation with new optimal schedule
+					updateGUISchedule(false);
+				}			}
 
 			if (schedule.getScheduledNodes().size() > 0) {
 				schedule.removeLastScheduledTask();
+				numPaths++;
+				if (scheduleListener != null) { //update visualisation with new number of paths
+					scheduleListener.updateNumPaths(numPaths);
+				}
 			}
 
 			schedulableNodes = schedule.getSchedulableNodes();
@@ -194,7 +204,7 @@ public class DFBnBScheduler implements Scheduler{
 		}
 
 		System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
-		//optimalSchedule.printSchedule();
+		updateGUISchedule(true);;
 		return optimalSchedule;
 
 	}
@@ -315,6 +325,19 @@ public class DFBnBScheduler implements Scheduler{
 			return false;
 		}
 
+	}
+
+	public void setScheduleListener(RootLayout listener) {
+		this.scheduleListener = listener;
+	}
+
+	private void updateGUISchedule (boolean done) {
+		scheduleListener.updateSchedule(optimalSchedule, done);
+		try {
+			TimeUnit.MILLISECONDS.sleep(100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
