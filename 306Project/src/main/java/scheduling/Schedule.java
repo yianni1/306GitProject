@@ -79,15 +79,109 @@ public class Schedule implements Serializable {
 
     /**
      * Gets all nodes that are able to be scheduled.
-     *
+     * Also sorts the schedulableNodes (the same way each time.
      * @return schedulableNodes
      */
     public List<TaskNode> getSchedulableNodes() {
 
+        // Sort the schedulable nodes
+//        this.schedulableNodes = sortSchedulableNodesAlphabetically();
+        this.schedulableNodes=sortSchedulableNodesByEET();
+
+//        System.out.print("Schedulable nodes are: ");
+//        for(TaskNode tn: schedulableNodes) {
+//            System.out.print(tn.getName() + ", ");
+//        }
+//        System.out.println();
+        return this.schedulableNodes;
+    }
+
+    /**
+     * Sorts nodes according to earliest end times (ONLY CONSIDERING p0 for the sake of speed).
+     * @return ArrayList<TaskNode> sorted by end time
+     */
+    public List<TaskNode> sortSchedulableNodesByEET() {
+        List<TaskNode> schedCopy = schedulableNodes;
+        List<TaskNode> sorted = new ArrayList<TaskNode>();
+
+        TaskNode nextNode;
+        Processor nextProcessor;
+
+        while (schedCopy.size() > 0) {
+            // Adapated from GreedyScheduler
+            nextNode = schedCopy.get(0);
+            nextProcessor = this.getProcessors().get(0);
+            int nextStartTime = this.getEarliestSchedulableTime(nextNode, nextProcessor);
+            int nextEndTime = nextStartTime + nextNode.getWeight();
+
+            //Go through all nodes and check earliest schedulable time on each processor to find next best node to schedule
+            for (TaskNode n : schedCopy) {
+
+                int tentativeStartTime = this.getEarliestSchedulableTime(n, nextProcessor);
+                int tentativeEndTime = tentativeStartTime + n.getWeight();
+
+                if (tentativeEndTime < nextEndTime) {
+//                        nextStartTime = tentativeStartTime;
+                    nextEndTime = tentativeEndTime;
+                    nextNode = n;
+//                        nextProcessor = p;
+                }
+
+            }
+            sorted.add(nextNode);
+            schedCopy.remove(nextNode);
+        }
+
+        return sorted;
+    }
+
+    /**
+     * Sorts the schedulable nodes by the earliest end time (over all processors)
+     * @return
+     */
+    public List<TaskNode> sortSchedulableNodesByAllEET () {
+        List<TaskNode> schedCopy = schedulableNodes;
+        List<TaskNode> sorted = new ArrayList<TaskNode>();
+
+        TaskNode nextNode;
+        Processor nextProcessor;
+
+        while (schedCopy.size()>0) {
+            // Adapated from GreedyScheduler
+            nextNode = schedCopy.get(0);
+            nextProcessor = this.getProcessors().get(0);
+            int nextStartTime = this.getEarliestSchedulableTime(nextNode, nextProcessor);
+            int nextEndTime = nextStartTime + nextNode.getWeight();
+
+            //Go through all nodes and check earliest schedulable time on each processor to find next best node to schedule
+            for (Processor p : this.getProcessors()) {
+                for (TaskNode n : schedCopy) {
+
+                    int tentativeStartTime = this.getEarliestSchedulableTime(n, p);
+                    int tentativeEndTime = tentativeStartTime + n.getWeight();
+
+                    if (tentativeEndTime < nextEndTime) {
+                        nextStartTime = tentativeStartTime;
+                        nextEndTime = tentativeEndTime;
+                        nextNode = n;
+                        nextProcessor = p;
+                    }
+
+                }
+            }
+            sorted.add(nextNode);
+            schedCopy.remove(nextNode);
+        }
+
+        return sorted;
+    }
+
+    public List<TaskNode> sortSchedulableNodesAlphabetically() {
+
         // Sort the tasknodes aphabetically.
         List<String> taskNames = new ArrayList<String>();
         for(TaskNode tn: schedulableNodes) {
-           taskNames.add(tn.getName());
+            taskNames.add(tn.getName());
         }
         sort(taskNames);
 
@@ -99,15 +193,9 @@ public class Schedule implements Serializable {
                 }
             }
         }
-
-        this.schedulableNodes = sortedTN;
-
-//        System.out.print("Schedulable nodes are: ");
-//        for(TaskNode tn: schedulableNodes) {
-//            System.out.print(tn.getName() + ", ");
-//        }
-        return this.schedulableNodes;
+        return sortedTN;
     }
+
 
     /**
      * Adds a task to the current schedule.
@@ -207,6 +295,5 @@ public class Schedule implements Serializable {
         }
         System.out.println();
     }
-
 
 }
