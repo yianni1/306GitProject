@@ -184,7 +184,8 @@ public class DFBnBScheduler implements Scheduler{
 				upperBound = schedule.getBound();
 				if (scheduleListener != null) { //update visualisation with new optimal schedule
 					updateGUISchedule(false);
-				}			}
+				}
+			}
 
 			if (schedule.getScheduledNodes().size() > 0) {
 				schedule.removeLastScheduledTask();
@@ -204,7 +205,9 @@ public class DFBnBScheduler implements Scheduler{
 		}
 
 		System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
-		updateGUISchedule(true);;
+		if (scheduleListener != null) {
+            updateGUISchedule(true);;
+        }
 		return optimalSchedule;
 
 	}
