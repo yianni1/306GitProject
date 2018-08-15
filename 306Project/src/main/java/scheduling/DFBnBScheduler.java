@@ -149,12 +149,7 @@ public class DFBnBScheduler implements Scheduler{
                     System.out.println("Upper Bound updated to " + upperBound);
 
                     if (scheduleListener != null) { //update visualisation with new optimal schedule
-                        scheduleListener.update(optimalSchedule);
-                        try {
-                            TimeUnit.MILLISECONDS.sleep(100);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                        updateGUI(optimalSchedule, false);
                     }
                 }
 
@@ -172,6 +167,7 @@ public class DFBnBScheduler implements Scheduler{
             }
 
             System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
+            updateGUI(optimalSchedule, true);
             return optimalSchedule;
 
         }
@@ -196,6 +192,15 @@ public class DFBnBScheduler implements Scheduler{
 
     public void setScheduleListener(RootLayout listener) {
         this.scheduleListener = listener;
+    }
+
+    public void updateGUI (Schedule schedule, boolean done) {
+        scheduleListener.update(optimalSchedule, done);
+        try {
+            TimeUnit.MILLISECONDS.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 

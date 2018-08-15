@@ -1,10 +1,13 @@
 package view;
 
 import com.jfoenix.effects.JFXDepthManager;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import graph.TaskGraph;
 import graph.TaskNode;
 import io.GraphLoader;
 import io.Output;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
@@ -17,11 +20,13 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 import main.App;
 import scheduling.DFBnBScheduler;
 import scheduling.Processor;
@@ -46,16 +51,40 @@ public class RootLayout implements Initializable{
 
 
     @FXML
+    private MaterialDesignIconView icnClose;
+
+    @FXML
+    private MaterialDesignIconView icnMinimize;
+
+    @FXML
+    private Label lblStart;
+
+    @FXML
+    private Label lblBound;
+
+    @FXML
+    private Label lblTime;
+
+    @FXML
     private AnchorPane rootPane;
 
     @FXML
     private AnchorPane topPane;
 
     @FXML
-    private AnchorPane bottomPane;
+    private AnchorPane graphPane;
 
     @FXML
     private AnchorPane chartPane;
+
+    @FXML
+    private AnchorPane startPane;
+
+    @FXML
+    private AnchorPane timePane;
+
+    @FXML
+    private AnchorPane statsPane;
 
     @FXML
     private StackedBarChart stackedBarChart;
@@ -72,59 +101,98 @@ public class RootLayout implements Initializable{
 
     private Service<Void> backgroundThread;
 
+    Timeline timeline;
+
+    private int mins = 0;
+    private int secs = 0;
+    private int millis = 0;
 
 
     public void initialize(URL url, ResourceBundle rb) {
-        JFXDepthManager.setDepth(topPane, -1);
-        JFXDepthManager.setDepth(bottomPane, -1);
-        JFXDepthManager.setDepth(chartPane, 5);
+        JFXDepthManager.setDepth(chartPane, 1);
+        JFXDepthManager.setDepth(graphPane, 1);
+        JFXDepthManager.setDepth(startPane, 1);
+        JFXDepthManager.setDepth(timePane, 1);
+        JFXDepthManager.setDepth(statsPane, 1);
 
         stackedBarChart.setAnimated(false);
         stackedBarChart.setLegendVisible(false);
-        stackedBarChart.setVisible(false);
+
+        timeline = new Timeline(new KeyFrame(Duration.millis(1), new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                updateTimer();
+            }
+        }));
+
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.setAutoReverse(false);
+
+
+//        stackedBarChart.setVisible(false);
+
+    }
+
+    public void updateTimer() {
+        if(millis == 1000) {
+            secs++;
+            millis = 0;
+        }
+        if (secs == 60) {
+            mins++;
+            secs = 0;
+        }
+        lblTime.setText((((mins/10) == 0) ? "0" : "") + mins + ":"
+                + (((secs/10) == 0) ? "0" : "") + secs + ":"
+                + (((millis/10) == 0) ? "00" : (((millis/100) == 0) ? "0" : "")) + millis++);
 
     }
 
 
-    public void update(Schedule schedule) {
+    public void update(Schedule schedule, boolean done) {
         final Schedule test = schedule;
         Platform.runLater(new Runnable() {
             public void run() {
-                stackedBarChart.getData().clear();
+                if (!done) {
+                    stackedBarChart.getData().clear();
+                    lblBound.setText("" + schedule.getBound());
+                    // translates schedule to series to show on stacked bar chart
+                    for (Processor processor : test.getProcessors()) {
+                        int time = 0;
+                        for (TaskNode task : processor.getTasks()) {
+                            XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
+                            series.setName(task.getName());
+                            if (time < task.getStartTime()) {
+                                XYChart.Series<String, Number> idle = new XYChart.Series<String, Number>();
+                                idle.getData().add(new XYChart.Data(task.getStartTime() - time, "No. " + processor.getID()));
+                                idle.setName("Idle time");
+                                stackedBarChart.getData().add(idle);
+                            }
+                            series.getData().add(new XYChart.Data(task.getWeight(), "No. " + processor.getID()));
+                            stackedBarChart.getData().add(series);
+                            time = task.getEndTime();
 
-                // translates schedule to series to show on stacked bar chart
-                for (Processor processor : test.getProcessors()) {
-                    int time = 0;
-                    for (TaskNode task : processor.getTasks()) {
-                        XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
-                        series.setName(task.getName());
-                        if (time < task.getStartTime()) {
-                            XYChart.Series<String, Number> idle = new XYChart.Series<String, Number>();
-                            idle.getData().add(new XYChart.Data(task.getStartTime() - time, "Processor " + processor.getID()));
-                            idle.setName("Idle time");
-                            stackedBarChart.getData().add(idle);
-                        }
-                        series.getData().add(new XYChart.Data(task.getWeight(), "Processor " + processor.getID()));
-                        stackedBarChart.getData().add(series);
-                        time = task.getEndTime();
-
-                    }
-                }
-
-                //Shows any idle time as a transparent block
-                for (final Object series : stackedBarChart.getData()) {
-                    for (final Object data : ((XYChart.Series)series).getData()) {
-                        if (((XYChart.Series) series).getName().equals("Idle time")) {
-                            ((XYChart.Data) data).getNode().setStyle("-fx-bar-fill: transparent; -fx-border-width: 0px;");
-                        } else {
-                            StackPane bar = (StackPane) ((XYChart.Data) data).getNode();
-                            final Text dataText = new Text(((XYChart.Series) series).getName());
-                            bar.getChildren().add(dataText);
                         }
                     }
+
+                    //Shows any idle time as a transparent block
+                    for (final Object series : stackedBarChart.getData()) {
+                        for (final Object data : ((XYChart.Series)series).getData()) {
+                            if (((XYChart.Series) series).getName().equals("Idle time")) {
+                                ((XYChart.Data) data).getNode().setStyle("-fx-bar-fill: transparent; -fx-border-width: 0px;");
+                            } else {
+                                StackPane bar = (StackPane) ((XYChart.Data) data).getNode();
+                                final Text dataText = new Text(((XYChart.Series) series).getName());
+                                bar.getChildren().add(dataText);
+                            }
+                        }
+                    }
+                } else {
+                    lblStart.setText("Done!");
+                    timeline.pause();
                 }
-                }
-            });
+            }
+        });
 
 
     }
@@ -132,6 +200,12 @@ public class RootLayout implements Initializable{
     @FXML
     private void btnStartHandler(ActionEvent event) throws IOException {
         stackedBarChart.setVisible(true);
+        lblStart.setText("Running...");
+        lblTime.setText("00:00:000");
+        mins = 0;
+        secs = 0;
+        millis = 0;
+        timeline.play();
         startTask();
 
     }

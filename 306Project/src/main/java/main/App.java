@@ -7,9 +7,13 @@ import java.net.URISyntaxException;
 import graph.TaskGraph;
 import io.GraphLoader;
 import io.Output;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.text.Font;
+import javafx.stage.StageStyle;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -34,11 +38,16 @@ public class App extends Application{
 
 	//private variables for the panes
 	private Stage primaryStage;
+	private double xOffset = 0;
+	private double yOffset = 0;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("Graph view");
+
+		Font.loadFont(getClass().getResourceAsStream("/fonts/Roboto-Thin.ttf"), 12);
+		Font.loadFont(getClass().getResourceAsStream("/fonts/Roboto-Light.ttf"), 12);
 
 		System.out.println("Starting Algorithum"); // FOR DEBUGGING ON CONSOLE
 
@@ -107,10 +116,27 @@ public class App extends Application{
 					FXMLLoader fxmlLoader = new FXMLLoader();
 					Parent root = fxmlLoader.load(getClass().getResource("/view/RootLayout.fxml").openStream());
 
+					primaryStage.initStyle(StageStyle.UNDECORATED);
+
 					RootLayout controller = (RootLayout) fxmlLoader.getController();
 
 					controller.setFileName(fileName);
 					controller.setProcessorNumber(processorNumber);
+
+					root.setOnMousePressed(new EventHandler<MouseEvent>() {
+						@Override
+						public void handle(MouseEvent event) {
+							xOffset = event.getSceneX();
+							yOffset = event.getSceneY();
+						}
+					});
+					root.setOnMouseDragged(new EventHandler<MouseEvent>() {
+						@Override
+						public void handle(MouseEvent event) {
+							primaryStage.setX(event.getScreenX() - xOffset);
+							primaryStage.setY(event.getScreenY() - yOffset);
+						}
+					});
 
 					//scene showing the root layout is displayed
 					Scene scene = new Scene(root);
