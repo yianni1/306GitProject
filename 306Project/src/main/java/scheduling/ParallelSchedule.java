@@ -24,20 +24,20 @@ public class ParallelSchedule extends Schedule implements Serializable {
         super(processorNumber, graph);
         this.upperBound = upperBound;
         thread = new ParallelThread();
-        DFBnBScheduler dfs = new DFBnBScheduler(this, upperBound);
+        ParallelDFS dfs = new ParallelDFS(this, upperBound);
         thread.addScheduler(dfs, this);
     }
 
 //    public ParallelSchedule(int processorNumber, TaskGraph graph, ParallelThread thread, int upperBound) {
 //        super(processorNumber, graph);
 //        this.thread = thread;
-//        DFBnBScheduler dfs = new DFBnBScheduler(this, upperBound);
+//        ParallelDFS dfs = new ParallelDFS(this, upperBound);
 //        thread.addScheduler(dfs);
 //    }
 
     public void setThread(ParallelSchedule schedule) {
         this.thread = schedule.thread;
-        DFBnBScheduler dfs = new DFBnBScheduler(this, upperBound);
+        ParallelDFS dfs = new ParallelDFS(this, upperBound);
         thread.addScheduler(dfs, this);
     }
 

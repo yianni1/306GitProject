@@ -9,11 +9,11 @@ import java.util.List;
  */
 public class ParallelThread extends Thread implements Serializable {
 
-    private List<DFBnBScheduler> schedulers = new ArrayList<DFBnBScheduler>();
+    private List<ParallelDFS> schedulers = new ArrayList<ParallelDFS>();
     private List<ParallelSchedule> parallelSchedules = new ArrayList<ParallelSchedule>();
     private int minDepth = 0;
 
-    public void addScheduler(DFBnBScheduler scheduler, ParallelSchedule schedule) {
+    public void addScheduler(ParallelDFS scheduler, ParallelSchedule schedule) {
         schedulers.add(scheduler);
         parallelSchedules.add(schedule);
 
@@ -23,7 +23,7 @@ public class ParallelThread extends Thread implements Serializable {
     public void run() {
         minDepth = parallelSchedules.get(0).getScheduledNodes().size();
         System.out.println("started");
-        for (DFBnBScheduler scheduler : schedulers) {
+        for (ParallelDFS scheduler : schedulers) {
             Schedule schedule = scheduler.createSchedule(minDepth);
             ParallelScheduler.setOptimalSchedule(schedule);
             System.out.println("finished this scheduler");

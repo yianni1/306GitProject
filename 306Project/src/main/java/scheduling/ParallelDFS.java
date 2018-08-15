@@ -5,6 +5,7 @@ import exceptions.NotSchedulableException;
 import graph.TaskGraph;
 import graph.TaskNode;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import static scheduling.DFBnBScheduler.deepClone;
 /**
  * Created by olive on 15/08/2018.
  */
-public class ParallelDFS  {
+public class ParallelDFS implements Serializable {
 
     private TaskGraph graph;
     private int upperBound;
@@ -30,44 +31,44 @@ public class ParallelDFS  {
 
     private List<TaskNode> initialNodes;
 
-    public ParallelDFS(TaskGraph graph, int processors) {
-        this.graph = graph;
-
-        initialNodes = new ArrayList<TaskNode>();
-        nodeIndices = new ArrayList<Integer>();
-        processorIndices = new ArrayList<Integer>();
-        schedule = new Schedule(processors, graph);
-        schedulableNodes = schedule.getSchedulableNodes();
-
-        //initialize depth, upperBound, and current time of the schedule
-        depth = 0;
-
-        Schedule greedySchedule = new GreedyScheduler(graph, processors).createSchedule();
-
-        upperBound = greedySchedule.getBound();
-
-        while (greedySchedule.getScheduledNodes().size() > 0) {
-            greedySchedule.removeLastScheduledTask();
-        }
-
-    }
-
-
-//    /**
-//     * Alternative constructor for parallelisation
-//     * @param partialSchedule
-//     * @param upperBound
-//     */
-//    public DFBnBScheduler(Schedule partialSchedule, int upperBound) {
-//        this.schedule = partialSchedule;
+//    public ParallelDFS(TaskGraph graph, int processors) {
+//        this.graph = graph;
+//
 //        initialNodes = new ArrayList<TaskNode>();
 //        nodeIndices = new ArrayList<Integer>();
 //        processorIndices = new ArrayList<Integer>();
-//        partialSchedule.getProcessors().size();
-//        schedulableNodes = partialSchedule.getSchedulableNodes();
-//        this.upperBound = upperBound;
-//        depth = partialSchedule.getSchedulableNodes().size();
+//        schedule = new Schedule(processors, graph);
+//        schedulableNodes = schedule.getSchedulableNodes();
+//
+//        //initialize depth, upperBound, and current time of the schedule
+//        depth = 0;
+//
+//        Schedule greedySchedule = new GreedyScheduler(graph, processors).createSchedule();
+//
+//        upperBound = greedySchedule.getBound();
+//
+//        while (greedySchedule.getScheduledNodes().size() > 0) {
+//            greedySchedule.removeLastScheduledTask();
+//        }
+//
 //    }
+
+
+    /**
+     * Alternative constructor for parallelisation
+     * @param partialSchedule
+     * @param upperBound
+     */
+    public ParallelDFS(Schedule partialSchedule, int upperBound) {
+        this.schedule = partialSchedule;
+        initialNodes = new ArrayList<TaskNode>();
+        nodeIndices = new ArrayList<Integer>();
+        processorIndices = new ArrayList<Integer>();
+        partialSchedule.getProcessors().size();
+        schedulableNodes = partialSchedule.getSchedulableNodes();
+        this.upperBound = upperBound;
+        depth = partialSchedule.getSchedulableNodes().size();
+    }
 
 
 //    public Schedule createSchedule() throws NotDeschedulableException, NotSchedulableException {

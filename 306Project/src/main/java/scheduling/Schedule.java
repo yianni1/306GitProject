@@ -9,9 +9,7 @@ import javafx.concurrent.Task;
 
 import javax.xml.soap.Node;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import static java.util.Collections.sort;
 
@@ -21,9 +19,10 @@ import static java.util.Collections.sort;
 public class Schedule implements Serializable {
 
     private List<Processor> processors = new ArrayList<Processor>();
-    private List<TaskNode> schedulableNodes = new ArrayList<TaskNode>(); // The tasks that can be scheduled.
+    private Map<String, TaskNode> schedulableNodes = new HashMap<String, TaskNode>(); // The tasks that can be scheduled.
     private TaskGraph graph;
     private List<TaskNode> scheduleOrder; // The order in which the tasks have been scheduled.
+    private List<String> schedulableNodesNames = new ArrayList<String>(); //The name of the list of all schedulable nodes
 
     public Schedule(int numberOfProcessors, TaskGraph graph) {
         List<Processor> processors = new ArrayList<Processor>();
@@ -47,15 +46,16 @@ public class Schedule implements Serializable {
      * @return schedulable: the list of schedulable nodes.
      */
     private void initializeSchedulableNodes(TaskGraph tg) {
-        List<TaskNode> initialNodes = new ArrayList<TaskNode>();
+//        List<TaskNode> initialNodes = new ArrayList<TaskNode>();
         HashSet<TaskNode> nodes = tg.getNodes();
 
         for (TaskNode n : nodes) {
             if (n.getIncomingEdges().size() == 0) {
-            	initialNodes.add(n);
+            	this.schedulableNodes.put(n.getName(), n);
+            	this.schedulableNodesNames.add(n.getName());
             }
         }
-        this.schedulableNodes = initialNodes;
+//        this.schedulableNodes = initialNodes;
     }
 
     /**
@@ -84,30 +84,31 @@ public class Schedule implements Serializable {
      */
     public List<TaskNode> getSchedulableNodes() {
 
+        /*
+        Edited by Oliver.
+        Changed
+         */
+
         // Sort the tasknodes aphabetically.
         List<String> taskNames = new ArrayList<String>();
         int count = 0;
-        for(TaskNode tn: schedulableNodes) {
-           taskNames.add(tn.getName());
+        for(String tn: schedulableNodesNames) {
+           taskNames.add(tn);
         }
         sort(taskNames);
 
         List<TaskNode> sortedTN = new ArrayList<TaskNode>();
         for(String s: taskNames) {
-            for(TaskNode tn: schedulableNodes ) {
-                if (s.equals(tn.getName())) {
-                    sortedTN.add(tn);
-                }
-            }
+            sortedTN.add(schedulableNodes.get(s));
         }
 
-        this.schedulableNodes = sortedTN;
+//        this.schedulableNodes = sortedTN;
 
 //        System.out.print("Schedulable nodes are: ");
 //        for(TaskNode tn: schedulableNodes) {
 //            System.out.print(tn.getName() + ", ");
 //        }
-        return this.schedulableNodes;
+        return sortedTN;
     }
 
     /**
@@ -121,12 +122,12 @@ public class Schedule implements Serializable {
         scheduleOrder.add(node);
 
         // Updates the schedulable nodes.
-        schedulableNodes.remove(node);
+        schedulableNodes.remove(node.getName());
 
 //        System.out.println("~");
         for (TaskEdge e : node.getOutgoingEdges()) {
             if (e.getEndNode().isSchedulable()) {
-                schedulableNodes.add(e.getEndNode());
+                schedulableNodes.put(e.getEndNode().getName(), e.getEndNode());
 //                System.out.println("name is " + e.getEndNode().getName());
             }
 //            if (schedulableNodes.size() > graph.getNodes().size()) {
@@ -151,11 +152,11 @@ public class Schedule implements Serializable {
         // Updating the schedulable nodes.
         // Get the last scheduled node, and add it back. Then remove all it's children from schedulable.
 //        TaskNode tn = scheduleOrder.get(scheduleOrder.size()-1);
-        schedulableNodes.add(lastScheduledTask);
+        schedulableNodes.put(lastScheduledTask.getName(), lastScheduledTask);
 
         for (TaskEdge e : lastScheduledTask.getOutgoingEdges()) {
 //            if (e.getEndNode().isSchedulable()) {
-                schedulableNodes.remove(e.getEndNode());
+            schedulableNodes.remove(e.getEndNode().getName());
 //            }
         }
 
