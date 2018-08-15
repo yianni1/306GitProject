@@ -84,10 +84,6 @@ public class Schedule implements Serializable {
      */
     public List<TaskNode> getSchedulableNodes() {
 
-        /*
-        Edited by Oliver.
-        Changed
-         */
 
         // Sort the tasknodes aphabetically.
         List<String> taskNames = new ArrayList<String>();
@@ -99,7 +95,9 @@ public class Schedule implements Serializable {
 
         List<TaskNode> sortedTN = new ArrayList<TaskNode>();
         for(String s: taskNames) {
-            sortedTN.add(schedulableNodes.get(s));
+            if (schedulableNodes.get(s) != null) {
+                sortedTN.add(schedulableNodes.get(s));
+            }
         }
 
 //        this.schedulableNodes = sortedTN;
@@ -117,30 +115,27 @@ public class Schedule implements Serializable {
      * @param node the node to be added
      * @param processor the processor to add it to
      */
-    public void addTask(TaskNode node, Processor processor, int time) throws NotSchedulableException {
+    public synchronized void addTask(TaskNode node, Processor processor, int time) throws NotSchedulableException {
         processor.addTask(node, time);
         scheduleOrder.add(node);
 
         // Updates the schedulable nodes.
         schedulableNodes.remove(node.getName());
+        schedulableNodesNames.remove(node.getName());
 
 //        System.out.println("~");
         for (TaskEdge e : node.getOutgoingEdges()) {
             if (e.getEndNode().isSchedulable()) {
                 schedulableNodes.put(e.getEndNode().getName(), e.getEndNode());
-//                System.out.println("name is " + e.getEndNode().getName());
+                schedulableNodesNames.add(e.getEndNode().getName());
             }
-//            if (schedulableNodes.size() > graph.getNodes().size()) {
-//                throw new NullPointerException("Something went badly wrong");
-//            }
         }
-//        System.out.println("/~");
     }
 
     /**
      * Removes the last scheduled task.
      */
-    public void removeLastScheduledTask() throws NotDeschedulableException {
+    public synchronized void removeLastScheduledTask() throws NotDeschedulableException {
         TaskNode lastScheduledTask = scheduleOrder.get(scheduleOrder.size() - 1);
 
         for (Processor p : processors) {
@@ -153,11 +148,12 @@ public class Schedule implements Serializable {
         // Get the last scheduled node, and add it back. Then remove all it's children from schedulable.
 //        TaskNode tn = scheduleOrder.get(scheduleOrder.size()-1);
         schedulableNodes.put(lastScheduledTask.getName(), lastScheduledTask);
+        schedulableNodesNames.add(lastScheduledTask.getName());
 
         for (TaskEdge e : lastScheduledTask.getOutgoingEdges()) {
 //            if (e.getEndNode().isSchedulable()) {
             schedulableNodes.remove(e.getEndNode().getName());
-//            }
+            schedulableNodesNames.remove(e.getEndNode().getName());
         }
 
         scheduleOrder.remove(scheduleOrder.size()-1);
@@ -169,7 +165,7 @@ public class Schedule implements Serializable {
      *
      * @return
      */
-    public int getEarliestSchedulableTime(TaskNode node, Processor p) {
+    public synchronized int getEarliestSchedulableTime(TaskNode node, Processor p) {
         int earliestStartTime = -1;
 
         if (node.isSchedulable()) {
@@ -190,7 +186,7 @@ public class Schedule implements Serializable {
         return earliestStartTime;
     }
 
-    public int getBound() {
+    public synchronized int getBound() {
         int bound = 0;
         for (Processor processor: processors) {
             if (processor.getBound() > bound) {

@@ -32,6 +32,7 @@ public class GreedyScheduler implements Scheduler {
             //TODO find a better a way to initalize this
             TaskNode nextNode = schedulableNodes.get(0);
             Processor nextProcessor = schedule.getProcessors().get(0);
+//            System.out.println(nextNode);
             int nextStartTime = schedule.getEarliestSchedulableTime(nextNode, nextProcessor);
             int nextEndTime = nextStartTime + nextNode.getWeight();
 

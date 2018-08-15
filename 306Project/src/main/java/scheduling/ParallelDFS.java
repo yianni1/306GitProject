@@ -92,7 +92,7 @@ public class ParallelDFS implements Serializable {
         //while there are branches to explore from depth minDepth, keep looping through all branches
         while (depth >= minDepth) {
 
-//            System.out.println(depth + " " + minDepth);
+            System.out.println("started thread");
 
             while (schedulableNodes.size() > 0) { //while there are still nodes to schedule
                 // System.out.println("Searching at depth " + depth + " with bound " + schedule.getBound());
@@ -115,7 +115,7 @@ public class ParallelDFS implements Serializable {
                         }
                         index++;
                     }
-                    //If all initial nodes have been seen, set finished to true to finish the algoritum
+                    //If all initial nodes have been seen, set finished to true to finish the algorithm
                     //As the optimal solution has been found
                     if (initialNodes.equals(schedulableNodes)) {
                         finished = true;
@@ -229,6 +229,9 @@ public class ParallelDFS implements Serializable {
         }
 
 //            System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
+        if (optimalSchedule == null) {
+            optimalSchedule = (Schedule) deepClone(schedule);
+        }
         return optimalSchedule;
 
     }
