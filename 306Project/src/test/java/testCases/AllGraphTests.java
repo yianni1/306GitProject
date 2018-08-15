@@ -62,10 +62,10 @@ public class AllGraphTests extends testCases.CompareOutput {
      */
     @Test
     public void testGreedySchedule() throws NotSchedulableException {
-        for (String filePath : filePaths) {
-            greedySchedule(filePath);
-     }
-      //  greedySchedule("src/main/resources/DotFiles/CustomTest.dot");
+     //   for (String filePath : filePaths) {
+     //       greedySchedule(filePath);
+   //  }
+        greedySchedule("src/main/resources/DotFiles/CustomTest.dot");
     }
 
     private void greedySchedule(String filePath) throws NotSchedulableException {
@@ -108,7 +108,7 @@ public class AllGraphTests extends testCases.CompareOutput {
                 
                 
             }
-
+            System.out.println(processor.getBound());
             //Checks each node is only schedule once, i.e. no duplicate nodes in any processor
             HashSet<TaskNode> set = new HashSet<TaskNode>(processor.getTasks());
             if (set.size() < processor.getTasks().size()) {

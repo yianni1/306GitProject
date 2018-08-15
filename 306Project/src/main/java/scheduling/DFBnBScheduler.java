@@ -4,7 +4,6 @@ import exceptions.NotSchedulableException;
 import exceptions.NotDeschedulableException;
 import graph.TaskGraph;
 import graph.TaskNode;
-import view.RootLayout;
 
 
 import java.io.ByteArrayInputStream;
@@ -13,7 +12,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Ray on 28/07/2018.
@@ -24,7 +22,6 @@ public class DFBnBScheduler implements Scheduler{
         private TaskGraph graph;
         private int upperBound;
         private int depth;
-        private int numPaths;
         private Processor currentProcessor;
 
         // Index of the children of the schedule.
@@ -35,8 +32,6 @@ public class DFBnBScheduler implements Scheduler{
         private Schedule schedule;
         private List<TaskNode> schedulableNodes;
 
-        private RootLayout scheduleListener;
-
         public DFBnBScheduler(TaskGraph graph, int processors) {
             this.graph = graph;
 
@@ -45,8 +40,7 @@ public class DFBnBScheduler implements Scheduler{
             schedule = new Schedule(processors, graph);
             schedulableNodes = schedule.getSchedulableNodes();
 
-            numPaths = 0;
-            //initialize depth, upperBound
+            //initialize depth, upperBound, and current time of the schedule
             depth = 0;
 
             Schedule greedySchedule = new GreedyScheduler(graph, processors).createSchedule();
@@ -71,7 +65,7 @@ public class DFBnBScheduler implements Scheduler{
             //while there are branches to explore from depth 0, keep looping through all branches
             while (depth >= 0) {
                 while (schedulableNodes.size() > 0) { //while there are still nodes to schedule
-                    System.out.println("Searching at depth " + depth + " with bound " + schedule.getBound());
+                   // System.out.println("Searching at depth " + depth + " with bound " + schedule.getBound());
                     //if the depth is less than the size of nodeIndices then the depth has been reached before
                     if (depth < nodeIndices.size()) {
                         nodeIndex = nodeIndices.get(depth); //get the index of the next node at that depth
@@ -145,33 +139,26 @@ public class DFBnBScheduler implements Scheduler{
 
 
                 //TODO clone schedule and set optimal schedule to be this schedule
-                if (schedule.getBound() < upperBound || optimalSchedule == null) {
+                if (schedule.getBound() <= upperBound) {
                     optimalSchedule = (Schedule) deepClone(schedule);
                     upperBound = schedule.getBound();
-                    System.out.println("Upper Bound updated to " + upperBound);
-
-                    if (scheduleListener != null) { //update visualisation with new optimal schedule
-                        updateGUISchedule(optimalSchedule, false);
-                    }
+              //      System.out.println("Upper Bound updated to " + upperBound);
                 }
-
-
-
 
                 if (schedule.getScheduledNodes().size() > 0) {
                     schedule.removeLastScheduledTask();
-                    numPaths++;
-                    scheduleListener.updateNumPaths(numPaths);
                 }
 
                 schedulableNodes = schedule.getSchedulableNodes();
 
 
 
+                nodeIndices.set(depth, nodeIndices.get(depth) + 1);
+
+
             }
 
-            System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
-            updateGUISchedule(optimalSchedule, true);
+          //  System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
             return optimalSchedule;
 
         }
@@ -191,19 +178,6 @@ public class DFBnBScheduler implements Scheduler{
         catch (Exception e) {
             e.printStackTrace();
             return null;
-        }
-    }
-
-    public void setScheduleListener(RootLayout listener) {
-        this.scheduleListener = listener;
-    }
-
-    public void updateGUISchedule (Schedule schedule, boolean done) {
-        scheduleListener.updateSchedule(optimalSchedule, done);
-        try {
-            TimeUnit.MILLISECONDS.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 
