@@ -112,7 +112,7 @@ public class ParallelScheduler implements Scheduler {
         for (TaskNode node : schedulableNodes) {
 
             numberOfSchedules++; //INcreasing the number of schedules
-            ParallelSchedule schedule = deepCloneSchedule(parallelSchedules.get(0));
+            ParallelSchedule schedule = deepCloneSchedule(parallelSchedules.get(0), depth);
 
             schedule.addTask(node, schedule.getProcessors().get(0), 0);
             if (!(numberOfSchedules <= coreNumber)) { //If there are now more threads than max cores
@@ -146,7 +146,7 @@ public class ParallelScheduler implements Scheduler {
 //                        System.out.println(node.getName());
                         TaskNode nodeClone = (TaskNode) DFBnBScheduler.deepClone(node);
                         numberOfSchedules++; //INcreasing the number of schedules
-                        ParallelSchedule scheduleClone = deepCloneSchedule(schedule);//Deep cloning old schedule
+                        ParallelSchedule scheduleClone = deepCloneSchedule(schedule, depth);//Deep cloning old schedule
                         Processor processor = scheduleClone.getProcessors().get(i);
 
                         //Figuring out the earliest time to be scheduled
@@ -195,9 +195,9 @@ public class ParallelScheduler implements Scheduler {
         }
     }
 
-    private static ParallelSchedule deepCloneSchedule(ParallelSchedule parallelSchedule) {
+    private static ParallelSchedule deepCloneSchedule(ParallelSchedule parallelSchedule, int minDepth) {
         ParallelSchedule schedule = (ParallelSchedule) DFBnBScheduler.deepClone(parallelSchedule);
-        schedule.setThread();
+        schedule.setThread(minDepth);
 //        for (ParallelSchedule schedule : parallelSchedules) {
 //            System.out.println(schedule.getThread());
 //        }
