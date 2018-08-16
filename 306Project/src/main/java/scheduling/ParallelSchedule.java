@@ -40,13 +40,13 @@ public class ParallelSchedule extends Schedule implements Serializable {
 //
     public void setThread(ParallelSchedule schedule, int minDepth) {
         this.thread = schedule.thread;
-        ParallelDFS dfs = new ParallelDFS(this, upperBound, graph);
+        ParallelDFS dfs = new ParallelDFS(this, upperBound, graph, minDepth);
         thread.addScheduler(dfs, this, minDepth);
     }
 
     public void setThread(int minDepth) {
         thread = new ParallelThread();
-        ParallelDFS dfs = new ParallelDFS(this, upperBound, graph);
+        ParallelDFS dfs = new ParallelDFS(this, upperBound, graph, minDepth);
         thread.addScheduler(dfs, this, minDepth);
         this.minDepth = minDepth;
     }

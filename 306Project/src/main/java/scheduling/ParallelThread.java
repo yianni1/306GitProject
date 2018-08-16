@@ -26,9 +26,8 @@ public class ParallelThread extends Thread implements Serializable {
 
     @Override
     public void run() {
-        minDepth = parallelSchedules.get(0).getScheduledNodes().size();
         for (ParallelDFS scheduler : schedulers) {
-            Schedule schedule = scheduler.createSchedule(minDepth + 1);
+            Schedule schedule = scheduler.createSchedule(minDepth);
             ParallelScheduler.setOptimalSchedule(schedule);
             System.out.println("finished this scheduler");
         }

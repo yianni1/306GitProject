@@ -31,8 +31,6 @@ public class ParallelDFS implements Serializable {
 
     private List<TaskNode> initialNodes;
 
-
-
 //    public ParallelDFS(TaskGraph graph, int processors) {
 //        this.graph = graph;
 //
@@ -61,7 +59,7 @@ public class ParallelDFS implements Serializable {
      * @param partialSchedule
      * @param upperBound
      */
-    public ParallelDFS(Schedule partialSchedule, int upperBound, TaskGraph graph) {
+    public ParallelDFS(Schedule partialSchedule, int upperBound, TaskGraph graph, int depth) {
         this.schedule = partialSchedule;
         initialNodes = new ArrayList<TaskNode>();
         nodeIndices = new ArrayList<Integer>();
@@ -69,7 +67,7 @@ public class ParallelDFS implements Serializable {
         partialSchedule.getProcessors().size();
         schedulableNodes = partialSchedule.getSchedulableNodes();
         this.upperBound = upperBound;
-        this.depth = partialSchedule.getScheduledNodes().size();
+        this.depth = depth;
 //        this.depth = depth;
         this.graph = graph;
     }
@@ -95,6 +93,7 @@ public class ParallelDFS implements Serializable {
         boolean initialIteration = true;
 
         //while there are branches to explore from depth minDepth, keep looping through all branches
+        System.out.println("this is depth " + depth + " this is mindepth " + minDepth);
         while (depth >= minDepth) {
 
 
