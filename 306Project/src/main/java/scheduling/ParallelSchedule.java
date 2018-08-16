@@ -15,6 +15,7 @@ public class ParallelSchedule extends Schedule implements Serializable {
     private ParallelThread thread;
     private int upperBound;
     private boolean finishedDFS = false;
+    private TaskGraph graph;
 
     /**
      * Constructor initliases graph, and thread.
@@ -26,6 +27,7 @@ public class ParallelSchedule extends Schedule implements Serializable {
         super(processorNumber, graph);
         this.upperBound = upperBound;
         setThread();
+        this.graph = graph;
     }
 
 //    public ParallelSchedule(int processorNumber, TaskGraph graph, ParallelThread thread, int upperBound) {
@@ -35,17 +37,18 @@ public class ParallelSchedule extends Schedule implements Serializable {
 //        thread.addScheduler(dfs);
 //    }
 //
-//    public void setThread(ParallelSchedule schedule) {
-//        this.thread = schedule.thread;
-//        ParallelDFS dfs = new ParallelDFS(this, upperBound);
-//        thread.addScheduler(dfs, this);
-//    }
+    public void setThread(ParallelSchedule schedule, int minDepth) {
+        this.thread = schedule.thread;
+        ParallelDFS dfs = new ParallelDFS(this, upperBound, graph);
+        thread.addScheduler(dfs, this, minDepth);
+    }
 
     public void setThread() {
         thread = new ParallelThread();
-        ParallelDFS dfs = new ParallelDFS(this, upperBound);
-        thread.addScheduler(dfs, this);
+        ParallelDFS dfs = new ParallelDFS(this, upperBound, graph);
+        thread.addScheduler(dfs, this, 0);
     }
+
 
 
     public void run() {

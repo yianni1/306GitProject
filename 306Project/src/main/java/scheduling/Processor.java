@@ -34,9 +34,9 @@ public class Processor implements Serializable {
      * @return
      */
     public int getID() {
-    	return procID;
+        return procID;
     }
-    
+
     /**
      * Adds a new task, with the node.
      * Called by TaskNode.
@@ -45,15 +45,15 @@ public class Processor implements Serializable {
      */
     public synchronized void addTask(TaskNode node, int startTime) throws NotSchedulableException {
 //        if (node != null) {
-            if (startTime < this.getBound()) {
+        if (startTime < this.getBound()) {
 //            System.out.println("this is the bad bound " + this.getBound() + " starttime was " + startTime);
-                throw new TaskException("The startTime cannot be lower than the bound");
-            }
+            throw new TaskException("The startTime cannot be lower than the bound");
+        }
 
-            taskNames.add(node.getName());
-            tasks.put(node.getName(), node);
+        taskNames.add(node.getName());
+        tasks.put(node.getName(), node);
 
-            node.schedule(startTime, this);
+        node.schedule(startTime, this);
 //        }
 
     }
@@ -91,14 +91,14 @@ public class Processor implements Serializable {
      * @return
      */
     public List<TaskNode> getTasks() {
-    	List<TaskNode> tasks = new ArrayList<TaskNode>();
-    	for (String name : taskNames) {
-    	    if (this.tasks.get(name) != null) {
+        List<TaskNode> tasks = new ArrayList<TaskNode>();
+        for (String name : taskNames) {
+            if (this.tasks.get(name) != null) {
                 tasks.add(this.tasks.get(name));
             }
         }
-    	return tasks;
-    	
+        return tasks;
+
     }
 }
 

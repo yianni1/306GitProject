@@ -100,7 +100,9 @@ public class Schedule implements Serializable {
 //        System.out.println();
         List<TaskNode> nodes = new ArrayList<>();
         for (String name : schedulableNodesNames) {
-            nodes.add(schedulableNodes.get(name));
+            if (schedulableNodes.get(name) != null) {
+                nodes.add(schedulableNodes.get(name));
+            }
         }
         return nodes;
     }

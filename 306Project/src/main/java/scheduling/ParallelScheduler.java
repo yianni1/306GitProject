@@ -79,7 +79,6 @@ public class ParallelScheduler implements Scheduler {
             }
         }
 
-        System.out.println(threads.size() + " number of threads");
 
         //Continuously looping through until everything has finished
         boolean finished = false;
@@ -105,25 +104,31 @@ public class ParallelScheduler implements Scheduler {
 
         int numberOverMaxCoreNumber = 0; //The number of more schedules at a depth than core number
         //Cutting tree in half
+
+        int depth = 0;
+
+
         for (TaskNode node : schedulableNodes) {
+
             numberOfSchedules++; //INcreasing the number of schedules
             ParallelSchedule schedule = deepCloneSchedule(parallelSchedules.get(0));
 
             schedule.addTask(node, schedule.getProcessors().get(0), 0);
-//            if (!(numberOfSchedules <= coreNumber)) { //If there are now more threads than max cores
-//                schedule.setThread(temporarySchedulers.get(numberOverMaxCoreNumber)); //We give it the same thread
-//                numberOverMaxCoreNumber++;
-//
-//            }
+            if (!(numberOfSchedules <= coreNumber)) { //If there are now more threads than max cores
+                schedule.setThread(temporarySchedulers.get(numberOverMaxCoreNumber), 1); //We give it the same thread
+                numberOverMaxCoreNumber++;
+
+            }
             temporarySchedulers.add(schedule);
 
         }
+        depth++;
 
         //Updating the list of schedules to make memory easier
         clearLists(temporarySchedulers);
 
-
         while (numberOfSchedules < coreNumber) {
+            depth++;
             numberOfSchedules = 0;
             numberOverMaxCoreNumber = 0;
 //
@@ -146,11 +151,11 @@ public class ParallelScheduler implements Scheduler {
                         //Figuring out the earliest time to be scheduled
                         int earliestSchedulableTime = scheduleClone.getEarliestSchedulableTime(nodeClone, processor);
                         scheduleClone.addTask(nodeClone, processor, earliestSchedulableTime); //Adding time to new processor
-//                        if (!(numberOfSchedules <= coreNumber)) { //If there are now more threads than max cores
-//                            scheduleClone.setThread(temporarySchedulers.get(numberOverMaxCoreNumber)); //We give it the same thread
-//                            numberOverMaxCoreNumber++;
-//                        }
-                        temporarySchedulers.add(schedule);
+                        if (!(numberOfSchedules <= coreNumber)) { //If there are now more threads than max cores
+                            scheduleClone.setThread(temporarySchedulers.get(numberOverMaxCoreNumber), depth); //We give it the same thread
+                            numberOverMaxCoreNumber++;
+                        }
+                        temporarySchedulers.add(scheduleClone);
                     }
                 }
             }
@@ -160,6 +165,8 @@ public class ParallelScheduler implements Scheduler {
 
         }
 
+
+
     }
 
 
@@ -168,6 +175,7 @@ public class ParallelScheduler implements Scheduler {
         for (ParallelSchedule schedule : list) {
             parallelSchedules.add(schedule);
         }
+
         list.clear();
     }
 
@@ -189,6 +197,9 @@ public class ParallelScheduler implements Scheduler {
     private static ParallelSchedule deepCloneSchedule(ParallelSchedule parallelSchedule) {
         ParallelSchedule schedule = (ParallelSchedule) DFBnBScheduler.deepClone(parallelSchedule);
         schedule.setThread();
+//        for (ParallelSchedule schedule : parallelSchedules) {
+//            System.out.println(schedule.getThread());
+//        }
         return schedule;
     }
 }
