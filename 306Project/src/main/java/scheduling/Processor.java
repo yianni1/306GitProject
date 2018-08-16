@@ -76,11 +76,11 @@ public class Processor implements Serializable {
         int bound = 0;
         for (String nodeName : taskNames) {
             TaskNode node = tasks.get(nodeName);
-            if (node != null) {
+//            if (node != null) {
                 if (node.getEndTime() > bound) {
                     bound = node.getEndTime();
                 }
-            }
+//            }
         }
 
         return bound;

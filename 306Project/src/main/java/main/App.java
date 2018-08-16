@@ -118,9 +118,12 @@ public class App extends Application{
 						System.out.println("number of cores is " + numCores);
 						Scheduler solution = new ParallelScheduler(graph, processorNumber, numCores);
 						Schedule finalSolution = solution.createSchedule();
+						System.out.println("done in main");
 
 						//Transporting to output
 						Output.createOutput(finalSolution.getProcessors(), graph, parentPath + sendToOutputClass + "-output.dot");
+						System.out.println("output is done");
+//						System.exit(0);
 
 					} catch (NumberFormatException ex) {
 						System.out.println("Please enter a positive integer for the core number");

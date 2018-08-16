@@ -61,8 +61,9 @@ public class ParallelSchedule extends Schedule implements Serializable {
         return thread;
     }
 
-    void setFinishedDFS() {
+    void setFinishedDFS(ParallelThread thread) {
         finishedDFS = true;
+        thread.interrupt();
     }
 
     public boolean getFinished() {

@@ -88,9 +88,11 @@ public class ParallelScheduler implements Scheduler {
                 if (!schedule.getFinished()) {
                     finished = false;
                 }
+                System.out.println("checking if thread finished");
             }
         }
         System.out.println("done");
+        System.out.println(optimalSchedule.getBound());
         return optimalSchedule;
     }
 
