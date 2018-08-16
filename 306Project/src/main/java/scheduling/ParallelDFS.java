@@ -79,12 +79,15 @@ public class ParallelDFS implements Serializable {
 
     public Schedule createSchedule(int minDepth) {
         //initialize upperBound
-        System.out.println("starting dfs");
-
         TaskNode nextTask = null;
         Processor nextProcessor = null;
         int nodeIndex = 0;
         int processorIndex = 0;
+
+        for (int i = 0; i < minDepth; i++) {
+            nodeIndices.add(i);
+            processorIndices.add(i);
+        }
 
         //Variables to know when all initial nodes have been looped through
         boolean finished = false;
@@ -93,7 +96,6 @@ public class ParallelDFS implements Serializable {
         boolean initialIteration = true;
 
         //while there are branches to explore from depth minDepth, keep looping through all branches
-        System.out.println("this is depth " + depth + " this is mindepth " + minDepth);
         while (depth >= minDepth) {
 
 
@@ -104,20 +106,20 @@ public class ParallelDFS implements Serializable {
                 //Block for determining if initial nodes have been seen
                 if ((depth == minDepth) && (initialIteration == false) ) {
 
-                    boolean addedNode = false;
-                    int index = 0;
-                    //Loop through initial nodes
-                    while (addedNode == false) {
-
-                        TaskNode node = schedulableNodes.get(index);
-                        //If initalNode not been seen, add it to list
-                        // Then break to look through all of its children
-                        if (!initialNodes.contains(node)) {
-                            initialNodes.add(node);
-                            addedNode = true;
-                        }
-                        index++;
-                    }
+//                    boolean addedNode = false;
+//                    int index = 0;
+//                    //Loop through initial nodes
+//                    while (addedNode == false) {
+//
+//                        TaskNode node = schedulableNodes.get(index);
+//                        //If initalNode not been seen, add it to list
+//                        // Then break to look through all of its children
+//                        if (!initialNodes.contains(node)) {
+//                            initialNodes.add(node);
+//                            addedNode = true;
+//                        }
+//                        index++;
+//                    }
                     //If all initial nodes have been seen, set finished to true to finish the algorithm
                     //As the optimal solution has been found
                     if (initialNodes.equals(schedulableNodes)) {
@@ -133,15 +135,15 @@ public class ParallelDFS implements Serializable {
                 }
 
 
-                if (depth - minDepth < nodeIndices.size()) {
-                    nodeIndex = nodeIndices.get(depth - minDepth); //get the index of the next node at that depth
-                    processorIndex = processorIndices.get(depth - minDepth); //get the index of the processor to schedule on
+                if (depth < nodeIndices.size()) {
+                    nodeIndex = nodeIndices.get(depth); //get the index of the next node at that depth
+                    processorIndex = processorIndices.get(depth); //get the index of the processor to schedule on
                 } else { //otherwise initialise the node index and processor index of that depth as 0
                     nodeIndex = 0;
                     processorIndex = 0;
-                    nodeIndices.add(depth - minDepth, nodeIndex);
+                    nodeIndices.add(depth, nodeIndex);
 
-                    processorIndices.add(depth - minDepth, processorIndex);
+                    processorIndices.add(depth, processorIndex);
 
 
                 }
@@ -150,18 +152,18 @@ public class ParallelDFS implements Serializable {
                     nextTask = schedulableNodes.get(nodeIndex); //get the next available one
                     nextProcessor = schedule.getProcessors().get(processorIndex); //get the processor to schedule on
                 } else if (processorIndex < schedule.getProcessors().size() - 1){ //if there is still a processor that we haven't tried to schedule this node on
-                    nodeIndices.set(depth - minDepth, 0); //reset the node index
-                    processorIndices.set(depth - minDepth, processorIndices.get(depth - minDepth) + 1); //increment the processor index
+                    nodeIndices.set(depth, 0); //reset the node index
+                    processorIndices.set(depth, processorIndices.get(depth) + 1); //increment the processor index
 
-                    nodeIndex = nodeIndices.get(depth - minDepth);
-                    processorIndex = processorIndices.get(depth - minDepth);
+                    nodeIndex = nodeIndices.get(depth);
+                    processorIndex = processorIndices.get(depth);
 
                     nextTask = schedulableNodes.get(nodeIndex); //get the next available one
                     nextProcessor = schedule.getProcessors().get(processorIndex); //get the processor to schedule on
 
                 } else { //otherwise no more nodes can be scheduled at this depth
-                    nodeIndices.set(depth - minDepth, 0); //reset node index for that depth
-                    processorIndices.set(depth - minDepth, 0);
+                    nodeIndices.set(depth, 0); //reset node index for that depth
+                    processorIndices.set(depth, 0);
 
                     depth--; //go to previous depth
 
@@ -181,18 +183,24 @@ public class ParallelDFS implements Serializable {
                 //TODO make better (hypothetical next bound)
                 schedule.addTask(nextTask, nextProcessor, schedule.getEarliestSchedulableTime(nextTask, nextProcessor));
                 schedulableNodes = schedule.getSchedulableNodes();
-                nodeIndices.set(depth - minDepth, nodeIndices.get(depth - minDepth) + 1);
-
+                nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 
                 // kind of pruning
-                if (schedule.getBound() > upperBound) {
-                    schedule.removeLastScheduledTask();
-                    schedulableNodes = schedule.getSchedulableNodes();
+                if (schedule.getBound() > upperBound && depth != minDepth) {
+                    try {
+//                    System.out.println("depth is " + depth + " mindepth is " + minDepth);
+                        schedule.removeLastScheduledTask();
+                        schedulableNodes = schedule.getSchedulableNodes();
 
-                    depth--;
+                        depth--;
 
-                    if (depth < 0) {
-                        break;
+                        if (depth < 0) {
+                            break;
+                        }
+                    }
+                    catch (NullPointerException npe) {
+                        npe.printStackTrace();
+                        System.out.println(depth);
                     }
 
                 }
@@ -200,11 +208,21 @@ public class ParallelDFS implements Serializable {
                 depth++;
             }
 
+
+            boolean eIsScheduled = false;
+            for (TaskNode node : schedule.getScheduledNodes()) {
+                if (node.getName().equals("e")) {
+                    eIsScheduled = true;
+                    break;
+                }
+            }
+            System.out.println(eIsScheduled + " that e is scheduled");
+
+            depth--; //go to previous depth
+
             if (depth < minDepth) {
                 break;
             }
-
-            depth--; //go to previous depth
 
             if (finished) {
                 break;
@@ -226,7 +244,7 @@ public class ParallelDFS implements Serializable {
                 throw new NullPointerException("Something went wrong");
             }
 
-            nodeIndices.set(depth - minDepth, nodeIndices.get(depth - minDepth) + 1);
+            nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 
 
         }
@@ -234,8 +252,12 @@ public class ParallelDFS implements Serializable {
 //            System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
         if (optimalSchedule == null) {
             optimalSchedule = (Schedule) deepClone(schedule);
+            upperBound = optimalSchedule.getBound();
         }
+
+
         return optimalSchedule;
 
     }
+
 }

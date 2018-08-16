@@ -123,7 +123,7 @@ public class App extends Application{
 						//Transporting to output
 						Output.createOutput(finalSolution.getProcessors(), graph, parentPath + sendToOutputClass + "-output.dot");
 						System.out.println("output is done");
-//						System.exit(0);
+						System.exit(0);
 
 					} catch (NumberFormatException ex) {
 						System.out.println("Please enter a positive integer for the core number");

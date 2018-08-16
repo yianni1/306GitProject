@@ -100,6 +100,7 @@ public class ParallelScheduler implements Scheduler {
      */
     private void runBFS() {
 
+        System.out.println("starting bfs");
         int numberOfSchedules = 0; //The number of schedules at the current depth
         List<ParallelSchedule> temporarySchedulers = new ArrayList<ParallelSchedule>(); //List to store temporarily the children of the schedules
 
@@ -109,24 +110,25 @@ public class ParallelScheduler implements Scheduler {
         int depth = 0;
 
 
-        for (TaskNode node : schedulableNodes) {
-
-            numberOfSchedules++; //INcreasing the number of schedules
-            ParallelSchedule schedule = deepCloneSchedule(parallelSchedules.get(0), depth);
-
-            schedule.addTask(node, schedule.getProcessors().get(0), 0);
-            if (!(numberOfSchedules <= coreNumber)) { //If there are now more threads than max cores
-                schedule.setThread(temporarySchedulers.get(numberOverMaxCoreNumber), 1); //We give it the same thread
-                numberOverMaxCoreNumber++;
-
-            }
-            temporarySchedulers.add(schedule);
-
-        }
-        depth++;
-
-        //Updating the list of schedules to make memory easier
-        clearLists(temporarySchedulers);
+//        for (TaskNode node : schedulableNodes) {
+//
+//            numberOfSchedules++; //INcreasing the number of schedules
+//            System.out.println("number of schedules " + numberOfSchedules);
+//            ParallelSchedule schedule = deepCloneSchedule(parallelSchedules.get(0), depth);
+//
+//            schedule.addTask(node, schedule.getProcessors().get(0), 0);
+//            if (!(numberOfSchedules <= coreNumber)) { //If there are now more threads than max cores
+//                schedule.setThread(temporarySchedulers.get(numberOverMaxCoreNumber), 1); //We give it the same thread
+//                numberOverMaxCoreNumber++;
+//
+//            }
+//            temporarySchedulers.add(schedule);
+//
+//        }
+//        depth++;
+//
+//        //Updating the list of schedules to make memory easier
+//        clearLists(temporarySchedulers);
 
         while (numberOfSchedules < coreNumber) {
             depth++;

@@ -4,6 +4,7 @@ import exceptions.NotSchedulableException;
 import graph.TaskEdge;
 import graph.TaskGraph;
 import graph.TaskNode;
+import io.GraphLoader;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import scheduling.Processor;
@@ -167,6 +168,41 @@ public class ScheduleClassTests {
 
         //Tests bound of max processor in schedule when B is added on p2
         assertTrue(schedule.getBound() == 14);
+    }
+
+
+    @Test
+    public void testGetSchedulableNodes() {
+        GraphLoader loader = new GraphLoader();
+        TaskGraph graph = loader.load("src/main/resources/DotFiles/threeParents.dot");
+
+        Schedule schedule = new Schedule(2, graph);
+
+        TaskNode a = null;
+        TaskNode e = null;
+        for (TaskNode node : graph.getNodes()) {
+            if (node.getName().equals("a")) {
+                a = node;
+            }
+            else if (node.getName().equals("e")) {
+                e = node;
+            }
+        }
+
+        schedule.addTask(a, schedule.getProcessors().get(0), 0);
+
+        for (TaskNode node : graph.getNodes()) {
+            if (!node.equals(e) && !node.equals(a)) {
+
+                schedule.addTask(node, schedule.getProcessors().get(0), schedule.getEarliestSchedulableTime(node, schedule.getProcessors().get(0)));
+                System.out.println(node.getName());
+            }
+        }
+
+
+
+        assertEquals(schedule.getSchedulableNodes().size(),1); //&& schedule.getScheduledNodes().size() == 1);
+
     }
 
 

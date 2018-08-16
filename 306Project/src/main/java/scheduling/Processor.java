@@ -1,5 +1,6 @@
 package scheduling;
 
+import data.ListMap;
 import exceptions.NotSchedulableException;
 import exceptions.NotDeschedulableException;
 import exceptions.TaskException;
@@ -18,8 +19,7 @@ import java.util.Map;
 public class Processor implements Serializable {
 
     private int procID;
-    private List<String> taskNames = new ArrayList<String>();
-    private Map<String, TaskNode> tasks = new HashMap<String, TaskNode>();
+    private ListMap<String, TaskNode> tasks = new ListMap<String, TaskNode>();
 
     /**
      * The processor with a number
@@ -50,8 +50,7 @@ public class Processor implements Serializable {
             throw new TaskException("The startTime cannot be lower than the bound");
         }
 
-        taskNames.add(node.getName());
-        tasks.put(node.getName(), node);
+        tasks.add(node.getName(), node);
 
         node.schedule(startTime, this);
 //        }
@@ -63,9 +62,17 @@ public class Processor implements Serializable {
      * @param node
      */
     public synchronized void removeTask(TaskNode node) throws NotDeschedulableException {
-        tasks.remove(node.getName());
-        taskNames.remove(node.getName());
-        node.deschedule();
+//        try {
+            tasks.remove(node.getName());
+            node.deschedule();
+//            if (node.getName().equals("2")) {
+//                throw new NullPointerException();
+//            }
+
+//        }
+//        catch (NullPointerException npex) {
+//            npex.printStackTrace();
+//        }
     }
 
     /**
@@ -74,15 +81,21 @@ public class Processor implements Serializable {
      */
     public synchronized int getBound() {
         int bound = 0;
-        for (String nodeName : taskNames) {
+        for (String nodeName : tasks.getList()) {
             TaskNode node = tasks.get(nodeName);
-//            if (node != null) {
+//            try {
+            if (node != null) {
                 if (node.getEndTime() > bound) {
                     bound = node.getEndTime();
                 }
+            }
+//            } catch (NullPointerException npex) {
+//                npex.printStackTrace();
+//                System.out.println("node name is " + nodeName);
 //            }
-        }
 
+
+        }
         return bound;
     }
 
@@ -92,13 +105,20 @@ public class Processor implements Serializable {
      */
     public List<TaskNode> getTasks() {
         List<TaskNode> tasks = new ArrayList<TaskNode>();
-        for (String name : taskNames) {
-            if (this.tasks.get(name) != null) {
-                tasks.add(this.tasks.get(name));
-            }
+        for (String name : this.tasks.getList()) {
+            tasks.add(this.tasks.get(name));
         }
         return tasks;
 
+    }
+
+    /**
+     * Returns the list of
+     * names of all the tasks
+     * @return
+     */
+    public List<String> getTaskNames() {
+        return tasks.getList();
     }
 }
 

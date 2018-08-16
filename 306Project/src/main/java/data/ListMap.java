@@ -20,9 +20,26 @@ public class ListMap<K, V> implements Serializable{
      * @param key
      * @param value
      */
-    public void add(K key, V value) {
-        list.add(key);
-        map.put(key, value);
+    public synchronized void add(K key, V value) {
+//        if (list.size() != map.size()) {
+//            System.out.println(key + " " + value);
+//            System.out.println(list.size() + " " + map.size());
+//            throw new ListException();
+//        }
+//        if (!list.contains(key)) {
+            list.add(key);
+            map.put(key, value);
+//        }
+//        if (list.size() != map.size()) {
+//            System.out.println(key + " " + value);
+//            System.out.println(list.size() + " " + map.size());
+//            String list = "";
+//            for (K listValue : this.list) {
+//                list += " " + listValue.toString();
+//            }
+//            System.out.println(list);
+//            throw new ListException();
+//        }
     }
 
     /**
@@ -30,9 +47,24 @@ public class ListMap<K, V> implements Serializable{
      * corresponding to the key
      * @param key
      */
-    public void remove(K key) {
+    public synchronized void remove(K key) {
         list.remove(key);
         map.remove(key);
+//        if (key.equals("b")) {
+//            System.out.println("removing b");
+//        }
+//        if (list.size() != map.size()) {
+//            System.out.println("something went wrong");
+//            System.out.println(key);
+//            throw new ListException();
+//        }
+        List<K> newList = new ArrayList<>();
+        for (K k : list) {
+            if (!k.equals(key)) {
+                newList.add(k);
+            }
+        }
+        list = newList;
     }
 
     /**
@@ -40,15 +72,19 @@ public class ListMap<K, V> implements Serializable{
      * @param key
      * @return
      */
-    public V get(K key) {
+    public synchronized V get(K key) {
         return map.get(key);
+    }
+
+    public synchronized K get(int index) {
+        return list.get(index);
     }
 
     /**
      * Gets the List of keys
      * @return the list of keys
      */
-    public List<K> getList() {
+    public synchronized List<K> getList() {
         return list;
     }
 
