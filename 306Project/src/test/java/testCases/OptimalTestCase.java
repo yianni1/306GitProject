@@ -26,7 +26,7 @@ public class OptimalTestCase extends CompareOutput {
 	@Test
 	public void test() throws IOException, URISyntaxException {
 		GraphLoader loader = new GraphLoader();
-		TaskGraph graph = loader.load("src/main/resources/DotFiles/OptimalTest.dot");
+		TaskGraph graph = loader.load("src/main/resources/DotFiles/CustomOptimalSmallGraphTest.dot");
 
 		String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
 		File parent = new File(path);
