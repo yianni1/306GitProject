@@ -98,7 +98,8 @@ public class Schedule implements Serializable {
 //            System.out.print(tn.getName() + ", ");
 //        }
 //        System.out.println();
-        List<TaskNode> nodes = new ArrayList<>();
+
+        List<TaskNode> nodes = new ArrayList<TaskNode>();
         for (String name : schedulableNodesNames) {
             if (schedulableNodes.get(name) != null) {
                 nodes.add(schedulableNodes.get(name));
@@ -192,6 +193,10 @@ public class Schedule implements Serializable {
         return sorted;
     }
 
+    /**
+     * This method sorts the scheduable nodes in an alphabetical order as per the taskNames that were attributed
+     * @return SortedTN
+     */
     private List<String> sortSchedulableNodesAlphabetically() {
 
         // Sort the tasknodes aphabetically.
