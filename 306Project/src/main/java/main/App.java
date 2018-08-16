@@ -7,15 +7,13 @@ import java.net.URISyntaxException;
 import graph.TaskGraph;
 import io.GraphLoader;
 import io.Output;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
-import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -25,10 +23,9 @@ import org.apache.commons.cli.Options;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import scheduling.DFBnBScheduler;
-import scheduling.GreedyScheduler;
 import scheduling.Schedule;
 import scheduling.Scheduler;
-import view.RootLayout;
+import view.VisualisationController;
 
 /**
  * This is the main application, this is written so that it is compatible with Java Fx using the start method account
@@ -116,13 +113,22 @@ public class App extends Application{
 				try {
 					//Load the root layout from the fxml file
 					FXMLLoader fxmlLoader = new FXMLLoader();
-					Parent root = fxmlLoader.load(getClass().getResource("/view/RootLayout.fxml").openStream());
+					Parent root = fxmlLoader.load(getClass().getResource("/view/Visualisation.fxml").openStream());
 
-					RootLayout controller = fxmlLoader.getController();
+					VisualisationController controller = fxmlLoader.getController();
 
 					controller.setFileName(fileName);
 					controller.setProcessorNumber(processorNumber);
 					controller.setCoreNumber(numCores);
+
+					primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+						@Override
+						public void handle(WindowEvent t) {
+							Platform.exit();
+							System.exit(0);
+							controller.closeViewer();
+						}
+					});
 
 					//scene showing the root layout is displayed
 					Scene scene = new Scene(root);

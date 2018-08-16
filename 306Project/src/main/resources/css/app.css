@@ -2,7 +2,7 @@
 }
 
 .top-pane {
-    -fx-background-color: #607d8b;
+    -fx-background-color: #4c5256;
 }
 
 .btn-start {
@@ -11,6 +11,40 @@
 
 .chart-pane {
     -fx-background-color: #FFFFFF;
+}
+
+.start-pane {
+    -fx-background-color: #479761;
+}
+
+.start-pane-running {
+    -fx-background-color: #9E5A63;
+}
+
+.time-pane {
+    -fx-background-color: #0e3147;
+}
+
+.stats-pane {
+    -fx-background-color: #487698;
+}
+
+.num-paths-pane {
+    -fx-background-color: #3B8BEB;
+}
+
+.branches-pruned-pane {
+    -fx-background-color: #5DA2D5;
+}
+
+.chart {
+    -fx-font-family: "Roboto Light";
+}
+
+/*
+
+.top-pane {
+    -fx-background-color: #607d8b;
 }
 
 .start-pane {
@@ -27,8 +61,4 @@
 
 .num-paths-pane {
     -fx-background-color: #fe7675;
-}
-
-.chart {
-    -fx-font-family: "Roboto Light";
-}
+}*/

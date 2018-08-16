@@ -5,7 +5,7 @@ import exceptions.NotDeschedulableException;
 import graph.TaskEdge;
 import graph.TaskGraph;
 import graph.TaskNode;
-import view.RootLayout;
+import view.VisualisationController;
 
 
 import java.io.ByteArrayInputStream;
@@ -22,12 +22,13 @@ import java.util.concurrent.TimeUnit;
  */
 public class DFBnBScheduler implements Scheduler{
 
-	private RootLayout scheduleListener;
+	private VisualisationController scheduleListener;
 
 	private TaskGraph graph;
 	private int upperBound;
 	private int depth;
-	private int numPaths;
+	private long numPaths;
+	private long branchesPruned;
 
 	// Index of the children of the schedule.
 	private List<Integer> nodeIndices;
@@ -50,9 +51,12 @@ public class DFBnBScheduler implements Scheduler{
 
 		//initialize depth, upperBound, and current time of the schedule
 		depth = 0;
-		numPaths = 0;
+		numPaths = 1;
+		branchesPruned = 0;
 
 		Schedule greedySchedule = new GreedyScheduler(graph, processors).createSchedule();
+
+		optimalSchedule = (Schedule) deepClone(greedySchedule); //set greedy schedule to be initial optimal schedule
 
 		upperBound = greedySchedule.getBound();
 
@@ -69,6 +73,11 @@ public class DFBnBScheduler implements Scheduler{
 	 * @throws NotSchedulableException Task not Schedulable
 	 */
 	public Schedule createSchedule() throws NotDeschedulableException, NotSchedulableException {
+
+		if (scheduleListener != null) { //update initial best schedule in gui
+			updateGUISchedule();
+			scheduleListener.updateNumPaths(numPaths);
+		}
 
 
 		TaskNode nextTask;
@@ -182,6 +191,12 @@ public class DFBnBScheduler implements Scheduler{
 					schedule.removeLastScheduledTask();
 					schedulableNodes = schedule.getSchedulableNodes();
 
+					branchesPruned++;
+					if (scheduleListener != null && (System.currentTimeMillis() % 100 == 0)) { //update visualisation with new number of branches pruned
+						scheduleListener.updateBranchesPruned(branchesPruned);
+					}
+
+
 					depth--;
 
 					if (depth < 0) {
@@ -207,31 +222,33 @@ public class DFBnBScheduler implements Scheduler{
 				optimalSchedule = (Schedule) deepClone(schedule);
 				upperBound = schedule.getBound();
 				if (scheduleListener != null) { //update visualisation with new optimal schedule
-					updateGUISchedule(false);
+					updateGUISchedule();
+					scheduleListener.updateNumPaths(numPaths);
 				}
 			}
 
 			if (schedule.getScheduledNodes().size() > 0) {
 				schedule.removeLastScheduledTask();
 				numPaths++;
-				if (scheduleListener != null) { //update visualisation with new number of paths
+				if (scheduleListener != null && (System.currentTimeMillis() % 100 == 0)) { //update visualisation with new number of paths
 					scheduleListener.updateNumPaths(numPaths);
 				}
 			}
 
+
+
 			schedulableNodes = schedule.getSchedulableNodes();
-
-
-
-			//                nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 
 
 		}
 
 		System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
 		if (scheduleListener != null) {
-			updateGUISchedule(true);
-		}
+            updateGUISchedule();;
+			scheduleListener.updateNumPaths(numPaths);
+			scheduleListener.updateBranchesPruned(branchesPruned);
+			scheduleListener.finish();
+        }
 		return optimalSchedule;
 
 	}
@@ -320,29 +337,29 @@ public class DFBnBScheduler implements Scheduler{
 	public int criticalPath(TaskNode node) {
 		return dfsCriticalPath(node) + node.getWeight();
 	}
-	
+
 	/**
 	 * This is used to find the highest critical path Does the DFS over the tree.
 	 * @param node The node we're finding the critical path for.
 	 * @return int: The highest critical path for that node's children.
 	 */
 	private int dfsCriticalPath(TaskNode node) {
-		
+
 		int ans = 0;
-		
+
 		//Loop through all children
 		for (TaskEdge edge : node.getOutgoingEdges()) {
 			TaskNode child = edge.getEndNode();
-			
+
 			//Do recursion as described by oliver's task scheduling for bottom level path
 			int temp = dfsCriticalPath(child) + child.getWeight();
-			
+
 			//Select the maximum weight of the current path
 			if (temp > ans) {
 				ans = temp;
 			}
 		}
-		
+
 		return ans;
 	}
 
@@ -449,14 +466,14 @@ public class DFBnBScheduler implements Scheduler{
 
 	}
 
-	public void setScheduleListener(RootLayout listener) {
+	public void setScheduleListener(VisualisationController listener) {
 		this.scheduleListener = listener;
 	}
 
-	private void updateGUISchedule (boolean done) {
-		scheduleListener.updateSchedule(optimalSchedule, done);
+	private void updateGUISchedule () {
+		scheduleListener.updateSchedule(optimalSchedule);
 		try {
-			TimeUnit.MILLISECONDS.sleep(100);
+			TimeUnit.MILLISECONDS.sleep(200);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
