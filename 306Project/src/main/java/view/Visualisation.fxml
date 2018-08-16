@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="rootPane" prefHeight="800.0" prefWidth="1280.0" stylesheets="@/css/app.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.RootLayout">
+<AnchorPane id="rootPane" prefHeight="800.0" prefWidth="1280.0" stylesheets="@/css/app.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.VisualisationController">
    <children>
       <ImageView fitHeight="800.0" fitWidth="1280.0" pickOnBounds="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <image>
@@ -48,7 +48,7 @@
                   <Font name="Roboto Light" size="36.0" />
                </font>
             </Label>
-            <Label layoutX="14.0" layoutY="58.0" text="click to start" textFill="WHITE" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="90.0">
+            <Label fx:id="lblProgress" layoutX="14.0" layoutY="58.0" text="click to start" textFill="WHITE" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="90.0">
                <font>
                   <Font name="Roboto Light" size="14.0" />
                </font></Label>
@@ -79,7 +79,7 @@
                </font>
             </Label>
          </children></AnchorPane>
-      <AnchorPane fx:id="numPathsPane" layoutX="544.0" layoutY="75.0" prefHeight="200.0" prefWidth="300.0" styleClass="num-paths-pane" stylesheets="@/css/app.css" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="80.0">
+      <AnchorPane fx:id="numPathsPane" layoutX="544.0" layoutY="75.0" prefHeight="90.0" prefWidth="300.0" styleClass="num-paths-pane" stylesheets="@/css/app.css" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="80.0">
          <children>
             <Label fx:id="lblNumPaths" text="0" textFill="WHITE" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="15.0">
                <font>
@@ -91,12 +91,16 @@
                   <Font name="Roboto Light" size="14.0" />
                </font>
             </Label>
-            <Label fx:id="lblBranchesPruned" layoutX="40.0" layoutY="25.0" text="0" textFill="WHITE" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="90.0">
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="branchesPrunedPane" layoutX="974.0" layoutY="90.0" prefHeight="90.0" prefWidth="300.0" styleClass="branches-pruned-pane" stylesheets="@/css/app.css" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="190.0">
+         <children>
+            <Label fx:id="lblBranchesPruned" text="0" textFill="WHITE" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="15.0">
                <font>
                   <Font name="Roboto Light" size="36.0" />
                </font>
             </Label>
-            <Label layoutX="50.0" layoutY="70.0" text="branches pruned" textFill="WHITE" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="140.0">
+            <Label text="branches pruned" textFill="WHITE" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="60.0">
                <font>
                   <Font name="Roboto Light" size="14.0" />
                </font>

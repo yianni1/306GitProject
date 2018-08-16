@@ -26,6 +26,7 @@ import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
+import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.Viewer;
 import scheduling.DFBnBScheduler;
 import scheduling.Processor;
@@ -42,9 +43,9 @@ import java.util.ResourceBundle;
 
 
 /**
- * Written by Kevin.
+ * Written by Kevin. Controls visualisation elements + running scheduler on a background thread.
  */
-public class RootLayout implements Initializable{
+public class VisualisationController implements Initializable{
 
 
     @FXML
@@ -55,6 +56,9 @@ public class RootLayout implements Initializable{
 
     @FXML
     private Label lblStart;
+
+    @FXML
+    private Label lblProgress;
 
     @FXML
     private Label lblBound;
@@ -87,6 +91,9 @@ public class RootLayout implements Initializable{
     private AnchorPane numPathsPane;
 
     @FXML
+    private AnchorPane branchesPrunedPane;
+
+    @FXML
     private StackedBarChart stackedBarChart;
 
     private String fileName;
@@ -105,19 +112,23 @@ public class RootLayout implements Initializable{
 
 
     public void initialize(URL url, ResourceBundle rb) {
-        JFXDepthManager.setDepth(chartPane, 1);
-        JFXDepthManager.setDepth(graphPane, 1);
-        JFXDepthManager.setDepth(startPane, 1);
-        JFXDepthManager.setDepth(timePane, 1);
-        JFXDepthManager.setDepth(statsPane, 1);
-        JFXDepthManager.setDepth(numPathsPane, 1);
+        //JFoenix depth for material design effect
+        JFXDepthManager.setDepth(chartPane, 2);
+        JFXDepthManager.setDepth(graphPane, 2);
+        JFXDepthManager.setDepth(startPane, 2);
+        JFXDepthManager.setDepth(timePane, 2);
+        JFXDepthManager.setDepth(statsPane, 2);
+        JFXDepthManager.setDepth(numPathsPane, 2);
+        JFXDepthManager.setDepth(branchesPrunedPane, 2);
 
+        //set panes opacity
         chartPane.setOpacity(0.7);
         graphPane.setOpacity(0.6);
 
         stackedBarChart.setAnimated(false);
         stackedBarChart.setLegendVisible(false);
 
+        //start timeline for time elapsed pane
         timeline = new Timeline(new KeyFrame(Duration.millis(1), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -128,84 +139,94 @@ public class RootLayout implements Initializable{
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.setAutoReverse(false);
 
-
-
-        Graph graph = new MultiGraph("embedded");
-        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
-
-
-
-//        stackedBarChart.setVisible(false);
-
     }
 
+    /**
+     * Creates input graph to be displayed.
+     */
     public void createGraph() {
+        //set title
         lblTitle.setText("Scheduling on " + processorNumber + " processor(s) with " + coreNumber + " core(s) - " + fileName);
         GraphLoader loader = new GraphLoader(); //Loading the graph
 
         String path = null;
+
         try {
+            //get path
             path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+
+            File parent = new File(path);
+            String parentPath = parent.getParent() + File.separator;
+            Graph graph = loader.loadGraph(parentPath + fileName);
+
+            graph.addAttribute("ui.quality");
+            graph.addAttribute("ui.antialias");
+
+            //add node labels
+            for (Node node : graph.getNodeSet()) {
+                node.addAttribute("ui.label", node.toString() + " : " + node.getAttribute("Weight").toString());
+            }
+
+            //add edge labels
+            for (Edge edge: graph.getEdgeSet()) {
+                edge.addAttribute("ui.label", edge.getAttribute("Weight").toString());
+            }
+
+            //set graph style
+            graph.addAttribute("ui.stylesheet",
+                    "node { " +
+                            "shape: box; " +
+                            "stroke-mode: plain; " +
+                            "size-mode: fit; " +
+                            "text-mode: normal; " +
+                            "text-background-mode: rounded-box; " +
+                            "text-background-color: black; " +
+                            "text-color: white; " +
+                            "text-style: normal; " +
+                            "text-alignment: center; " +
+                            "text-padding: 3px; " +
+                            "text-size: 12px; " +
+                            " }" +
+                            "edge { " +
+                            "arrow-size: 20px, 5px; " +
+                            "text-alignment: under; " +
+                            "text-size: 12px; " +
+                            " }");
+
+            // initialise GraphStream graph on a Swing thread
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+                    viewer.enableAutoLayout();
+                    JPanel view = viewer.addDefaultView(false);
+                    view.setPreferredSize(new Dimension(((Double) graphPane.getWidth()).intValue(), ((Double) graphPane.getHeight()).intValue()));
+
+                    javafx.application.Platform.runLater(new Runnable() {
+                        @Override public void run() {
+                            SwingNode swingNode = new SwingNode();
+                            swingNode.setContent(view);
+                            graphPane.getChildren().add(swingNode);
+                            graphPane.requestLayout();
+                        }
+                    });
+
+                }
+            });
+
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        File parent = new File(path);
-        String parentPath = parent.getParent() + File.separator;
-        Graph graph = loader.loadGraph(parentPath + fileName);
-
-        for (Node node : graph.getNodeSet()) {
-            node.addAttribute("ui.label", node.toString() + " : " + node.getAttribute("Weight").toString());
-        }
-
-        for (Edge edge: graph.getEdgeSet()) {
-            edge.addAttribute("ui.label", edge.getAttribute("Weight").toString());
-        }
-
-        graph.addAttribute("ui.stylesheet",
-                "node { " +
-                        "shape: box; " +
-                        "stroke-mode: plain; " +
-                        "size-mode: fit; " +
-                        "text-mode: normal; " +
-                        "text-background-mode: rounded-box; " +
-                        "text-background-color: black; " +
-                        "text-color: white; " +
-                        "text-style: normal; " +
-                        "text-alignment: center; " +
-                        "text-padding: 3px; " +
-                        "text-size: 12px; " +
-                        " }" +
-                        "edge { " +
-                        "arrow-size: 20px, 5px; " +
-                        "text-alignment: under; " +
-                        "text-size: 12px; " +
-                        " }");
 
 
 
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
-                JPanel view = viewer.addDefaultView(false);
-                view.setPreferredSize(new Dimension(500, 450));
 
-                viewer.enableAutoLayout();
-
-                javafx.application.Platform.runLater(new Runnable() {
-                    @Override public void run() {
-                        SwingNode swingNode = new SwingNode();
-                        swingNode.setContent(view);
-                        graphPane.getChildren().add(swingNode);
-                        graphPane.requestLayout();
-                    }
-                });
-
-            }
-        });
     }
 
+    /**
+     * Closes the GraphStream viewer
+     */
     public void closeViewer() {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -215,6 +236,9 @@ public class RootLayout implements Initializable{
         });
     }
 
+    /**
+     * Updates the timer
+     */
     private void updateTimer() {
         if(millis == 1000) {
             secs++;
@@ -230,8 +254,11 @@ public class RootLayout implements Initializable{
 
     }
 
-
-    public void updateNumPaths(int numPaths) {
+    /**
+     * Updates number of paths. Called from scheduler.
+     * @param numPaths the number of paths explored
+     */
+    public void updateNumPaths(long numPaths) {
             Platform.runLater(new Runnable() {
                 public void run() {
                     lblNumPaths.setText("" + numPaths);
@@ -239,7 +266,11 @@ public class RootLayout implements Initializable{
             });
     }
 
-    public void updateBranchesPruned(int branchesPruned) {
+    /**
+     * Updates branches pruned. Called from scheduler.
+     * @param branchesPruned the number of branches pruned
+     */
+    public void updateBranchesPruned(long branchesPruned) {
         Platform.runLater(new Runnable() {
             public void run() {
                 lblBranchesPruned.setText("" + branchesPruned);
@@ -247,10 +278,17 @@ public class RootLayout implements Initializable{
         });
     }
 
+    /**
+     * Updates GUI state to done. Called from scheduler.
+     */
     public void finish() {
         Platform.runLater(new Runnable() {
            public void run() {
                lblStart.setText("Done!");
+               stackedBarChart.setTitle("Optimal Schedule");
+               lblProgress.setText("click to restart");
+               startPane.getStyleClass().clear();
+               startPane.getStyleClass().add("start-pane");
                btnStart.setDisable(false);
                timeline.pause();
            }
@@ -258,14 +296,17 @@ public class RootLayout implements Initializable{
 ;
     }
 
-    public void updateSchedule(Schedule schedule) {
-        final Schedule test = schedule;
+    /**
+     * Updates Gantt chart of the current best schedule.
+     * @param schedule the current best schedule
+     */
+    public void updateSchedule(final Schedule schedule) {
         Platform.runLater(new Runnable() {
             public void run() {
                 stackedBarChart.getData().clear();
                 lblBound.setText("" + schedule.getBound());
                 // translates schedule to series to show on stacked bar chart
-                for (Processor processor : test.getProcessors()) {
+                for (Processor processor : schedule.getProcessors()) {
                     int time = 0;
                     for (TaskNode task : processor.getTasks()) {
                         XYChart.Series series = new XYChart.Series<String, Number>();
@@ -306,10 +347,15 @@ public class RootLayout implements Initializable{
     private void btnStartHandler(ActionEvent event) {
         btnStart.setDisable(true);
         stackedBarChart.getData().clear();
+        stackedBarChart.setTitle("Current Best Schedule");
         lblBound.setText("0");
         lblNumPaths.setText("0");
         lblStart.setText("Running...");
+        startPane.getStyleClass().clear();
+        startPane.getStyleClass().add("start-pane-running");
+        lblProgress.setText("scheduling in progress");
         lblTime.setText("00:00:000");
+        lblBranchesPruned.setText("0");
         mins = 0;
         secs = 0;
         millis = 0;
@@ -318,6 +364,9 @@ public class RootLayout implements Initializable{
 
     }
 
+    /**
+     * Creates a background thread and calls runTask().
+     */
     private void startTask() {
         Runnable task = new Runnable() {
             public void run() {
@@ -330,6 +379,9 @@ public class RootLayout implements Initializable{
         backgroundThread.start();
     }
 
+    /**
+     * Starts the scheduler.
+     */
     private void runTask() {
         try {
             String outputN = fileName.substring(0, fileName.length() - 4);
