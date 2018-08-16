@@ -14,7 +14,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -43,9 +42,9 @@ public class DFBnBScheduler implements Scheduler{
 	public DFBnBScheduler(TaskGraph graph, int processors) {
 		this.graph = graph;
 
-		initialNodes = new ArrayList<TaskNode>();
-		nodeIndices = new ArrayList<Integer>();
-		processorIndices = new ArrayList<Integer>();
+		initialNodes = new ArrayList<>();
+		nodeIndices = new ArrayList<>();
+		processorIndices = new ArrayList<>();
 		schedule = new Schedule(processors, graph);
 		schedulableNodes = schedule.getSchedulableNodes();
 
@@ -63,14 +62,19 @@ public class DFBnBScheduler implements Scheduler{
 
 	}
 
-
+	/**
+	 * Returns the schedule according to DFSBnB
+	 * @return Schedule object for the schedule
+	 * @throws NotDeschedulableException Task not deSchedulable
+	 * @throws NotSchedulableException Task not Schedulable
+	 */
 	public Schedule createSchedule() throws NotDeschedulableException, NotSchedulableException {
-		//initialize upperBound
 
-		TaskNode nextTask = null;
-		Processor nextProcessor = null;
-		int nodeIndex = 0;
-		int processorIndex = 0;
+
+		TaskNode nextTask;
+		Processor nextProcessor;
+		int nodeIndex;
+		int processorIndex;
 
 		//Variables to know when all initial nodes have been looped through
 		boolean finished = false;
@@ -84,7 +88,7 @@ public class DFBnBScheduler implements Scheduler{
 			while (schedulableNodes.size() > 0) { //while there are still nodes to schedule
 				// System.out.println("Searching at depth " + depth + " with bound " + schedule.getBound());
 
-				//Determine wheather initial nodes have been repeated
+				//Determine whether initial nodes have been repeated
 				finished = removeReplicatedTree(initialIteration);
 
 				initialIteration = false;
@@ -198,7 +202,7 @@ public class DFBnBScheduler implements Scheduler{
 			if (finished) {
 				break;
 			}
-			//TODO clone schedule and set optimal schedule to be this schedule
+
 			if (schedule.getBound() < upperBound || optimalSchedule == null) {
 				optimalSchedule = (Schedule) deepClone(schedule);
 				upperBound = schedule.getBound();
@@ -226,7 +230,7 @@ public class DFBnBScheduler implements Scheduler{
 
 		System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
 		if (scheduleListener != null) {
-			updateGUISchedule(true);;
+			updateGUISchedule(true);
 		}
 		return optimalSchedule;
 
@@ -235,7 +239,7 @@ public class DFBnBScheduler implements Scheduler{
 	/**
 	 * This method makes a "deep clone" of any object it is given.
 	 */
-	public static Object deepClone(Object object) {
+	private static Object deepClone(Object object) {
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -252,7 +256,7 @@ public class DFBnBScheduler implements Scheduler{
 
 	/**
 	 * Calculates the cost function for a TaskNode on a Processor
-	 * @param nextTask The tasknode we are looking at scheduling
+	 * @param nextTask The taskNode we are looking at scheduling
 	 * @param nextProcessor The processor we are looking at scheduling it on
 	 * @return The 'cost' for scheduling that task on that processor
 	 */
@@ -295,16 +299,14 @@ public class DFBnBScheduler implements Scheduler{
 		}
 
 		// Can't call getStartTime on the child node because we haven't scheduled it yet.
-		int childStartTime = 0;
-		childStartTime = Math.max(schedule.getEarliestSchedulableTime(nextTask, nextProcessor), childStartTime);
+		int childStartTime = schedule.getEarliestSchedulableTime(nextTask, nextProcessor);
 		fblTemp = childStartTime + criticalPath(nextTask);
 		fblMax = Math.max(fblMax, fblTemp);
 
 		// TODO: fDRT calculation
 
 
-//		int heuristic = Math.max(fblMax, fIdle);
-//		child.setCostFunction(heuristic);
+//		child.setCostFunction(Math.max(fblMax, fIdle));
 
 		// TODO: Double check if this should be max or min.
 		return Math.max(fblMax, fIdle);
@@ -348,7 +350,7 @@ public class DFBnBScheduler implements Scheduler{
 
 
 	/**
-	 * This method removes replciated parts of the tree depending on the number of initial nodes
+	 * This method removes replicated parts of the tree depending on the number of initial nodes
 	 * @param initialIteration Is this the first iteration?
 	 * @return boolean determining weather to finish the algorithm
 	 */
@@ -364,7 +366,7 @@ public class DFBnBScheduler implements Scheduler{
 			//Loop through initial nodes
 			while (addedNode == false) {
 				TaskNode node = schedulableNodes.get(index);
-				//If initalNode not been seen, add it to list 
+				//If initialNode not been seen, add it to list
 				// Then break to look through all of its children 
 				if (!initialNodes.contains(node)) {
 					initialNodes.add(node);
@@ -372,7 +374,7 @@ public class DFBnBScheduler implements Scheduler{
 				}
 				index++;
 			}
-			//If all initial nodes have been seen, set finished to true to finish the algorithum
+			//If all initial nodes have been seen, set finished to true to finish the algorithm
 			//As the optimal solution has been found
 			if (initialNodes.equals(schedulableNodes)) {
 				finished = true;
@@ -387,11 +389,11 @@ public class DFBnBScheduler implements Scheduler{
 
 	/**
 	 * This method skips duplicate nodes from the tree
-	 * @param nodeIndex
-	 * @param processorIndex
-	 * @param nextTask
-	 * @param nextProcessor
-	 * @return boolean wheather to skip the current node
+	 * @param nodeIndex The index of the nextTask
+	 * @param processorIndex The index of the nextProcessor
+	 * @param nextTask The potential next task
+	 * @param nextProcessor The processor the task would be scheduled on
+	 * @return boolean whether to skip the current node
 	 */
 	private boolean removeDuplicates(int nodeIndex, int processorIndex, TaskNode nextTask, Processor nextProcessor) {
 
@@ -401,7 +403,7 @@ public class DFBnBScheduler implements Scheduler{
 		for (TaskEdge edge : nextTask.getIncomingEdges()) {
 			TaskNode parent = edge.getStartNode();
 
-			//Statment to determine if current processor has no parent nodes of current node
+			//Statement to determine if current processor has no parent nodes of current node
 			if (!parent.getProcessor().equals(nextProcessor)) {
 				parentsOnSameProcessor = false;
 			}
