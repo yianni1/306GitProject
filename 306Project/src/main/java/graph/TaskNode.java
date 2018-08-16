@@ -1,12 +1,15 @@
 package graph;
 
+import exceptions.NotSchedulableException;
+import exceptions.NotDeschedulableException;
 import scheduling.Processor;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class TaskNode {
+public class TaskNode implements Serializable {
     private int weight;
     private String name;
     private boolean scheduled;
@@ -28,15 +31,16 @@ public class TaskNode {
 
     /**
      *
-     * Sets the status of this node to scheduled, assigning a start time and a processor.
+     * The Status of the node is set to scheduled which assigns the attributes of start time and a processor.
      *
-     * @param startTime the time at which the node is scheduled
-     * @param processor the processor that this node has been scheduled on
+     * @param startTime The time that the node is scheduled in the scheduler
+     * @param processor the processor that the particular node is scheduled on
      * @return
      */
-    public boolean schedule(int startTime, Processor processor) {
+    public boolean schedule(int startTime, Processor processor) throws NotSchedulableException {
         if (!this.isSchedulable()) {
-            return false;
+            // System.out.println("Scheduling task " + this.name + " is invalid.");
+            throw new NotSchedulableException();
         }
         this.startTime = startTime;
         this.processor = processor;
@@ -48,9 +52,10 @@ public class TaskNode {
      * Resets this node to its unscheduled state.
      * @return
      */
-    public boolean deschedule() {
-        if (this.isSchedulable()) {
-            return false;
+    public boolean deschedule() throws NotDeschedulableException {
+        if (!this.isDeschedulable()) {
+            // System.out.println("Unscheduled node attempted to be descheduled.");
+            throw new NotDeschedulableException();
         }
         this.startTime = -1;
         this.processor = null;
@@ -64,6 +69,10 @@ public class TaskNode {
      */
     public int getEndTime() {
         return this.startTime + this.weight;
+    }
+
+    public int getStartTime() {
+    	return this.startTime;
     }
 
     /**
@@ -113,10 +122,6 @@ public class TaskNode {
     public boolean isScheduled() {
         return scheduled;
     }
-    
-    public void schedule() {
-    	scheduled = true;
-    }
 
     /**
      * Checks whether this node is schedulable.
@@ -136,6 +141,22 @@ public class TaskNode {
     }
 
     /**
+     * Checks if the node is deschedulable (it's children are not scheduled).
+     */
+    public boolean isDeschedulable() {
+        if (!this.isScheduled()) {
+            return false;
+        }
+
+        for (TaskEdge e: outgoingEdges) {
+            if (e.getEndNode().isScheduled()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Returns the name of this node.
      * @return
      */
@@ -143,6 +164,10 @@ public class TaskNode {
         return name;
     }
 
+    /**
+     * Returns the processor that the node is currently on.
+     * @return
+     */
     public Processor getProcessor() {
         return processor;
     }

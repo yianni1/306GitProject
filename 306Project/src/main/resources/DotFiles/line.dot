@@ -1,0 +1,11 @@
+digraph "GraphWithThreeParents" {
+	a	 [Weight=7];
+	b	 [Weight=7];
+	c	 [Weight=6];
+	d	 [Weight=12];
+	e	 [Weight=3];
+	a->b	 [Weight=2];
+	b->c	 [Weight=3];
+	c->d	 [Weight=12];
+	d->e	 [Weight=7];
+}

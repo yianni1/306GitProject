@@ -4,9 +4,6 @@ import graph.TaskEdge;
 import graph.TaskGraph;
 import graph.TaskNode;
 import scheduling.Processor;
-import scheduling.Schedule;
-import scheduling.SimpleScheduler;
-import scheduling.SolutionTree;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -18,9 +15,7 @@ import java.util.List;
  */
 public class Output {
  
-    private static final String FILEPATH = "src/main/resources/DotFiles/";
     private static File file;
-    private static String outputFileName;
 
     /**
      * Creates the output file. For the first submission, we will be using
@@ -33,7 +28,7 @@ public class Output {
 
 
         //Creating the file
-        String fileName = FILEPATH + outputFileName + "-output.dot";
+        String fileName = outputFileName;
         file = new File(fileName);
         try {
             file.createNewFile();

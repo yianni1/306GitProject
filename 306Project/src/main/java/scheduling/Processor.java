@@ -1,20 +1,21 @@
 package scheduling;
 
+import exceptions.NotSchedulableException;
+import exceptions.NotDeschedulableException;
+import exceptions.TaskException;
 import graph.TaskNode;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This class represents a processor, with a list of tasks
  */
-public class Processor {
+public class Processor implements Serializable {
 
     private int procID;
     private List<TaskNode> tasks = new ArrayList<TaskNode>();
-    private int bound;
 
     /**
      * The processor with a number
@@ -24,19 +25,28 @@ public class Processor {
         this.procID = number;
     }
 
+    /**
+     * Gets the id of the processor
+     * @return
+     */
     public int getID() {
     	return procID;
     }
+    
     /**
      * Adds a new task, with the node.
      * Called by TaskNode.
      * @param node The node to be added.
+     * @param startTime The starttime
      */
-    public void addTask(TaskNode node, int time) {
+    public void addTask(TaskNode node, int startTime) throws NotSchedulableException {
+        if (startTime < this.getBound()) {
+            throw new TaskException("The startTime cannot be lower than the bound");
+        }
+
         tasks.add(node);
 
-        node.schedule(time, this);
-        bound = time + node.getWeight();
+        node.schedule(startTime, this);
 
     }
 
@@ -44,7 +54,7 @@ public class Processor {
      * Removes a task from this node.
      * @param node
      */
-    public void removeTask(TaskNode node) {
+    public void removeTask(TaskNode node) throws NotDeschedulableException {
         tasks.remove(node);
         node.deschedule();
     }
@@ -54,6 +64,13 @@ public class Processor {
      * @return
      */
     public int getBound() {
+        int bound = 0;
+        for (TaskNode node : tasks) {
+            if (node.getEndTime() > bound) {
+                bound = node.getEndTime();
+            }
+        }
+
         return bound;
     }
 

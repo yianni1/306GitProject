@@ -1,0 +1,16 @@
+digraph "Graph1" {
+	a	 [Weight=6];
+	b	 [Weight=7];
+	1	 [Weight=2];
+	2	 [Weight=3];
+	e	 [Weight=10];
+	f	 [Weight=8];
+	5	 [Weight=5];
+	a -> 1	 [Weight=4];
+	b -> 1	 [Weight=6];
+	b -> 2	 [Weight=2];
+	5 -> 1	 [Weight=3];
+	1 -> e	 [Weight=9];
+	2 -> e	 [Weight=10];
+	2 -> f	 [Weight=1];
+}
