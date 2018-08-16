@@ -233,5 +233,5 @@ public class OptimalTestCase extends CompareOutput {
 		System.out.println(solution.getBound());
 		assertTrue(solution.getBound() == 227);
 	}
-	
+
 }

@@ -148,10 +148,27 @@ public class DFBnBScheduler implements Scheduler{
 					continue;
 				}
 
-				//TODO make better (hypothetical next bound)
 				schedule.addTask(nextTask, nextProcessor, schedule.getEarliestSchedulableTime(nextTask, nextProcessor));
 
-				costFunction(nextTask);
+//				costFunction(nextTask);
+
+				// Run the cost function for each of the tasks children to determine which one to schedule first.
+				TaskNode minTask;			// The node and processor that has the lowest cost
+				Processor minProcessor;
+
+				int minCost = Integer.MAX_VALUE;
+				int minCostTemp;
+				for (TaskEdge e: nextTask.getOutgoingEdges()){
+					TaskNode tn = e.getEndNode();
+					for (Processor p: schedule.getProcessors()) {
+						minCostTemp = costFunction(tn, p);
+						if (minCostTemp<minCost) {
+							minTask = tn;
+							minProcessor = p;
+						}
+					}
+				}
+				// TODO: Actually make use of minTask and minProcessor
 
 				schedulableNodes = schedule.getSchedulableNodes();
 				nodeIndices.set(depth, nodeIndices.get(depth) + 1);
@@ -233,85 +250,90 @@ public class DFBnBScheduler implements Scheduler{
 		}
 	}
 
+	/**
+	 * Calculates the cost function for a TaskNode on a Processor
+	 * @param nextTask The tasknode we are looking at scheduling
+	 * @param nextProcessor The processor we are looking at scheduling it on
+	 * @return The 'cost' for scheduling that task on that processor
+	 */
+	private int costFunction(TaskNode nextTask, Processor nextProcessor) {
 
-	private void costFunction(TaskNode nextTask) {
+		//COST FUNCTION CODE---------------------------------------------
 
-		for (TaskEdge edges : nextTask.getOutgoingEdges()) {
-			TaskNode child = edges.getEndNode();
+		// F-IDLE CALCULATION -------------------------------------------
 
-			//COST FUNCTION CODE---------------------------------------------
-			int totalCostOfNodes = 0;
-			for (TaskNode node : graph.getNodes()) {
-				totalCostOfNodes = totalCostOfNodes + node.getWeight();
-			}
-
-
-			int totalIdleTime = 0;
-			//Gets the total idle time for the schedule
-			for (Processor p : schedule.getProcessors()) {
-				int totalTime = schedule.getBound(); // Use the entire bound of the processor
-				int totalTaskWeight = 0;
-				for (TaskNode tasks : p.getTasks()) {
-					totalTaskWeight = totalTaskWeight + tasks.getWeight();
-				}
-				totalIdleTime = totalIdleTime + totalTime - totalTaskWeight;
-			}
-
-			//fidle formula calculation
-			int fIdle = (totalCostOfNodes + totalIdleTime) / schedule.getProcessors().size();
-
-			//Gets the bottom level path from node n
-			int bottomLevelPath = 0;
-			
-			bottomLevelPath = criticalPath(child) + child.getWeight();
-
-			int fbl = 0;
-			//THIS Block COULD BE WRONG
-			if (child.getStartTime() != -1) {
-				fbl = bottomLevelPath + child.getStartTime();
-			}
-			else {
-				fbl = bottomLevelPath;
-			}
-
-			int heuristic = 0;
-			if (fbl > fIdle) {
-				heuristic = fbl;
-			}
-			else {
-				heuristic = fIdle;
-			}
-
-			child.setCostFunction(heuristic);
+		// Gets the total cost of all nodes
+		int totalCostOfNodes = 0;
+		for (TaskNode node : graph.getNodes()) {
+			totalCostOfNodes = totalCostOfNodes + node.getWeight();
 		}
+
+		int totalIdleTime = 0;
+		// Gets the total idle time for that partial schedule
+		for (Processor p : schedule.getProcessors()) {
+			int totalTime = schedule.getBound(); // Use the entire bound of the processor
+			int totalTaskWeight = 0;
+			for (TaskNode tasks : p.getTasks()) {
+				totalTaskWeight = totalTaskWeight + tasks.getWeight();
+			}
+			totalIdleTime = totalIdleTime + totalTime - totalTaskWeight;
+		}
+
+		// fIdle formula calculation
+		int fIdle = (totalCostOfNodes + totalIdleTime) / schedule.getProcessors().size();
+
+		// F-BOTTOM-LEVEL CALCULATION ----------------------------------------------
+		// fbl(s) = max(start time + bottom level weight) of all nodes of that partial schedule.
+
+		int fblTemp;
+		int fblMax = 0;    // The currently highest maximum fbl.
+
+		// Loop through all the scheduled nodes, then the node we want to schedule and find the maxFbl out of them.
+		for (TaskNode tn : schedule.getScheduledNodes()) {
+			fblTemp = tn.getStartTime() + criticalPath(tn);
+			fblMax = Math.max(fblMax, fblTemp);
+		}
+
+		// Can't call getStartTime on the child node because we haven't scheduled it yet.
+		int childStartTime = 0;
+		childStartTime = Math.max(schedule.getEarliestSchedulableTime(nextTask, nextProcessor), childStartTime);
+		fblTemp = childStartTime + criticalPath(nextTask);
+		fblMax = Math.max(fblMax, fblTemp);
+
+		// TODO: fDRT calculation
+
+
+//		int heuristic = Math.max(fblMax, fIdle);
+//		child.setCostFunction(heuristic);
+
+		// TODO: Double check if this should be max or min.
+		return Math.max(fblMax, fIdle);
 	}
 
 	/**
-	 * Calculates the longest path from the current node to an end node
-	 * @param node
-	 * @return
+	 * Calculates the longest path from the current node to an end node.
+	 * @param node The node we're finding the critical path for.
+	 * @return int: The highest critical path for that node.
 	 */
 	public int criticalPath(TaskNode node) {
-		
-		int ans = dfs(node) + node.getWeight();
-	
-		return ans;
+		return dfsCriticalPath(node) + node.getWeight();
 	}
 	
 	/**
-	 * Does the DFS over the tree
-	 * @param node
+	 * This is used to find the highest critical path Does the DFS over the tree.
+	 * @param node The node we're finding the critical path for.
+	 * @return int: The highest critical path for that node's children.
 	 */
-	private int dfs(TaskNode node) {
+	private int dfsCriticalPath(TaskNode node) {
 		
 		int ans = 0;
 		
-		//Loop through all childern
+		//Loop through all children
 		for (TaskEdge edge : node.getOutgoingEdges()) {
 			TaskNode child = edge.getEndNode();
 			
-			//Do recursion as described by olivers task scheduling for bottom level path 
-			int temp = dfs(child) + child.getWeight();
+			//Do recursion as described by oliver's task scheduling for bottom level path
+			int temp = dfsCriticalPath(child) + child.getWeight();
 			
 			//Select the maximum weight of the current path
 			if (temp > ans) {
@@ -327,7 +349,7 @@ public class DFBnBScheduler implements Scheduler{
 
 	/**
 	 * This method removes replciated parts of the tree depending on the number of initial nodes
-	 * @param initialIteration
+	 * @param initialIteration Is this the first iteration?
 	 * @return boolean determining weather to finish the algorithm
 	 */
 	private boolean removeReplicatedTree(boolean initialIteration) {
