@@ -86,12 +86,28 @@ public class Schedule implements Serializable {
 
         // Sort the schedulable nodes. Decide which sorting to use based on how many processors (and nodes).
         // TODO: Optimise the conditions for choosing the sorting mothod.
-        if ((this.processors.size() > 2) && (graph.getNodes().size()>=11)) {
+        if ((this.processors.size() > 1) && (graph.getNodes().size()>=10)) {
             this.schedulableNodes=sortSchedulableNodesByEET();
+        	
         } else {
             this.schedulableNodes = sortSchedulableNodesAlphabetically();
         }
+    	
+    /*	boolean sortingAlg = false;
+    	for (Processor p : this.getProcessors()) {
+    		if (p.getTasks().size() != 0) {
+    			sortingAlg = true;
+    			break;
+    		}
+    	}
 
+    	if (sortingAlg == false) {
+    		this.schedulableNodes = sortSchedulableNodesAlphabetically();
+    	}
+    	else {
+    		this.schedulableNodes = sortByCostFunction();
+    	}*/
+    	
 //        System.out.print("Schedulable nodes are: ");
 //        for(TaskNode tn: schedulableNodes) {
 //            System.out.print(tn.getName() + ", ");
@@ -100,6 +116,40 @@ public class Schedule implements Serializable {
         return this.schedulableNodes;
     }
 
+    private List<TaskNode> sortByCostFunction() {
+        List<TaskNode> schedCopy = schedulableNodes;
+        List<TaskNode> sorted = new ArrayList<TaskNode>();
+
+        TaskNode nextNode;
+
+        while (schedCopy.size() > 0) {
+            // Adapated from GreedyScheduler
+            nextNode = schedCopy.get(0);
+            
+            int costF = nextNode.getCostFunction();
+           
+            //Go through all nodes and check earliest schedulable time on each processor to find next best node to schedule
+            for (TaskNode n : schedCopy) {
+
+            	int otherCF = n.getCostFunction();
+            	
+                if (costF > otherCF) {
+                	costF = otherCF;
+                    nextNode = n;
+                }
+
+            }
+            sorted.add(nextNode);
+            schedCopy.remove(nextNode);
+        }
+
+        return sorted;
+    }
+    
+    
+    
+    
+    
     /**
      * Sorts nodes according to earliest end times (ONLY CONSIDERING p0 for the sake of speed).
      * @return ArrayList<TaskNode> sorted by end time
