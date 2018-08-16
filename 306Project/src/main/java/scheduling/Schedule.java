@@ -6,6 +6,7 @@ import graph.TaskEdge;
 import graph.TaskGraph;
 import graph.TaskNode;
 import javafx.concurrent.Task;
+import scala.util.parsing.combinator.testing.Str;
 
 import javax.xml.soap.Node;
 import java.io.Serializable;
@@ -87,9 +88,9 @@ public class Schedule implements Serializable {
         // Sort the schedulable nodes. Decide which sorting to use based on how many processors (and nodes).
         // TODO: Optimise the conditions for choosing the sorting mothod.
         if ((this.processors.size() > 2) && (graph.getNodes().size()>=11)) {
-            this.schedulableNodes=sortSchedulableNodesByEET();
+            this.schedulableNodesNames = sortSchedulableNodesByEET();
         } else {
-            this.schedulableNodes = sortSchedulableNodesAlphabetically();
+            this.schedulableNodesNames = sortSchedulableNodesAlphabetically();
         }
 
 //        System.out.print("Schedulable nodes are: ");
@@ -97,29 +98,36 @@ public class Schedule implements Serializable {
 //            System.out.print(tn.getName() + ", ");
 //        }
 //        System.out.println();
-        return this.schedulableNodes;
+        List<TaskNode> nodes = new ArrayList<>();
+        for (String name : schedulableNodesNames) {
+            nodes.add(schedulableNodes.get(name));
+        }
+        return nodes;
     }
 
     /**
      * Sorts nodes according to earliest end times (ONLY CONSIDERING p0 for the sake of speed).
      * @return ArrayList<TaskNode> sorted by end time
      */
-    private List<TaskNode> sortSchedulableNodesByEET() {
-        List<TaskNode> schedCopy = schedulableNodes;
-        List<TaskNode> sorted = new ArrayList<TaskNode>();
+    private List<String> sortSchedulableNodesByEET() {
+        List<String> schedCopy = schedulableNodesNames;
+        List<String> sorted = new ArrayList<String>();
 
+        String nextNodeName;
         TaskNode nextNode;
         Processor nextProcessor = this.getProcessors().get(0);
         // The processor to be scheduled on. (We're only considering P0 for this sorting method).
 
         while (schedCopy.size() > 0) {
             // Adapated from GreedyScheduler
-            nextNode = schedCopy.get(0);
+            nextNodeName = schedCopy.get(0);
+            nextNode = schedulableNodes.get(nextNodeName);
             int nextStartTime = this.getEarliestSchedulableTime(nextNode, nextProcessor);
             int nextEndTime = nextStartTime + nextNode.getWeight();
 
             //Go through all nodes and check earliest schedulable time on each processor to find next best node to schedule
-            for (TaskNode n : schedCopy) {
+            for (String nodeName : schedCopy) {
+                TaskNode n = schedulableNodes.get(nodeName);
 
                 int tentativeStartTime = this.getEarliestSchedulableTime(n, nextProcessor);
                 int tentativeEndTime = tentativeStartTime + n.getWeight();
@@ -131,8 +139,8 @@ public class Schedule implements Serializable {
                 }
 
             }
-            sorted.add(nextNode);
-            schedCopy.remove(nextNode);
+            sorted.add(nextNodeName);
+            schedCopy.remove(nextNodeName);
         }
 
         return sorted;
@@ -142,23 +150,26 @@ public class Schedule implements Serializable {
      * Sorts the schedulable nodes by the earliest end time (over all processors)
      * @return List<TaskNode> sorted by all earliest end times
      */
-    private List<TaskNode> sortSchedulableNodesByAllEET () {
-        List<TaskNode> schedCopy = schedulableNodes;
-        List<TaskNode> sorted = new ArrayList<TaskNode>();
+    private List<String> sortSchedulableNodesByAllEET () {
+        List<String> schedCopy = schedulableNodesNames;
+        List<String> sorted = new ArrayList<String>();
 
+        String nextNodeName;
         TaskNode nextNode;
         Processor nextProcessor;
 
         while (schedCopy.size()>0) {
             // Adapated from GreedyScheduler
-            nextNode = schedCopy.get(0);
+            nextNodeName = schedCopy.get(0);
+            nextNode = schedulableNodes.get(nextNodeName);
             nextProcessor = this.getProcessors().get(0);
             int nextStartTime = this.getEarliestSchedulableTime(nextNode, nextProcessor);
             int nextEndTime = nextStartTime + nextNode.getWeight();
 
             //Go through all nodes and check earliest schedulable time on each processor to find next best node to schedule
             for (Processor p : this.getProcessors()) {
-                for (TaskNode n : schedCopy) {
+                for (String nodeName : schedCopy) {
+                    TaskNode n = schedulableNodes.get(nodeName);
 
                     int tentativeStartTime = this.getEarliestSchedulableTime(n, p);
                     int tentativeEndTime = tentativeStartTime + n.getWeight();
@@ -172,14 +183,14 @@ public class Schedule implements Serializable {
 
                 }
             }
-            sorted.add(nextNode);
-            schedCopy.remove(nextNode);
+            sorted.add(nextNodeName);
+            schedCopy.remove(nextNodeName);
         }
 
         return sorted;
     }
 
-    private List<TaskNode> sortSchedulableNodesAlphabetically() {
+    private List<String> sortSchedulableNodesAlphabetically() {
 
         // Sort the tasknodes aphabetically.
         List<String> taskNames = new ArrayList<String>();
@@ -188,11 +199,11 @@ public class Schedule implements Serializable {
         }
         sort(taskNames);
 
-        List<TaskNode> sortedTN = new ArrayList<TaskNode>();
+        List<String> sortedTN = new ArrayList<String>();
         for(String s: taskNames) {
-            if (schedulableNodes.get(s) != null) {
-                sortedTN.add(schedulableNodes.get(s));
-            }
+//            if (schedulableNodesNames.get(s) != null) {
+                sortedTN.add(s);
+//            }
         }
         return sortedTN;
     }
