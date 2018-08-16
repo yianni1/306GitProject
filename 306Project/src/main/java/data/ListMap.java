@@ -2,6 +2,7 @@ package data;
 
 import exceptions.ListException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
 /**
  * Created by olive on 16/08/2018.
  */
-public class ListMap<K, V>{
+public class ListMap<K, V> implements Serializable{
 
     private HashMap<K, V> map = new HashMap<>();
     private List<K> list = new ArrayList<>();

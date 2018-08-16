@@ -79,6 +79,7 @@ public class ParallelDFS implements Serializable {
 
     public Schedule createSchedule(int minDepth) {
         //initialize upperBound
+        System.out.println("starting dfs");
 
         TaskNode nextTask = null;
         Processor nextProcessor = null;
