@@ -83,7 +83,7 @@ public class DFBnBScheduler implements Scheduler{
 
 			while (schedulableNodes.size() > 0) { //while there are still nodes to schedule
 				// System.out.println("Searching at depth " + depth + " with bound " + schedule.getBound());
-				
+
 				//Determine wheather initial nodes have been repeated
 				finished = removeReplicatedTree(initialIteration);
 
@@ -150,9 +150,9 @@ public class DFBnBScheduler implements Scheduler{
 
 				//TODO make better (hypothetical next bound)
 				schedule.addTask(nextTask, nextProcessor, schedule.getEarliestSchedulableTime(nextTask, nextProcessor));
-				
+
 				costFunction(nextTask);
-				
+
 				schedulableNodes = schedule.getSchedulableNodes();
 				nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 
@@ -209,8 +209,8 @@ public class DFBnBScheduler implements Scheduler{
 
 		System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
 		if (scheduleListener != null) {
-            updateGUISchedule(true);;
-        }
+			updateGUISchedule(true);;
+		}
 		return optimalSchedule;
 
 	}
@@ -233,19 +233,19 @@ public class DFBnBScheduler implements Scheduler{
 		}
 	}
 
-	
+
 	private void costFunction(TaskNode nextTask) {
-		
+
 		for (TaskEdge edges : nextTask.getOutgoingEdges()) {
 			TaskNode child = edges.getEndNode();
-			
+
 			//COST FUNCTION CODE---------------------------------------------
 			int totalCostOfNodes = 0;
 			for (TaskNode node : graph.getNodes()) {
 				totalCostOfNodes = totalCostOfNodes + node.getWeight();
 			}
-			
-			
+
+
 			int totalIdleTime = 0;
 			//Gets the total idle time for the schedule
 			for (Processor p : schedule.getProcessors()) {
@@ -256,14 +256,15 @@ public class DFBnBScheduler implements Scheduler{
 				}
 				totalIdleTime = totalIdleTime + totalTime - totalTaskWeight;
 			}
-			
+
 			//fidle formula calculation
 			int fIdle = (totalCostOfNodes + totalIdleTime) / schedule.getProcessors().size();
-			
+
 			//Gets the bottom level path from node n
 			int bottomLevelPath = 0;
-			bottomLevelPath = criticalPath(child) + child.getWeight();
 			
+			bottomLevelPath = criticalPath(child) + child.getWeight();
+
 			int fbl = 0;
 			//THIS Block COULD BE WRONG
 			if (child.getStartTime() != -1) {
@@ -272,7 +273,7 @@ public class DFBnBScheduler implements Scheduler{
 			else {
 				fbl = bottomLevelPath;
 			}
-			 
+
 			int heuristic = 0;
 			if (fbl > fIdle) {
 				heuristic = fbl;
@@ -280,61 +281,59 @@ public class DFBnBScheduler implements Scheduler{
 			else {
 				heuristic = fIdle;
 			}
-			
+
 			child.setCostFunction(heuristic);
 		}
 	}
-	
-	
-	
-	
+
 	/**
 	 * Calculates the longest path from the current node to an end node
 	 * @param node
 	 * @return
 	 */
-	///TODO FIX THIS 
-	private int criticalPath(TaskNode node) {
+	public int criticalPath(TaskNode node) {
 		
+		int ans = dfs(node) + node.getWeight();
+	
+		return ans;
+	}
+	
+	/**
+	 * Does the DFS over the tree
+	 * @param node
+	 */
+	private int dfs(TaskNode node) {
 		
-		Stack<TaskNode> stack = new Stack<TaskNode>();
-		stack.push(node);
+		int ans = 0;
 		
-		
-		while(!stack.isEmpty()) {
-			TaskNode element = stack.pop();
- 
-			for (TaskEdge edge : element.getOutgoingEdges()) {
-				TaskNode otherNode = edge.getEndNode();
-				
-				if(otherNode != null && !otherNode.isVisistedInDFS) {
-					stack.add(otherNode);
-					otherNode.isVisistedInDFS = true;
- 
-				}
-
+		//Loop through all childern
+		for (TaskEdge edge : node.getOutgoingEdges()) {
+			TaskNode child = edge.getEndNode();
+			
+			//Do recursion as described by olivers task scheduling for bottom level path 
+			int temp = dfs(child) + child.getWeight();
+			
+			//Select the maximum weight of the current path
+			if (temp > ans) {
+				ans = temp;
 			}
 		}
 		
-		for (TaskNode tn : graph.getNodes()) {
-			tn.isVisistedInDFS = false;
-		}
-		
-		return 9;
+		return ans;
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * This method removes replciated parts of the tree depending on the number of initial nodes
 	 * @param initialIteration
 	 * @return boolean determining weather to finish the algorithm
 	 */
 	private boolean removeReplicatedTree(boolean initialIteration) {
-		
+
 		boolean finished = false;
-		
+
 		//Block for determining if initial nodes have been seen
 		if ((depth == 0) && (initialIteration == false) ) {
 
@@ -359,11 +358,11 @@ public class DFBnBScheduler implements Scheduler{
 
 		}
 		return finished;
-		
+
 	}
-	
-	
-	
+
+
+
 	/**
 	 * This method skips duplicate nodes from the tree
 	 * @param nodeIndex
@@ -379,7 +378,7 @@ public class DFBnBScheduler implements Scheduler{
 		//Loop through parents of current node
 		for (TaskEdge edge : nextTask.getIncomingEdges()) {
 			TaskNode parent = edge.getStartNode();
-			
+
 			//Statment to determine if current processor has no parent nodes of current node
 			if (!parent.getProcessor().equals(nextProcessor)) {
 				parentsOnSameProcessor = false;
@@ -390,14 +389,14 @@ public class DFBnBScheduler implements Scheduler{
 			}
 		}
 
-		
+
 		boolean duplicate = false;
 		for (Processor p : schedule.getProcessors()) {
 			//If current processor different to next one which next node will be scheduled on
 			if (!p.equals(nextProcessor)) {
-				
+
 				List<TaskNode> tasks = p.getTasks();
-				
+
 				if (tasks.size() > 0) {
 					//Get the latest task from this processor
 					TaskNode latestTask = tasks.get(tasks.size() - 1);
