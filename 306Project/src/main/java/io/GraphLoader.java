@@ -25,13 +25,40 @@ public class GraphLoader {
 
 
 
+	public Graph loadGraph(String filePath) {
+
+		Graph graph = new SingleGraph("graph"); // Creates graph
+		FileSource fs = null;
+
+		// Loads graph from filepath
+		try {
+			fs = FileSourceFactory.sourceFor(filePath);
+
+			fs.addSink(graph);
+
+			fs.readAll(filePath);
+
+
+		} catch( IOException e) {
+
+		} finally {
+//			try {
+			fs.removeSink(graph);
+//			}
+//			catch (NullPointerException npex) {
+//				System.out.println("Invalid input file");
+//			}
+		}
+
+		return graph;
+	}
+
 	/**
 	 * load method to load graph from dot file into TaskGraph object
 	 * @param filePath to dot file
 	 * @return graph representation of dot file
 	 */
 	public TaskGraph load(String filePath) {
-
 		//Finding the name of the graph
 		String graphTitle = null;
 		try {
@@ -44,29 +71,7 @@ public class GraphLoader {
 
 		}
 
-
-		Graph graph = new SingleGraph("graph"); // Creates graph
-		FileSource fs = null;		
-
-		// Loads graph from filepath
-		try {
-			fs = FileSourceFactory.sourceFor(filePath); 
-
-			fs.addSink(graph);
-
-			fs.readAll(filePath);
-
-
-		} catch( IOException e) {
-
-		} finally {
-//			try {
-				fs.removeSink(graph);
-//			}
-//			catch (NullPointerException npex) {
-//				System.out.println("Invalid input file");
-//			}
-		}
+		Graph graph = loadGraph(filePath);
 
 		TaskGraph taskGraph = convertGraph(graph, graphTitle);
 		 

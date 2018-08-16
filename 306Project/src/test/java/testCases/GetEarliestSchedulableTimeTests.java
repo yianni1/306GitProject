@@ -1,6 +1,7 @@
 package testCases;
 
 import exceptions.NotSchedulableException;
+import graph.TaskEdge;
 import graph.TaskGraph;
 import graph.TaskNode;
 import io.GraphLoader;
@@ -9,6 +10,7 @@ import scheduling.Processor;
 import scheduling.Schedule;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class GetEarliestSchedulableTimeTests extends testCases.CompareOutput {
 
@@ -106,4 +108,71 @@ public class GetEarliestSchedulableTimeTests extends testCases.CompareOutput {
             }
         }
 
-}}
+    }
+
+    @Test
+    public void testCustomTest() {
+        TaskNode nodeA = new TaskNode(6, "a");
+        TaskNode nodeB = new TaskNode(7, "b");
+        TaskNode nodeC = new TaskNode(2, "c");
+        TaskNode nodeD = new TaskNode(3, "d");
+        TaskNode nodeF = new TaskNode(8, "f");
+        TaskNode nodeG = new TaskNode(5, "g");
+
+        TaskEdge edge1 = new TaskEdge(nodeA, nodeC, 4);
+        TaskEdge edge2 = new TaskEdge(nodeG, nodeC, 3);
+        TaskEdge edge3 = new TaskEdge(nodeB, nodeC, 6);
+        TaskEdge edge4 = new TaskEdge(nodeB, nodeD, 2);
+        TaskEdge edge5 = new TaskEdge(nodeD, nodeF, 1);
+
+
+
+        nodeC.addIncomingEdge(edge1);
+        nodeC.addIncomingEdge(edge2);
+        nodeC.addIncomingEdge(edge3);
+        nodeD.addIncomingEdge(edge4);
+        nodeF.addIncomingEdge(edge5);
+
+        nodeA.addOutgoingEdge(edge1);
+        nodeB.addOutgoingEdge(edge2);
+        nodeG.addOutgoingEdge(edge3);
+        nodeB.addOutgoingEdge(edge4);
+        nodeD.addOutgoingEdge(edge5);
+
+        TaskGraph graph = new TaskGraph("graph");
+        graph.addEdge(edge1);
+        graph.addEdge(edge2);
+        graph.addEdge(edge3);
+        graph.addEdge(edge4);
+        graph.addEdge(edge5);
+
+        graph.addNode(nodeA);
+        graph.addNode(nodeB);
+        graph.addNode(nodeC);
+        graph.addNode(nodeD);
+        graph.addNode(nodeF);
+        graph.addNode(nodeG);
+
+        //Creates schedule with 2 processors
+        Schedule schedule = new Schedule(3, graph);
+
+        schedule.addTask(nodeA, schedule.getProcessors().get(0), 0);
+        schedule.addTask(nodeB, schedule.getProcessors().get(1), 0);
+        schedule.addTask(nodeG, schedule.getProcessors().get(2), 0);
+        schedule.addTask(nodeD, schedule.getProcessors().get(1), 7);
+        schedule.addTask(nodeF, schedule.getProcessors().get(0), 11);
+
+        for (int i=0; i<20; i++) {
+            int cool = schedule.getEarliestSchedulableTime(nodeC, schedule.getProcessors().get(1));
+            System.out.print(cool + " ");
+        }
+        System.out.println();
+
+
+        //Tests bound of max processor in schedule when A is added on p1
+       // assertTrue(schedule.getBound() == 5);
+
+      //  schedule.addTask(nodeB, schedule.getProcessors().get(1), 6);
+    }
+
+}

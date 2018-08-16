@@ -5,8 +5,9 @@ import java.util.HashSet;
 
 /**
  * Created by olive on 29/07/2018.
- * This is the TaskGraph class which stores an Hashset of all the available edges and Nodes and there respective connections
- * to create the representation of the graph to be delievered to the Scheduler and algo components of the project.
+ * This is the TaskGraph class which stores an HashSet of all the available edges and Nodes and their respective connections
+ * to create the representation of the graph. This representation is to be delivered to the Scheduler and also components
+ * of the project.
  */
 public class TaskGraph implements Serializable {
 
