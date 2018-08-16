@@ -14,6 +14,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -246,8 +247,9 @@ public class DFBnBScheduler implements Scheduler{
 			
 			
 			int totalIdleTime = 0;
+			//Gets the total idle time for the schedule
 			for (Processor p : schedule.getProcessors()) {
-				int totalTime = p.getBound();
+				int totalTime = schedule.getBound(); // Use the entire bound of the processor
 				int totalTaskWeight = 0;
 				for (TaskNode tasks : p.getTasks()) {
 					totalTaskWeight = totalTaskWeight + tasks.getWeight();
@@ -255,8 +257,10 @@ public class DFBnBScheduler implements Scheduler{
 				totalIdleTime = totalIdleTime + totalTime - totalTaskWeight;
 			}
 			
+			//fidle formula calculation
 			int fIdle = (totalCostOfNodes + totalIdleTime) / schedule.getProcessors().size();
 			
+			//Gets the bottom level path from node n
 			int bottomLevelPath = 0;
 			bottomLevelPath = criticalPath(child) + child.getWeight();
 			
@@ -289,23 +293,34 @@ public class DFBnBScheduler implements Scheduler{
 	 * @param node
 	 * @return
 	 */
+	///TODO FIX THIS 
 	private int criticalPath(TaskNode node) {
 		
-		TaskNode maxChildNode = null;
-		int maxChildWeight = 0;
-		for (TaskEdge edges : node.getOutgoingEdges()) {
-			TaskNode child = edges.getEndNode();
+		
+		Stack<TaskNode> stack = new Stack<TaskNode>();
+		stack.push(node);
+		
+		
+		while(!stack.isEmpty()) {
+			TaskNode element = stack.pop();
+ 
+			for (TaskEdge edge : element.getOutgoingEdges()) {
+				TaskNode otherNode = edge.getEndNode();
+				
+				if(otherNode != null && !otherNode.isVisistedInDFS) {
+					stack.add(otherNode);
+					otherNode.isVisistedInDFS = true;
+ 
+				}
 
-			if (maxChildWeight < child.getWeight()) {
-				maxChildNode = child;
-				maxChildWeight = child.getWeight();
 			}
 		}
-		if (maxChildNode != null) {
-			maxChildWeight = maxChildWeight + criticalPath(maxChildNode);
+		
+		for (TaskNode tn : graph.getNodes()) {
+			tn.isVisistedInDFS = false;
 		}
 		
-		return maxChildWeight;
+		return 9;
 	}
 	
 	
