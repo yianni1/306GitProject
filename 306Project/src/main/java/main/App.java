@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import graph.TaskGraph;
 import io.GraphLoader;
 import io.Output;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -123,6 +124,15 @@ public class App extends Application{
 					controller.setFileName(fileName);
 					controller.setProcessorNumber(processorNumber);
 					controller.setCoreNumber(numCores);
+
+					primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+						@Override
+						public void handle(WindowEvent t) {
+							Platform.exit();
+							System.exit(0);
+							controller.closeViewer();
+						}
+					});
 
 					//scene showing the root layout is displayed
 					Scene scene = new Scene(root);

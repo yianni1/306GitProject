@@ -83,10 +83,20 @@
          <children>
             <Label fx:id="lblNumPaths" text="0" textFill="WHITE" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="15.0">
                <font>
-                  <Font name="Roboto Light" size="64.0" />
+                  <Font name="Roboto Light" size="36.0" />
                </font>
             </Label>
-            <Label text="schedules searched" textFill="WHITE" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="90.0">
+            <Label text="schedules searched" textFill="WHITE" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="60.0">
+               <font>
+                  <Font name="Roboto Light" size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="lblBranchesPruned" layoutX="40.0" layoutY="25.0" text="0" textFill="WHITE" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="90.0">
+               <font>
+                  <Font name="Roboto Light" size="36.0" />
+               </font>
+            </Label>
+            <Label layoutX="50.0" layoutY="70.0" text="branches pruned" textFill="WHITE" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="140.0">
                <font>
                   <Font name="Roboto Light" size="14.0" />
                </font>

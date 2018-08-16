@@ -66,6 +66,9 @@ public class RootLayout implements Initializable{
     private Label lblNumPaths;
 
     @FXML
+    private Label lblBranchesPruned;
+
+    @FXML
     private AnchorPane graphPane;
 
     @FXML
@@ -229,56 +232,69 @@ public class RootLayout implements Initializable{
 
 
     public void updateNumPaths(int numPaths) {
+            Platform.runLater(new Runnable() {
+                public void run() {
+                    lblNumPaths.setText("" + numPaths);
+                }
+            });
+    }
+
+    public void updateBranchesPruned(int branchesPruned) {
         Platform.runLater(new Runnable() {
             public void run() {
-                lblNumPaths.setText("" + numPaths);
+                lblBranchesPruned.setText("" + branchesPruned);
             }
         });
     }
 
-    public void updateSchedule(Schedule schedule, boolean done) {
+    public void finish() {
+        Platform.runLater(new Runnable() {
+           public void run() {
+               lblStart.setText("Done!");
+               btnStart.setDisable(false);
+               timeline.pause();
+           }
+        });
+;
+    }
+
+    public void updateSchedule(Schedule schedule) {
         final Schedule test = schedule;
         Platform.runLater(new Runnable() {
             public void run() {
-                if (!done) {
-                    stackedBarChart.getData().clear();
-                    lblBound.setText("" + schedule.getBound());
-                    // translates schedule to series to show on stacked bar chart
-                    for (Processor processor : test.getProcessors()) {
-                        int time = 0;
-                        for (TaskNode task : processor.getTasks()) {
-                            XYChart.Series series = new XYChart.Series<String, Number>();
-                            series.setName(task.getName());
-                            if (time < task.getStartTime()) {
-                                XYChart.Series idle = new XYChart.Series<String, Number>();
-                                idle.getData().add(new XYChart.Data(task.getStartTime() - time, "" + processor.getID()));
-                                idle.setName("Idle time");
-                                stackedBarChart.getData().add(idle);
-                            }
-                            series.getData().add(new XYChart.Data(task.getWeight(), "" + processor.getID()));
-                            stackedBarChart.getData().add(series);
-                            time = task.getEndTime();
+                stackedBarChart.getData().clear();
+                lblBound.setText("" + schedule.getBound());
+                // translates schedule to series to show on stacked bar chart
+                for (Processor processor : test.getProcessors()) {
+                    int time = 0;
+                    for (TaskNode task : processor.getTasks()) {
+                        XYChart.Series series = new XYChart.Series<String, Number>();
+                        series.setName(task.getName());
+                        if (time < task.getStartTime()) {
+                            XYChart.Series idle = new XYChart.Series<String, Number>();
+                            idle.getData().add(new XYChart.Data(task.getStartTime() - time, "" + processor.getID()));
+                            idle.setName("Idle time");
+                            stackedBarChart.getData().add(idle);
+                        }
+                        series.getData().add(new XYChart.Data(task.getWeight(), "" + processor.getID()));
+                        stackedBarChart.getData().add(series);
+                        time = task.getEndTime();
 
+                    }
+                }
+
+                //Shows any idle time as a transparent block
+                for (final Object series : stackedBarChart.getData()) {
+                    for (final Object data : ((XYChart.Series)series).getData()) {
+                        if (((XYChart.Series) series).getName().equals("Idle time")) {
+                            ((XYChart.Data) data).getNode().setStyle("-fx-bar-fill: transparent; -fx-border-width: 0px;");
+                        } else {
+                            ((XYChart.Data) data).getNode().setStyle("-fx-bar-fill: #CFD8DC; -fx-border-width: 1px; -fx-border-color: #607D8B;");
+                            StackPane bar = (StackPane) ((XYChart.Data) data).getNode();
+                            final Text dataText = new Text(((XYChart.Series) series).getName());
+                            bar.getChildren().add(dataText);
                         }
                     }
-
-                    //Shows any idle time as a transparent block
-                    for (final Object series : stackedBarChart.getData()) {
-                        for (final Object data : ((XYChart.Series)series).getData()) {
-                            if (((XYChart.Series) series).getName().equals("Idle time")) {
-                                ((XYChart.Data) data).getNode().setStyle("-fx-bar-fill: transparent; -fx-border-width: 0px;");
-                            } else {
-                                ((XYChart.Data) data).getNode().setStyle("-fx-bar-fill: #CFD8DC; -fx-border-width: 1px; -fx-border-color: #607D8B;");
-                                StackPane bar = (StackPane) ((XYChart.Data) data).getNode();
-                                final Text dataText = new Text(((XYChart.Series) series).getName());
-                                bar.getChildren().add(dataText);
-                            }
-                        }
-                    }
-                } else {
-                    lblStart.setText("Done!");
-                    btnStart.setDisable(false);
-                    timeline.pause();
                 }
             }
         });
@@ -289,7 +305,9 @@ public class RootLayout implements Initializable{
     @FXML
     private void btnStartHandler(ActionEvent event) {
         btnStart.setDisable(true);
-        stackedBarChart.setVisible(true);
+        stackedBarChart.getData().clear();
+        lblBound.setText("0");
+        lblNumPaths.setText("0");
         lblStart.setText("Running...");
         lblTime.setText("00:00:000");
         mins = 0;
