@@ -33,7 +33,7 @@ public class TestOptimality {
 //            if (file.getName().startsWith("2p") ||
 //                    file.getName().startsWith("4p") ||
 //                    file.getName().startsWith("8p")) {
-//                files.add(file);
+//				  files.add(file);
 //            }
 //
 //        }

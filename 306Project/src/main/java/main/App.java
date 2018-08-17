@@ -7,15 +7,13 @@ import java.net.URISyntaxException;
 import graph.TaskGraph;
 import io.GraphLoader;
 import io.Output;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
-import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -24,8 +22,10 @@ import org.apache.commons.cli.Options;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import scheduling.*;
-import view.RootLayout;
+import scheduling.DFBnBScheduler;
+import scheduling.Schedule;
+import scheduling.Scheduler;
+import view.VisualisationController;
 
 /**
  * This is the main application, this is written so that it is compatible with Java Fx using the start method account
@@ -106,31 +106,35 @@ public class App extends Application{
 
 						String sendToOutputClass = outputN;
 
-						GraphLoader loader = new GraphLoader(); //Loading the graph
+			if (cmd.hasOption("v")) {
+				try {
+					//Load the root layout from the fxml file
+					FXMLLoader fxmlLoader = new FXMLLoader();
+					Parent root = fxmlLoader.load(getClass().getResource("/view/Visualisation.fxml").openStream());
 
-						String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-						File parent = new File(path);
-						String parentPath = parent.getParent() + File.separator;
+					VisualisationController controller = fxmlLoader.getController();
 
 						TaskGraph graph = loader.load(parentPath + fileName);
 
-						//Doing the algorithm
-						System.out.println("number of cores is " + numCores);
-						Scheduler solution = new ParallelScheduler(graph, processorNumber, numCores);
-						Schedule finalSolution = solution.createSchedule();
-						System.out.println("done in main");
+					primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+						@Override
+						public void handle(WindowEvent t) {
+							Platform.exit();
+							System.exit(0);
+							controller.closeViewer();
+						}
+					});
 
-						//Transporting to output
-						Output.createOutput(finalSolution.getProcessors(), graph, parentPath + sendToOutputClass + "-output.dot");
-						System.out.println("output is done");
-						System.exit(0);
-
-					} catch (NumberFormatException ex) {
-						System.out.println("Please enter a positive integer for the core number");
-						System.exit(0);
-					}
-
-
+					//scene showing the root layout is displayed
+					Scene scene = new Scene(root);
+					primaryStage.setScene(scene);
+					primaryStage.getIcons().add(new Image(App.class.getResourceAsStream("/background/icon.png")));
+					primaryStage.setResizable(false);
+					primaryStage.sizeToScene();
+					controller.createGraph();
+					primaryStage.show();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 
 				if (cmd.hasOption("v")) {

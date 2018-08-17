@@ -15,11 +15,14 @@ public class TaskNode implements Serializable {
     private boolean scheduled;
     private int startTime;
     private Processor processor;
+    private int costFunction;
+    public boolean isVisistedInDFS; // USED FOR criticalPath method in DFBnB
 
     private HashSet<TaskEdge> incomingEdges;
     private HashSet<TaskEdge> outgoingEdges;
 
     public TaskNode(int weight, String name) {
+    	isVisistedInDFS = false;
         this.name = name;
         this.weight = weight;
         this.scheduled = false;
@@ -29,6 +32,15 @@ public class TaskNode implements Serializable {
         outgoingEdges = new HashSet<TaskEdge>();
     }
 
+    public int getCostFunction() {
+    	return costFunction;
+    }
+    
+    public void setCostFunction(int costFunction) {
+    	this.costFunction = costFunction;
+    }
+    
+    
     /**
      *
      * The Status of the node is set to scheduled which assigns the attributes of start time and a processor.
