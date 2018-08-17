@@ -23,7 +23,7 @@ import org.apache.commons.cli.Options;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import scheduling.DFBnBScheduler;
-import scheduling.Schedule;
+import scheduling.*;
 import scheduling.Scheduler;
 import view.VisualisationController;
 

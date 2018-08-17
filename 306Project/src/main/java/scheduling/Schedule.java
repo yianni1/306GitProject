@@ -261,7 +261,7 @@ public class Schedule implements Serializable {
         scheduleOrder.add(node);
 
         // Updates the schedulable nodes.
-        schedulableNodes.remove(node);
+        schedulableNodes.removeIf(obj -> obj.getName().equals(node.getName()));
 
         for (TaskEdge e : node.getOutgoingEdges()) {
             if (e.getEndNode().isSchedulable()) {

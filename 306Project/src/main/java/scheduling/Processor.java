@@ -1,6 +1,5 @@
 package scheduling;
 
-import data.ListMap;
 import exceptions.NotSchedulableException;
 import exceptions.NotDeschedulableException;
 import exceptions.TaskException;
@@ -19,10 +18,11 @@ import java.util.Map;
 public class Processor implements Serializable {
 
     private int procID;
-    private ListMap<String, TaskNode> tasks = new ListMap<String, TaskNode>();
+    private List<TaskNode> tasks = new ArrayList<>();
 
     /**
      * The processor with a number
+     *
      * @param number
      */
     public Processor(int number) {
@@ -31,6 +31,7 @@ public class Processor implements Serializable {
 
     /**
      * Gets the id of the processor
+     *
      * @return
      */
     public int getID() {
@@ -40,43 +41,35 @@ public class Processor implements Serializable {
     /**
      * Adds a new task, with the node.
      * Called by TaskNode.
-     * @param node The node to be added.
+     *
+     * @param node      The node to be added.
      * @param startTime The starttime
      */
     public synchronized void addTask(TaskNode node, int startTime) throws NotSchedulableException {
-//        if (node != null) {
         if (startTime < this.getBound()) {
             System.out.println("this is the bad bound " + this.getBound() + " starttime was " + startTime);
             throw new TaskException("The startTime cannot be lower than the bound");
         }
 
-        tasks.add(node.getName(), node);
+        tasks.add(node);
 
         node.schedule(startTime, this);
-//        }
 
     }
 
     /**
      * Removes a task from this node.
+     *
      * @param node
      */
     public synchronized void removeTask(TaskNode node) throws NotDeschedulableException {
-//        try {
-            tasks.remove(node.getName());
-            node.deschedule();
-//            if (node.getName().equals("2")) {
-//                throw new NullPointerException();
-//            }
-
-//        }
-//        catch (NullPointerException npex) {
-//            npex.printStackTrace();
-//        }
+        tasks.removeIf(obj -> obj.getName().equals(node.getName()));
+        node.deschedule();
     }
 
     /**
      * Returns the current bound of this node.
+     *
      * @return
      */
     public synchronized int getBound() {
@@ -93,32 +86,18 @@ public class Processor implements Serializable {
 //        return bound;
 
         //Seems faster this way
-        if (tasks.getList().size() == 0) {
-            return 0;
-        }
-        return tasks.get(tasks.getList().get(tasks.getList().size() - 1)).getEndTime();
+        return tasks.get(tasks.size() - 1).getEndTime();
     }
 
     /**
      * Returns the nodes that have been scheduled on this processor.
+     *
      * @return
      */
     public List<TaskNode> getTasks() {
-        List<TaskNode> tasks = new ArrayList<TaskNode>();
-        for (String name : this.tasks.getList()) {
-            tasks.add(this.tasks.get(name));
-        }
+
         return tasks;
 
-    }
-
-    /**
-     * Returns the list of
-     * names of all the tasks
-     * @return
-     */
-    public List<String> getTaskNames() {
-        return tasks.getList();
     }
 }
 
