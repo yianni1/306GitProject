@@ -13,24 +13,33 @@ import static scheduling.DFBnBScheduler.deepClone;
 
 /**
  * Created by olive on 15/08/2018.
+ * This implements the DFS algorithim for searching an optimal schedule in the parallel with multiple processors
+ * Refactored by Dweep
  */
 public class ParallelDFS implements Serializable {
 
+    //variables for DFS
     private TaskGraph graph;
     private int upperBound;
     private int depth;
-    private Processor currentProcessor;
 
-    // Index of the children of the schedule.
+
+    //Index of the children nodes which need to be scheduled , and indices involving the processor
     private List<Integer> nodeIndices;
     private List<Integer> processorIndices;
 
+    //the variables involving th schedule
     private Schedule optimalSchedule;
     private Schedule schedule;
     private List<TaskNode> schedulableNodes;
 
+    //variable for the initial nodes of the graph
     private List<TaskNode> initialNodes;
 
+
+    /**
+     * OLD CONSTRUCTOR FOR THE DFS TAKE FROM THE NORMAL DFS FUNCTION
+     */
 //    public ParallelDFS(TaskGraph graph, int processors) {
 //        this.graph = graph;
 //
@@ -55,20 +64,30 @@ public class ParallelDFS implements Serializable {
 
 
     /**
-     * Alternative constructor for parallelisation
-     * @param partialSchedule
+     * The Constructor for the parallization DFS, it takes the the following inputs in order
+     * to the call the aglorithim and create the optimal schedule
+     * @param partialSchedule -> the partial schedule that has been generated
      * @param upperBound
+     * @param graph
+     * @param depth
      */
     public ParallelDFS(Schedule partialSchedule, int upperBound, TaskGraph graph, int depth) {
-        this.schedule = partialSchedule;
+
+        //creating a structure for the intial nodes
         initialNodes = new ArrayList<TaskNode>();
+
+        //strcuture for nodes and processor indices
         nodeIndices = new ArrayList<Integer>();
         processorIndices = new ArrayList<Integer>();
+
+        //storing , checking for the processors, and the scheduable nodes for a partial schedule
+        this.schedule = partialSchedule;
         partialSchedule.getProcessors().size();
         schedulableNodes = partialSchedule.getSchedulableNodes();
+
+        //storing in global variables
         this.upperBound = upperBound;
         this.depth = depth;
-//        this.depth = depth;
         this.graph = graph;
     }
 
@@ -100,6 +119,7 @@ public class ParallelDFS implements Serializable {
 
 
             while (schedulableNodes.size() > 0) { //while there are still nodes to schedule
+
                 // System.out.println("Searching at depth " + depth + " with bound " + schedule.getBound());
                 //if the depth is less than the size of nodeIndices then the depth has been reached before
 
@@ -157,7 +177,7 @@ public class ParallelDFS implements Serializable {
                     }
 
                     //if there are scheduled nodes
-                    if (schedule.getScheduledNodes().size() > 0) {
+                    if (schedule.getScheduledNodes().size() > minDepth) {
                         schedule.removeLastScheduledTask(); //remove the last scheduled task from the most recent depth
 
                         schedulableNodes = schedule.getSchedulableNodes(); //get schedulable nodes
