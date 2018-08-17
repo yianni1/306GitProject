@@ -1,5 +1,6 @@
 package testCases;
 
+import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.*;
 
@@ -91,8 +92,8 @@ public class OptimalTestCase extends CompareOutput {
 
 		Scheduler schedule = new DFBnBScheduler(graph, 2);
 		Schedule solution = schedule.createSchedule();
-		
-		assertTrue(solution.getBound() == 28);
+
+		assertEquals(28, solution.getBound());
 	}
 	
 	@Test
@@ -106,8 +107,8 @@ public class OptimalTestCase extends CompareOutput {
 
 		Scheduler schedule = new DFBnBScheduler(graph, 2);
 		Schedule solution = schedule.createSchedule();
-	
-		assertTrue(solution.getBound() == 581);
+
+		assertEquals(581, solution.getBound());
 	}
 	
 	@Test
@@ -121,8 +122,8 @@ public class OptimalTestCase extends CompareOutput {
 
 		Scheduler schedule = new DFBnBScheduler(graph, 2);
 		Schedule solution = schedule.createSchedule();
-		
-		assertTrue(solution.getBound() == 55);
+
+		assertEquals(55, solution.getBound());
 	}
 	
 	@Test
@@ -136,8 +137,8 @@ public class OptimalTestCase extends CompareOutput {
 
 		Scheduler schedule = new DFBnBScheduler(graph, 2);
 		Schedule solution = schedule.createSchedule();
-		
-		assertTrue(solution.getBound() == 50);
+
+		assertEquals(50, solution.getBound());
 	}
 	
 	@Test
@@ -152,7 +153,7 @@ public class OptimalTestCase extends CompareOutput {
 		Scheduler schedule = new DFBnBScheduler(graph, 4);
 		Schedule solution = schedule.createSchedule();
 
-		assertTrue(solution.getBound() == 22);
+		assertEquals(22, solution.getBound());
 	}
 	
 	
@@ -167,8 +168,8 @@ public class OptimalTestCase extends CompareOutput {
 
 		Scheduler schedule = new DFBnBScheduler(graph, 4);
 		Schedule solution = schedule.createSchedule();
-		
-		assertTrue(solution.getBound() == 581);
+
+		assertEquals(581, solution.getBound());
 	}
 	
 	@Test
@@ -182,8 +183,8 @@ public class OptimalTestCase extends CompareOutput {
 
 		Scheduler schedule = new DFBnBScheduler(graph, 4);
 		Schedule solution = schedule.createSchedule();
-		
-		assertTrue(solution.getBound() == 55);
+
+		assertEquals(55, solution.getBound());
 	}
 
 	@Test
@@ -198,8 +199,7 @@ public class OptimalTestCase extends CompareOutput {
 			Scheduler schedule = new DFBnBScheduler(graph, 4);
 			Schedule solution = schedule.createSchedule();
 
-			System.out.println(solution.getBound());
-		assertTrue(solution.getBound() == 50);
+		assertEquals(50, solution.getBound());
 	}
 	
 	@Test
@@ -213,9 +213,8 @@ public class OptimalTestCase extends CompareOutput {
 
 		Scheduler schedule = new DFBnBScheduler(graph, 2);
 		Schedule solution = schedule.createSchedule();
-		
-		System.out.println(solution.getBound());
-		assertTrue(solution.getBound() == 350);
+
+		assertEquals(350, solution.getBound());
 	}
 	
 	@Test
@@ -229,9 +228,8 @@ public class OptimalTestCase extends CompareOutput {
 
 		Scheduler schedule = new DFBnBScheduler(graph, 4);
 		Schedule solution = schedule.createSchedule();
-		
-		System.out.println(solution.getBound());
-		assertTrue(solution.getBound() == 227);
+
+		assertEquals(227, solution.getBound());
 	}
 
 }

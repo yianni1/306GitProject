@@ -71,7 +71,7 @@ public class TestOptimality {
 //            long endTime = System.nanoTime();
 //            System.out.println("Time elapsed is " + ((endTime - startTime) / 1000000000) + " seconds");
 //
-//            assertEquals(solution.getBound(), optimal);
+//            assertEquals(optimal, solution.getBound());
 //        }
 //    }
 }
