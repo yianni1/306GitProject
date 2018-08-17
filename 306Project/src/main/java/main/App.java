@@ -159,6 +159,7 @@ public class App extends Application{
 
                     //Transporting to output
                     Output.createOutput(finalSolution.getProcessors(), graph, parentPath + sendToOutputClass + ".dot");
+					System.exit(0);
                 }
                 else {
 
@@ -185,6 +186,7 @@ public class App extends Application{
 
                         //Transporting to output
                         Output.createOutput(finalSolution.getProcessors(), graph, parentPath + sendToOutputClass + "-output.dot");
+						System.exit(0);
                     }
                     else {
                         System.out.println("Incorrect argument format");
