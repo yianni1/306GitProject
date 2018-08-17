@@ -1,5 +1,6 @@
 package scheduling;
 
+import comparator.CostFunctionComparator;
 import exceptions.NotSchedulableException;
 import exceptions.NotDeschedulableException;
 import graph.TaskEdge;
@@ -13,7 +14,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -36,14 +39,17 @@ public class DFBnBScheduler implements Scheduler{
 
 	private Schedule optimalSchedule;
 	private Schedule schedule;
-	private List<TaskNode> schedulableNodes;
+	private PriorityQueue<TaskNode> schedulableNodes;
 
-	private List<TaskNode> initialNodes;
+	private PriorityQueue<TaskNode> initialNodes;
 
 	public DFBnBScheduler(TaskGraph graph, int processors) {
 		this.graph = graph;
 
-		initialNodes = new ArrayList<>();
+		//Priority Queue comparator setup
+		Comparator<TaskNode> comparator = new CostFunctionComparator();
+		initialNodes = new PriorityQueue<TaskNode>(1, comparator);
+
 		nodeIndices = new ArrayList<>();
 		processorIndices = new ArrayList<>();
 		schedule = new Schedule(processors, graph);
@@ -124,7 +130,7 @@ public class DFBnBScheduler implements Scheduler{
 
 				boolean skip = false;
 				if (nodeIndex < schedulableNodes.size()) { //if there is still schedulable nodes
-					nextTask = schedulableNodes.get(nodeIndex); //get the next available one
+					nextTask = schedulableNodes.peek(); //get the next available one
 					nextProcessor = schedule.getProcessors().get(processorIndex); //get the processor to schedule on
 
 					skip = removeDuplicates(nodeIndex, processorIndex, nextTask, nextProcessor);
@@ -136,7 +142,7 @@ public class DFBnBScheduler implements Scheduler{
 					nodeIndex = nodeIndices.get(depth);
 					processorIndex = processorIndices.get(depth);
 
-					nextTask = schedulableNodes.get(nodeIndex); //get the next available one
+					nextTask = schedulableNodes.peek(); //get the next available one
 					nextProcessor = schedule.getProcessors().get(processorIndex); //get the processor to schedule on
 
 					skip = removeDuplicates(nodeIndex, processorIndex, nextTask, nextProcessor);
@@ -163,7 +169,7 @@ public class DFBnBScheduler implements Scheduler{
 
 				schedule.addTask(nextTask, nextProcessor, schedule.getEarliestSchedulableTime(nextTask, nextProcessor));
 
-//				costFunction(nextTask);
+				//costFunction(nextTask);
 
 				// Run the cost function for each of the tasks children to determine which one to schedule first.
 				TaskNode minTask;			// The node and processor that has the lowest cost
@@ -380,23 +386,41 @@ public class DFBnBScheduler implements Scheduler{
 
 			boolean addedNode = false;
 			int index = 0;
-			//Loop through initial nodes
-			while (addedNode == false) {
-				TaskNode node = schedulableNodes.get(index);
-				//If initialNode not been seen, add it to list
-				// Then break to look through all of its children 
-				if (!initialNodes.contains(node)) {
-					initialNodes.add(node);
-					addedNode = true;
-				}
-				index++;
-			}
-			//If all initial nodes have been seen, set finished to true to finish the algorithm
-			//As the optimal solution has been found
-			if (initialNodes.equals(schedulableNodes)) {
-				finished = true;
-			}
+			List<TaskNode> list = new ArrayList<TaskNode>();
+			for (TaskNode pqNode : schedulableNodes) {
+                list.add(pqNode);
+            }
 
+            //For loops used to compare priority queue elements since you cannot do it directly
+			List<TaskNode> initialNodesAsList =new ArrayList<TaskNode>();
+            for (TaskNode seenInitialNode : initialNodes) {
+                initialNodesAsList.add(seenInitialNode);
+            }
+
+            List<TaskNode> schedulableNodesAsList =new ArrayList<TaskNode>();
+            for (TaskNode pqNodes : schedulableNodes) {
+                schedulableNodesAsList.add(pqNodes);
+            }
+            if (schedulableNodesAsList.equals(initialNodesAsList)) {
+                finished = true;
+            }
+
+            //If all initial nodes have been seen, set finished to true to finish the algorithm
+            //As the optimal solution has been found
+            if (finished != true) {
+                //Loop through initial nodes
+                while (addedNode == false) {
+
+                    TaskNode node = list.get(index);
+                    //If initialNode not been seen, add it to list
+                    // Then break to look through all of its children
+                    if (!initialNodes.contains(node)) {
+                        initialNodes.add(node);
+                        addedNode = true;
+                    }
+                    index++;
+                }
+            }
 		}
 		return finished;
 

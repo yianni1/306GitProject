@@ -10,6 +10,7 @@ import scheduling.Processor;
 import scheduling.Schedule;
 
 import java.util.List;
+import java.util.PriorityQueue;
 
 public class ScheduleClassTests {
 
@@ -36,17 +37,17 @@ public class ScheduleClassTests {
 
         //Checks that only a is initially schedulable nodes are schedualable
         assertTrue(schedule.getSchedulableNodes().size() == 1);
-        assertTrue(schedule.getSchedulableNodes().get(0).getName().equals(nodeA.getName()));
+        assertTrue(schedule.getSchedulableNodes().peek().getName().equals(nodeA.getName()));
 
         List<Processor> processor = schedule.getProcessors();
         //add task method to test
         schedule.addTask(nodeA, processor.get(0), 0);
 
-        List<TaskNode> schedulableNodes = schedule.getSchedulableNodes();
+        PriorityQueue<TaskNode> schedulableNodes = schedule.getSchedulableNodes();
 
         //Tests that only other node schedulable is B
         assertTrue(schedulableNodes.size() == 1);
-        assertTrue(schedulableNodes.get(0).getName().equals(nodeB.getName()));
+        assertTrue(schedulableNodes.peek().getName().equals(nodeB.getName()));
     }
 
 
@@ -123,14 +124,14 @@ public class ScheduleClassTests {
 
         assertTrue(schedule.getSchedulableNodes().size() == 2);
 
-        List<TaskNode> schedulableNode = schedule.getSchedulableNodes();
+        PriorityQueue<TaskNode> schedulableNode = schedule.getSchedulableNodes();
 
         //Tests that nodes c and a have been initialized as schedulable
-        if (schedulableNode.get(0).getName().equals(nodeA.getName())) {
-            assertTrue(schedulableNode.get(1).getName().equals(nodeC.getName()));
+        if (schedulableNode.peek().getName().equals(nodeA.getName())) {
+            assertTrue(schedulableNode.peek().getName().equals(nodeC.getName()));
         }
-        else if (schedulableNode.get(1).getName().equals(nodeA.getName())){
-            assertTrue(schedulableNode.get(0).getName().equals(nodeC.getName()));
+        else if (schedulableNode.peek().getName().equals(nodeA.getName())){
+            assertTrue(schedulableNode.peek().getName().equals(nodeC.getName()));
         }
         else {
             fail();

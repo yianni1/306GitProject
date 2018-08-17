@@ -5,6 +5,7 @@ import graph.TaskGraph;
 import graph.TaskNode;
 
 import java.util.List;
+import java.util.PriorityQueue;
 
 /**
  * Created on 3/0/8/2018 by Ray and Kevin
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class GreedyScheduler implements Scheduler {
 
-	private List<TaskNode> schedulableNodes;
+    private PriorityQueue<TaskNode> schedulableNodes;
 	private Schedule schedule;
 	
     /**
@@ -30,7 +31,7 @@ public class GreedyScheduler implements Scheduler {
         //While there are still nodes to schedule
         while (schedulableNodes.size() > 0) {
             //TODO find a better a way to initalize this
-            TaskNode nextNode = schedulableNodes.get(0);
+            TaskNode nextNode = schedulableNodes.peek();
             Processor nextProcessor = schedule.getProcessors().get(0);
             int nextStartTime = schedule.getEarliestSchedulableTime(nextNode, nextProcessor);
             int nextEndTime = nextStartTime + nextNode.getWeight();
