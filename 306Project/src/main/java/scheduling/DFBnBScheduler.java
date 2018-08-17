@@ -10,7 +10,9 @@ import view.VisualisationController;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -37,6 +39,8 @@ public class DFBnBScheduler implements Scheduler, Serializable {
 
 	private List<TaskNode> initialNodes;
 
+	private Map<String, Integer> bottomLevelCosts = new HashMap<String ,Integer>();
+
 	public DFBnBScheduler(TaskGraph graph, int processors) {
 		this.graph = graph;
 
@@ -60,6 +64,11 @@ public class DFBnBScheduler implements Scheduler, Serializable {
 		while (greedySchedule.getScheduledNodes().size() > 0) {
 			greedySchedule.removeLastScheduledTask();
 		}
+
+		for (TaskNode n : graph.getNodes()) {
+		    Integer blp = criticalPath(n);
+            bottomLevelCosts.put(n.getName(), blp);
+        }
 
 	}
 
@@ -96,6 +105,24 @@ public class DFBnBScheduler implements Scheduler, Serializable {
 
 				//Determine whether initial nodes have been repeated
 				finished = removeReplicatedTree(initialIteration);
+
+                if (initialIteration) {
+                    int costF;
+                    for (TaskNode tn : schedulableNodes) {
+                        costF = Integer.MAX_VALUE;
+
+                        for (Processor p: schedule.getProcessors()) {
+                            //costF = costFunction(tn, p);
+                            int currentCF = costFunction(tn,p);
+                            if (currentCF <= costF) {
+                                tn.setCostFunction(currentCF);
+                            }
+
+                        }
+                    }
+                }
+
+
 
 				initialIteration = false;
 
@@ -159,51 +186,47 @@ public class DFBnBScheduler implements Scheduler, Serializable {
 					continue;
 				}
 
-				schedule.addTask(nextTask, nextProcessor, schedule.getEarliestSchedulableTime(nextTask, nextProcessor));
+				int est = schedule.getEarliestSchedulableTime(nextTask, nextProcessor);
 
-//				costFunction(nextTask);
+				// Don't add the task to the processor if the upper bound will be higher
+				if (est + nextTask.getWeight() < upperBound && !skip) {
+					//System.out.println("Task " + nextTask.getName() + " on schedule "+nextProcessor.getID()+" will be less than the upper bound. ("+est+" vs. "+ upperBound+")");
+					schedule.addTask(nextTask, nextProcessor, est);
 
-				// Run the cost function for each of the tasks children to determine which one to schedule first.
-				TaskNode minTask;			// The node and processor that has the lowest cost
-				Processor minProcessor;
+//				// Run the cost function for each of the tasks children to determine which one to schedule first.
+//				TaskNode minTask;			// The node and processor that has the lowest cost
+//				Processor minProcessor;
 
-				int minCost = Integer.MAX_VALUE;
-				int minCostTemp;
-				for (TaskEdge e: nextTask.getOutgoingEdges()){
-					TaskNode tn = e.getEndNode();
-					for (Processor p: schedule.getProcessors()) {
-						minCostTemp = costFunction(tn, p);
-						if (minCostTemp<minCost) {
-							minTask = tn;
-							minProcessor = p;
-						}
-					}
-				}
-				// TODO: Actually make use of minTask and minProcessor
+//                int costF;
+//				for (TaskEdge e: nextTask.getOutgoingEdges()){
+//					TaskNode tn = e.getEndNode();
+//                    costF = Integer.MAX_VALUE;
+//
+//                    for (Processor p: schedule.getProcessors()) {
+//
+//					    //costF = costFunction(tn, p);
+//                        int currentCF = costFunction(tn,p);
+//
+//					    if (currentCF <= costF) {
+//                            tn.setCostFunction(currentCF);
+//                        }
+//					}
+//				}
 
-				schedulableNodes = schedule.getSchedulableNodes();
-				nodeIndices.set(depth, nodeIndices.get(depth) + 1);
-
-				// kind of pruning
-				if ((schedule.getBound() > upperBound) || (skip == true)){
-					schedule.removeLastScheduledTask();
 					schedulableNodes = schedule.getSchedulableNodes();
+					nodeIndices.set(depth, nodeIndices.get(depth) + 1);
+					depth++;
 
+
+
+				} else {	// Pruning
+					nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 					branchesPruned++;
 					if (scheduleListener != null && (System.currentTimeMillis() % 100 == 0)) { //update visualisation with new number of branches pruned
 						scheduleListener.updateBranchesPruned(branchesPruned);
 					}
 
-
-					depth--;
-
-					if (depth < 0) {
-						break;
-					}
-
 				}
-
-				depth++;
 			}
 
 			if (depth < 0) {
@@ -309,22 +332,29 @@ public class DFBnBScheduler implements Scheduler, Serializable {
 
 		// Loop through all the scheduled nodes, then the node we want to schedule and find the maxFbl out of them.
 		for (TaskNode tn : schedule.getScheduledNodes()) {
-			fblTemp = tn.getStartTime() + criticalPath(tn);
+            Integer value = bottomLevelCosts.get(nextTask.getName());
+			fblTemp = tn.getStartTime() + value;
 			fblMax = Math.max(fblMax, fblTemp);
 		}
 
 		// Can't call getStartTime on the child node because we haven't scheduled it yet.
 		int childStartTime = schedule.getEarliestSchedulableTime(nextTask, nextProcessor);
-		fblTemp = childStartTime + criticalPath(nextTask);
+        Integer value = bottomLevelCosts.get(nextTask.getName());
+		fblTemp = childStartTime + value;
 		fblMax = Math.max(fblMax, fblTemp);
 
 		// TODO: fDRT calculation
+// fDRT CALCULATION -------------------------------------------------------------------------
+		// fDRT(s) = max{tdr(n) + blw(n) for every free node.
+		// tdr(n) = min (tdr(n,P) min of all processors
+		// tdr(n,P) is earliest schedulable time
+		// If nj is a source task, then tdr(nj,P)=0
 
+		int fDRT = schedule.getEarliestSchedulableTime(nextTask,nextProcessor) + childStartTime;
 
 //		child.setCostFunction(Math.max(fblMax, fIdle));
 
-		// TODO: Double check if this should be max or min.
-		return Math.max(fblMax, fIdle);
+		return Math.max(Math.max(fblMax, fIdle), fDRT);
 	}
 
 	/**
@@ -380,6 +410,13 @@ public class DFBnBScheduler implements Scheduler, Serializable {
 			int index = 0;
 			//Loop through initial nodes
 			while (addedNode == false) {
+
+			    //If all initial nodes have been looped through, we are finished
+			    if (index == schedulableNodes.size()) {
+                    finished = true;
+			        break;
+                }
+
 				TaskNode node = schedulableNodes.get(index);
 				//If initialNode not been seen, add it to list
 				// Then break to look through all of its children 
