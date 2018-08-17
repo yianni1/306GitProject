@@ -332,12 +332,17 @@ public class DFBnBScheduler implements Scheduler{
 		fblMax = Math.max(fblMax, fblTemp);
 
 		// TODO: fDRT calculation
+// fDRT CALCULATION -------------------------------------------------------------------------
+		// fDRT(s) = max{tdr(n) + blw(n) for every free node.
+		// tdr(n) = min (tdr(n,P) min of all processors
+		// tdr(n,P) is earliest schedulable time
+		// If nj is a source task, then tdr(nj,P)=0
 
+		int fDRT = schedule.getEarliestSchedulableTime(nextTask,nextProcessor) + childStartTime;
 
 //		child.setCostFunction(Math.max(fblMax, fIdle));
 
-		// TODO: Double check if this should be max or min.
-		return Math.max(fblMax, fIdle);
+		return Math.max(Math.max(fblMax, fIdle), fDRT);
 	}
 
 	/**
