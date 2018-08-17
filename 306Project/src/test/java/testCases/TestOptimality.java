@@ -30,10 +30,10 @@ public class TestOptimality {
 //        File folder = new File("src/main/resources/DotFiles/");
 //        File[] paths = folder.listFiles();
 //        for (File file : paths) {
-//            if (file.getName().startsWith("2p") ||
-//                    file.getName().startsWith("4p") ||
-//                    file.getName().startsWith("8p")) {
-//				  files.add(file);
+//            if (file.getName().startsWith("2p")) //||
+//                  //  file.getName().startsWith("4p") ||
+//                  //  file.getName().startsWith("8p")) {
+//                    {files.add(file);
 //            }
 //
 //        }
