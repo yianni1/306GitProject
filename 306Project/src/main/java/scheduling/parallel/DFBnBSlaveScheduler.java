@@ -26,31 +26,44 @@ public class DFBnBSlaveScheduler implements Scheduler{
 
 	private VisualisationController scheduleListener;
 
+	// variables associated with the graph
 	private TaskGraph graph;
 	private int upperBound;
 	private int depth;
 	private int minDepth;
 	private long numPaths;
 	private long branchesPruned;
+	private List<TaskNode> initialNodes;
 
 	// Index of the children of the schedule.
 	private List<Integer> nodeIndices;
 	private List<Integer> processorIndices;
 
+	//variables assoicated with the schedules
 	private Schedule optimalSchedule;
 	private Schedule schedule;
 	private List<TaskNode> schedulableNodes;
 
-	private List<TaskNode> initialNodes;
-
+	//vars associated with pruning
 	private Map<String, Integer> bottomLevelCosts = new HashMap<String ,Integer>();
 
+	/**
+	 * The Constructor associated with the Slave Schedular which conducts DFS algorithim for particular branches on seperate threads
+	 * @param graph
+	 * @param processors
+	 * @param initialSchedule
+	 * @param initialUpperBound
+	 */
 	public DFBnBSlaveScheduler(TaskGraph graph, int processors, Schedule initialSchedule, int initialUpperBound) {
+
 		this.graph = graph;
 
+		//storing the initial nodes, indexs for the nodes and processors
 		initialNodes = new ArrayList<>();
-		nodeIndices = new ArrayList<>(Collections.nCopies((graph.getNodes().size()), 0)); //initialise nodeIndices array with all depths set to 0
+		nodeIndices = new ArrayList<>(Collections.nCopies((graph.getNodes().size()), 0)); //depth of all nodes in the nodeIndices array is set to zero
 		processorIndices = new ArrayList<>(Collections.nCopies((graph.getNodes().size()), 0));
+
+		//initializing the initial blank schedule and getting the amount schedulable nodes within the graph
 		schedule = initialSchedule;
 		schedulableNodes = schedule.getSchedulableNodes();
 
@@ -70,14 +83,15 @@ public class DFBnBSlaveScheduler implements Scheduler{
 	}
 
 	/**
-	 * Returns the schedule according to DFSBnB
-	 * @return Schedule object for the schedule
-	 * @throws NotDeschedulableException Task not deSchedulable
-	 * @throws NotSchedulableException Task not Schedulable
+	 * Returns an schedule which is found upon the termination of the Depth first search branch and bound algorithim
+	 * @return Schedule object which is a valid solution
+	 * @throws NotDeschedulableException Task cannot be descheduled
+	 * @throws NotSchedulableException Task cannot be scheduled
 	 */
 	public Schedule createSchedule() throws NotDeschedulableException, NotSchedulableException {
 
-		if (scheduleListener != null) { //update initial best schedule in gui
+		//updating the inital schedule so that it is visible in the GUI
+		if (scheduleListener != null) {
 			updateGUISchedule();
 			scheduleListener.updateNumPaths(numPaths);
 		}
@@ -97,17 +111,21 @@ public class DFBnBSlaveScheduler implements Scheduler{
 		//while there are branches to explore from depth 0, keep looping through all branches
 		while (depth >= minDepth) {
 
-			while (schedulableNodes.size() > 0) { //while there are still nodes to schedule
-				// System.out.println("Searching at depth " + depth + " with bound " + schedule.getBound());
+			//checking if there are still any nodes that are schedulable
+			while (schedulableNodes.size() > 0) {
 
-				//Determine whether initial nodes have been repeated
+				//checking if the inital node have been repeated
 				finished = removeReplicatedTree(initialIteration);
 
+
                 if (initialIteration) {
+
+                	//intializing the cost function
                     int costF;
                     for (TaskNode tn : schedulableNodes) {
                         costF = Integer.MAX_VALUE;
 
+                        //resetting cost function if the value is lower than the preivous value
                         for (Processor p: schedule.getProcessors()) {
                             //costF = costFunction(tn, p);
                             int currentCF = costFunction(tn,p);
@@ -119,59 +137,83 @@ public class DFBnBSlaveScheduler implements Scheduler{
                     }
                 }
 
-
+				//iterating the through inital nodes completed
 				initialIteration = false;
 
 				if (finished) {
 					break;
 				}
 
-				nodeIndex = nodeIndices.get(depth); //get the index of the next node at that depth
-				processorIndex = processorIndices.get(depth); //get the index of the processor to schedule on
+				//get the index of the node at that particular depth
+				nodeIndex = nodeIndices.get(depth);
+
+				//get the index of the processor to schedule on
+				processorIndex = processorIndices.get(depth);
 
 
 				boolean skip = false;
-				if (nodeIndex < schedulableNodes.size()) { //if there is still schedulable nodes
-					nextTask = schedulableNodes.get(nodeIndex); //get the next available one
-					nextProcessor = schedule.getProcessors().get(processorIndex); //get the processor to schedule on
 
+				//checking if there are any more schedulable nodes
+				if (nodeIndex < schedulableNodes.size()) {
+
+					//obtain the next available schedulable node
+					nextTask = schedulableNodes.get(nodeIndex);
+
+					//obtain the processor to schedule the particular node on
+					nextProcessor = schedule.getProcessors().get(processorIndex);
+
+					//remove duplicate schedules in the tree, (the same schedule just started on a different processor)
 					skip = removeDuplicates(nodeIndex, processorIndex, nextTask, nextProcessor);
 
-				} else if (processorIndex < schedule.getProcessors().size() - 1){ //if there is still a processor that we haven't tried to schedule this node on
-					nodeIndices.set(depth, 0); //reset the node index
-					processorIndices.set(depth, processorIndices.get(depth) + 1); //increment the processor index
+					//iterating through all the processors and understanding whether we have tried to schedule this node on
+				} else if (processorIndex < schedule.getProcessors().size() - 1){
 
+					//reset the node index
+					nodeIndices.set(depth, 0);
+
+					//move on to the next processor
+					processorIndices.set(depth, processorIndices.get(depth) + 1);
+
+					//get the depth of the current node and the processor
 					nodeIndex = nodeIndices.get(depth);
 					processorIndex = processorIndices.get(depth);
 
-					nextTask = schedulableNodes.get(nodeIndex); //get the next available one
-					nextProcessor = schedule.getProcessors().get(processorIndex); //get the processor to schedule on
+					//get the next available node
+					nextTask = schedulableNodes.get(nodeIndex);
 
+					//obtain a processor to schedule on
+					nextProcessor = schedule.getProcessors().get(processorIndex);
+
+					//remove any duplicate schedules
 					skip = removeDuplicates(nodeIndex, processorIndex, nextTask, nextProcessor);
 
 
 				} else { //otherwise no more nodes can be scheduled at this depth
-					nodeIndices.set(depth, 0); //reset node index for that depth
+
+					//reset the node and processor index for the graph
+					nodeIndices.set(depth, 0);
 					processorIndices.set(depth, 0);
 
-					depth--; //go to previous depth
+					//iterate back to the previous depth for the graph
+					depth--;
 
+					//depth greater than the mindepth then break
 					if (depth < minDepth) {
 						break;
 					}
 
-					//if there are scheduled nodes
+					//if there are scheduled nodes, remove the last schedulable node and get the schedulable nodes
 					if (schedule.getScheduledNodes().size() > 0) {
-						schedule.removeLastScheduledTask(); //remove the last scheduled task from the most recent depth
+						schedule.removeLastScheduledTask();
 
-						schedulableNodes = schedule.getSchedulableNodes(); //get schedulable nodes
+						schedulableNodes = schedule.getSchedulableNodes();
 					}
 					continue;
 				}
 
 				int est = schedule.getEarliestSchedulableTime(nextTask, nextProcessor);
 
-				// Don't add the task to the processor if the upper bound will be higher
+				//  Checking if the weight is lower than the upperbound in that case it would add a task
 				if (est + nextTask.getWeight() < upperBound && !skip) {
 					//System.out.println("Task " + nextTask.getName() + " on schedule "+nextProcessor.getID()+" will be less than the upper bound. ("+est+" vs. "+ upperBound+")");
 					schedule.addTask(nextTask, nextProcessor, est);
@@ -196,13 +238,14 @@ public class DFBnBSlaveScheduler implements Scheduler{
 //					}
 //				}
 
+					//get the schedulable nodes , iterate to the next depth and increase depth
 					schedulableNodes = schedule.getSchedulableNodes();
 					nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 					depth++;
 
 
 
-				} else {	// Pruning
+				} else {	//pruning visualisation update and pruning call
 					nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 					branchesPruned++;
 					if (scheduleListener != null && (System.currentTimeMillis() % 100 == 0)) { //update visualisation with new number of branches pruned
@@ -222,14 +265,19 @@ public class DFBnBSlaveScheduler implements Scheduler{
 				break;
 			}
 
+			//if the schedule bound is lower than the upperbound and no optimal schedule has been stored then
+			//it stores the current schedule by retrieving a deep clone
 			if (schedule.getBound() < upperBound || optimalSchedule == null) {
 				optimalSchedule = (Schedule) deepClone(schedule);
 				upperBound = schedule.getBound();
-				if (scheduleListener != null) { //update visualisation with new optimal schedule
+
+				//updating optimal schedule to be shown in the visualisation
+				if (scheduleListener != null) {
 					updateGUISchedule();
 					scheduleListener.updateNumPaths(numPaths);
 				}
 			}
+
 
 			if (schedule.getScheduledNodes().size() > 0) {
 				schedule.removeLastScheduledTask();
@@ -246,6 +294,7 @@ public class DFBnBSlaveScheduler implements Scheduler{
 
 		}
 
+		//robustness handling
 		if (optimalSchedule != null) {
 			System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
 		} else {
@@ -281,8 +330,8 @@ public class DFBnBSlaveScheduler implements Scheduler{
 	}
 
 	/**
-	 * Calculates the cost function for a TaskNode on a Processor
-	 * @param nextTask The taskNode we are looking at scheduling
+	 * This method calculates the cost function based on the task and processor
+	 * @param nextTask The Tasknode which is going to be scheduled
 	 * @param nextProcessor The processor we are looking at scheduling it on
 	 * @return The 'cost' for scheduling that task on that processor
 	 */
@@ -301,7 +350,9 @@ public class DFBnBSlaveScheduler implements Scheduler{
 		int totalIdleTime = 0;
 		// Gets the total idle time for that partial schedule
 		for (Processor p : schedule.getProcessors()) {
-			int totalTime = schedule.getBound(); // Use the entire bound of the processor
+
+			//Use the entire bound of the processor
+			int totalTime = schedule.getBound();
 			int totalTaskWeight = 0;
 			for (TaskNode tasks : p.getTasks()) {
 				totalTaskWeight = totalTaskWeight + tasks.getWeight();
@@ -468,7 +519,8 @@ public class DFBnBSlaveScheduler implements Scheduler{
 					//Loop through parent nodes of this task
 					for (TaskEdge edge : nextTask.getIncomingEdges()) {
 						TaskNode parent = edge.getStartNode();    
-						//If the node scheduled on this processor was the parent of the the 
+
+						//If the node scheduled on this processor was the parent of the the
 						//Current node, means it is a duplicate situation
 						if (latestTask.equals(parent)) {
 							duplicate = true;
@@ -489,10 +541,17 @@ public class DFBnBSlaveScheduler implements Scheduler{
 
 	}
 
+	/**
+	 * Set the schedule listener for the current listener
+	 * @param listener
+	 */
 	public void setScheduleListener(VisualisationController listener) {
 		this.scheduleListener = listener;
 	}
 
+	/**
+	 * This method updates the GUI schedule with that of the optimal schedule to be shown in the visualisation
+	 */
 	private void updateGUISchedule () {
 		scheduleListener.updateSchedule(optimalSchedule);
 		try {
