@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  * Created by Ray on 28/07/2018.
  * Written by Kevin & Ray.
  */
-public class DFBnBMasterScheduler {
+public class DFBnBMasterScheduler implements  Scheduler {
 
 	private VisualisationController scheduleListener;
 
@@ -96,7 +96,8 @@ public class DFBnBMasterScheduler {
                 @Override
                 public void run() {
                     DFBnBSlaveScheduler scheduler = new DFBnBSlaveScheduler(schedule.getGraph(), processors, schedule, upperBound);
-                    locallyOptimalSchedules.add(scheduler.createSchedule());
+					Schedule s = scheduler.createSchedule();
+                    locallyOptimalSchedules.add(s);
                 }
             });
         }
