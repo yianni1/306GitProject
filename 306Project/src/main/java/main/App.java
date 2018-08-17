@@ -7,15 +7,13 @@ import java.net.URISyntaxException;
 import graph.TaskGraph;
 import io.GraphLoader;
 import io.Output;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
-import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -24,8 +22,10 @@ import org.apache.commons.cli.Options;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import scheduling.*;
-import view.RootLayout;
+import scheduling.DFBnBScheduler;
+import scheduling.Schedule;
+import scheduling.Scheduler;
+import view.VisualisationController;
 
 /**
  * This is the main application, this is written so that it is compatible with Java Fx using the start method account
@@ -42,60 +42,60 @@ public class App extends Application{
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		try {
-			this.primaryStage = primaryStage;
-			this.primaryStage.setTitle("Task Scheduler - Team K.O.D.Y.R");
+		this.primaryStage = primaryStage;
+		this.primaryStage.setTitle("Task Scheduler - Team K.O.D.Y.R");
 
-			System.out.println("Starting Algorithm"); // FOR DEBUGGING ON CONSOLE
-			Font.loadFont(getClass().getResourceAsStream("/fonts/Roboto-Thin.ttf"), 12);
-			Font.loadFont(getClass().getResourceAsStream("/fonts/Roboto-Light.ttf"), 12);
+		Font.loadFont(getClass().getResourceAsStream("/fonts/Roboto-Thin.ttf"), 12);
+		Font.loadFont(getClass().getResourceAsStream("/fonts/Roboto-Light.ttf"), 12);
 
-			System.out.println("Starting Algorithm"); // FOR DEBUGGING ON CONSOLE
+		System.out.println("Starting Algorithm"); // FOR DEBUGGING ON CONSOLE
 
-			Parameters params = getParameters();
-			int size = params.getRaw().size();
-			String[] args = params.getRaw().toArray(new String[size]);
+		Parameters params = getParameters(); 
+		int size = params.getRaw().size();
+		String[] args = params.getRaw().toArray(new String[size]);
 
-			//Command line options using Apache Commons CLI
-			Options options = new Options();
+		//Command line options using Apache Commons CLI
+		Options options = new Options();
 
-			//option for the parallelization of the core with an additional argument of how many cores are being used
-			options.addOption("p", true, "Number of cores to use");
+		//option for the parallelization of the core with an additional argument of how many cores are being used
+		options.addOption("p", true, "Number of cores to use");
 
-			//option for the visualisation of the graph
-			options.addOption("v", false, "Use visualisation");
+		//option for the visualisation of the graph
+		options.addOption("v", false, "Use visualisation");
 
-			//option for the custom output name provided to the user
-			options.addOption("o", true, "Output file name");
+		//option for the custom output name provided to the user
+		options.addOption("o", true, "Output file name" );
 
-			checkOptions(args);
+		checkOptions(args);
 
-			CommandLineParser parser = new DefaultParser();
-			CommandLine cmd = parser.parse(options, args);
+		CommandLineParser parser = new DefaultParser();
+		CommandLine cmd = parser.parse(options, args);
 
-			if (args.length < 2) {
+		if (args.length < 2) {
 
-				//checking if the argument len is less than 2 if so in this case it should not allow the program to run which catches
-				//the exception and procedes to provide an error message
-				System.out.println("Insufficient arguments. Please specify input file and number of processors.");
+			//checking if the argument len is less than 2 if so in this case it should not allow the program to run which catches
+			//the exception and procedes to provide an error message
+			System.out.println("Insufficient arguments. Please specify input file and number of processors.");
+			System.exit(0);
+		} 
+		else {
+			//required arguments
+			String fileName = args[0];
+
+			int processorNumber = 0;
+
+			try{
+				processorNumber = Integer.parseInt(args[1]);
+			}
+			catch (NumberFormatException ex) {
+				System.out.println("Please enter a positive integer for the processor number");
 				System.exit(0);
-			} else {
-				//required arguments
-				String fileName = args[0];
+			}
 
-				int processorNumber = 0;
+			//default values for optional arguments
+			int numCores = 1;
 
-				try {
-					processorNumber = Integer.parseInt(args[1]);
-				} catch (NumberFormatException ex) {
-					System.out.println("Please enter a positive integer for the processor number");
-					System.exit(0);
-				}
-
-				//default values for optional arguments
-				int numCores = 1;
-
-				if (cmd.hasOption("p")) {
+			if (cmd.hasOption("p")) {
 
 
 					try {
@@ -133,87 +133,95 @@ public class App extends Application{
 
 				}
 
-				if (cmd.hasOption("v")) {
-					try {
-						//Load the root layout from the fxml file
-						FXMLLoader fxmlLoader = new FXMLLoader();
-						Parent root = fxmlLoader.load(getClass().getResource("/view/RootLayout.fxml").openStream());
+			if (cmd.hasOption("v")) {
+				try {
+					//Load the root layout from the fxml file
+					FXMLLoader fxmlLoader = new FXMLLoader();
+					Parent root = fxmlLoader.load(getClass().getResource("/view/Visualisation.fxml").openStream());
 
-						RootLayout controller = fxmlLoader.getController();
+					VisualisationController controller = fxmlLoader.getController();
 
-						controller.setFileName(fileName);
-						controller.setProcessorNumber(processorNumber);
-						controller.setCoreNumber(numCores);
+					controller.setFileName(fileName);
+					controller.setProcessorNumber(processorNumber);
+					controller.setCoreNumber(numCores);
 
-						//scene showing the root layout is displayed
-						Scene scene = new Scene(root);
-						primaryStage.setScene(scene);
-						primaryStage.getIcons().add(new Image(App.class.getResourceAsStream("/background/icon.png")));
-						primaryStage.setResizable(false);
-						primaryStage.sizeToScene();
-						controller.createGraph();
-						primaryStage.show();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				} else {
-					if (cmd.hasOption("o")) {
-						//Block for the user specificed option
-						String sendToOutputClass = cmd.getOptionValue("o");
-
-						GraphLoader loader = new GraphLoader(); //Loading the graph
-						String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-						File parent = new File(path);
-						String parentPath = parent.getParent() + File.separator;
-
-						TaskGraph graph = loader.load(parentPath + fileName);
-
-						//Doing the algorithm
-						Scheduler solution = new DFBnBScheduler(graph, processorNumber);
-						Schedule finalSolution = solution.createSchedule();
-
-						//Transporting to output
-						Output.createOutput(finalSolution.getProcessors(), graph, parentPath + sendToOutputClass + ".dot");
-					} else {
-
-						boolean inputOk = checkArgs(args);
-
-						if (inputOk) {
-							//Block for non specified option
-							String outputN = fileName.substring(0, fileName.length() - 4);
-
-
-							String sendToOutputClass = outputN;
-
-							GraphLoader loader = new GraphLoader(); //Loading the graph
-
-							String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-							File parent = new File(path);
-							String parentPath = parent.getParent() + File.separator;
-
-							TaskGraph graph = loader.load(parentPath + fileName);
-
-							//Doing the algorithm
-							Scheduler solution = new DFBnBScheduler(graph, processorNumber);
-							Schedule finalSolution = solution.createSchedule();
-
-							//Transporting to output
-							Output.createOutput(finalSolution.getProcessors(), graph, parentPath + sendToOutputClass + "-output.dot");
-						} else {
-							System.out.println("Incorrect argument format");
+					primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+						@Override
+						public void handle(WindowEvent t) {
+							Platform.exit();
 							System.exit(0);
+							controller.closeViewer();
 						}
+					});
 
-
-					}
+					//scene showing the root layout is displayed
+					Scene scene = new Scene(root);
+					primaryStage.setScene(scene);
+					primaryStage.getIcons().add(new Image(App.class.getResourceAsStream("/background/icon.png")));
+					primaryStage.setResizable(false);
+					primaryStage.sizeToScene();
+					controller.createGraph();
+					primaryStage.show();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
+			} else {
+                if (cmd.hasOption("o")) {
+                    //Block for the user specificed option
+                    String sendToOutputClass = cmd.getOptionValue("o");
+
+                    GraphLoader loader = new GraphLoader(); //Loading the graph
+                    String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+                    File parent = new File(path);
+                    String parentPath = parent.getParent() + File.separator;
+
+                    TaskGraph graph = loader.load(parentPath + fileName);
+
+                    //Doing the algorithm
+                    Scheduler solution = new DFBnBScheduler(graph, processorNumber);
+                    Schedule finalSolution = solution.createSchedule();
+
+                    //Transporting to output
+                    Output.createOutput(finalSolution.getProcessors(), graph, parentPath + sendToOutputClass + ".dot");
+                }
+                else {
+
+                    boolean inputOk = checkArgs(args);
+
+                    if (inputOk) {
+                        //Block for non specified option
+                        String outputN = fileName.substring(0, fileName.length() - 4);
 
 
-				System.out.println("Scheduling on " + processorNumber + " processors using " + numCores + " cores.");
-			}
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
+                        String sendToOutputClass = outputN;
+
+                        GraphLoader loader = new GraphLoader(); //Loading the graph
+
+                        String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+                        File parent = new File(path);
+                        String parentPath = parent.getParent() + File.separator;
+
+                        TaskGraph graph = loader.load(parentPath + fileName);
+
+                        //Doing the algorithm
+                        Scheduler solution = new DFBnBScheduler(graph, processorNumber);
+                        Schedule finalSolution = solution.createSchedule();
+
+                        //Transporting to output
+                        Output.createOutput(finalSolution.getProcessors(), graph, parentPath + sendToOutputClass + "-output.dot");
+                    }
+                    else {
+                        System.out.println("Incorrect argument format");
+                        System.exit(0);
+                    }
+
+
+                }
+            }
+
+
+
+			System.out.println("Scheduling on " + processorNumber + " processors using " + numCores + " cores.");
 		}
 	}
 
