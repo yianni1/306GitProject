@@ -96,22 +96,34 @@ public class ParallelDFS implements Serializable {
 //        return createSchedule(0);
 //    }
 
+    /**
+     * This method is used to create the optimal schedule by running the DFS algortihim this invlvoves first going through the
+     * BFS search to check the number of cores and then going through DFS with each of the nodes on the branches that are in the
+     * graph
+     * @param minDepth
+     * @return
+     */
     public Schedule createSchedule(int minDepth) {
-        //initialize upperBound
+
+        //initialize the upperbound which allows algorithim iteration
         TaskNode nextTask = null;
         Processor nextProcessor = null;
         int nodeIndex = 0;
         int processorIndex = 0;
 
+        int NodeIndex = 0;
+        int ProcessorIndex = 0;
+
+        //adding the nodes which are run through the BFS search into the Indices datastructures
         for (int i = 0; i < minDepth; i++) {
             nodeIndices.add(i);
             processorIndices.add(i);
         }
 
-        //Variables to know when all initial nodes have been looped through
+        //this is variable to know when all the intial nodes have been traversed through
         boolean finished = false;
 
-        //Used to not break on first iteration
+        //to not break the loop when it occurs in the first iteration
         boolean initialIteration = true;
 
         //while there are branches to explore from depth minDepth, keep looping through all branches
@@ -199,7 +211,7 @@ public class ParallelDFS implements Serializable {
 
                         depth--;
 
-                        if (depth < 0) {
+                        if (depth < minDepth ) {
                             break;
                         }
                     }
