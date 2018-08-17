@@ -38,7 +38,9 @@ public class DFBnBScheduler implements Scheduler{
 
 	private Map<String, Integer> bottomLevelCosts = new HashMap<String ,Integer>();
 
-	public DFBnBScheduler(TaskGraph graph, int processors) {
+    private HashSet<Schedule> seenSchedules = new HashSet<>();
+
+    public DFBnBScheduler(TaskGraph graph, int processors) {
 		this.graph = graph;
 
 		initialNodes = new ArrayList<>();
@@ -187,7 +189,15 @@ public class DFBnBScheduler implements Scheduler{
 				// Don't add the task to the processor if the upper bound will be higher
 				if (est + nextTask.getWeight() < upperBound && !skip) {
 					//System.out.println("Task " + nextTask.getName() + " on schedule "+nextProcessor.getID()+" will be less than the upper bound. ("+est+" vs. "+ upperBound+")");
-					schedule.addTask(nextTask, nextProcessor, est);
+
+                    schedule.addTask(nextTask, nextProcessor, est);
+//                    if (seenSchedules.contains(schedule)) {
+//                        schedule.removeLastScheduledTask();
+//                    }
+//                    else {
+//                        Schedule clonedSchedule = (Schedule) deepClone(schedule);
+//                        seenSchedules.add(clonedSchedule);
+//                    }
 
 //				// Run the cost function for each of the tasks children to determine which one to schedule first.
 //				TaskNode minTask;			// The node and processor that has the lowest cost
