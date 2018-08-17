@@ -15,10 +15,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -32,6 +29,7 @@ public class DFBnBSlaveScheduler implements Scheduler{
 	private TaskGraph graph;
 	private int upperBound;
 	private int depth;
+	private int minDepth;
 	private long numPaths;
 	private long branchesPruned;
 
@@ -47,29 +45,22 @@ public class DFBnBSlaveScheduler implements Scheduler{
 
 	private Map<String, Integer> bottomLevelCosts = new HashMap<String ,Integer>();
 
-	public DFBnBSlaveScheduler(TaskGraph graph, int processors) {
+	public DFBnBSlaveScheduler(TaskGraph graph, int processors, Schedule initialSchedule, int initialUpperBound) {
 		this.graph = graph;
 
 		initialNodes = new ArrayList<>();
-		nodeIndices = new ArrayList<>();
-		processorIndices = new ArrayList<>();
-		schedule = new Schedule(processors, graph);
+		nodeIndices = new ArrayList<>(Collections.nCopies((graph.getNodes().size()), 0)); //initialise nodeIndices array with all depths set to 0
+		processorIndices = new ArrayList<>(Collections.nCopies((graph.getNodes().size()), 0));
+		schedule = initialSchedule;
 		schedulableNodes = schedule.getSchedulableNodes();
 
 		//initialize depth, upperBound, and current time of the schedule
-		depth = 0;
+		depth = schedule.getScheduledNodes().size();
+		minDepth = depth;
 		numPaths = 1;
-		branchesPruned = 0;
 
-		Schedule greedySchedule = new GreedyScheduler(graph, processors).createSchedule();
+		upperBound = initialUpperBound;
 
-		optimalSchedule = (Schedule) deepClone(greedySchedule); //set greedy schedule to be initial optimal schedule
-
-		upperBound = greedySchedule.getBound();
-
-		while (greedySchedule.getScheduledNodes().size() > 0) {
-			greedySchedule.removeLastScheduledTask();
-		}
 
 		for (TaskNode n : graph.getNodes()) {
 		    Integer blp = criticalPath(n);
@@ -104,7 +95,7 @@ public class DFBnBSlaveScheduler implements Scheduler{
 		boolean initialIteration = true;
 
 		//while there are branches to explore from depth 0, keep looping through all branches
-		while (depth >= 0) {
+		while (depth >= minDepth) {
 
 			while (schedulableNodes.size() > 0) { //while there are still nodes to schedule
 				// System.out.println("Searching at depth " + depth + " with bound " + schedule.getBound());
@@ -129,27 +120,14 @@ public class DFBnBSlaveScheduler implements Scheduler{
                 }
 
 
-
 				initialIteration = false;
 
 				if (finished) {
 					break;
 				}
 
-
-				if (depth < nodeIndices.size()) {
-					nodeIndex = nodeIndices.get(depth); //get the index of the next node at that depth
-					processorIndex = processorIndices.get(depth); //get the index of the processor to schedule on
-				} else { //otherwise initialise the node index and processor index of that depth as 0
-					nodeIndex = 0;
-					processorIndex = 0;
-					nodeIndices.add(depth, nodeIndex);
-
-					processorIndices.add(depth, processorIndex);
-
-
-				}
-
+				nodeIndex = nodeIndices.get(depth); //get the index of the next node at that depth
+				processorIndex = processorIndices.get(depth); //get the index of the processor to schedule on
 
 
 				boolean skip = false;
@@ -178,7 +156,7 @@ public class DFBnBSlaveScheduler implements Scheduler{
 
 					depth--; //go to previous depth
 
-					if (depth < 0) {
+					if (depth < minDepth) {
 						break;
 					}
 
@@ -234,7 +212,7 @@ public class DFBnBSlaveScheduler implements Scheduler{
 				}
 			}
 
-			if (depth < 0) {
+			if (depth < minDepth) {
 				break;
 			}
 
@@ -268,7 +246,12 @@ public class DFBnBSlaveScheduler implements Scheduler{
 
 		}
 
-		System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
+		if (optimalSchedule != null) {
+			System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
+		} else {
+			System.out.println("No solution better than upper bound found on this branch.");
+		}
+
 		if (scheduleListener != null) {
             updateGUISchedule();;
 			scheduleListener.updateNumPaths(numPaths);

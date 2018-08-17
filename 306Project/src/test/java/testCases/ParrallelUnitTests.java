@@ -4,9 +4,12 @@ import graph.TaskGraph;
 import graph.TaskNode;
 import io.GraphLoader;
 import org.junit.Test;
+import scheduling.DFBnBScheduler;
+import scheduling.GreedyScheduler;
 import scheduling.Processor;
 import scheduling.Schedule;
 import scheduling.parallel.DFBnBMasterScheduler;
+import scheduling.parallel.DFBnBSlaveScheduler;
 
 import java.util.List;
 
@@ -16,17 +19,16 @@ public class ParrallelUnitTests {
 
     @Test
     public void testinitialisePartialSchedules() {
-//        GraphLoader loader = new GraphLoader();
-//        TaskGraph graph = loader.load("src/main/resources/DotFiles/CustomTest.dot");
-//
-//        int numCores = 3;
-//        int numProcesses = 2;
-//
-//
-//        DFBnBMasterScheduler parrallelScheduler = new DFBnBMasterScheduler(graph, numProcesses, numCores);
-//
-//        parrallelScheduler.initialisePartialSchedules();
-//        List<Schedule> scheduleList = parrallelScheduler.getPartialSchedules();
+        GraphLoader loader = new GraphLoader();
+        TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_11_OutTree.dot");
+
+        int cores = 3;
+        int processors = 4;
+
+        DFBnBMasterScheduler scheduler = new DFBnBMasterScheduler(graph, processors, cores);
+        scheduler.createSchedule();
+
+
 //
 //        TaskNode a = null;
 //        TaskNode b = null;

@@ -16,10 +16,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -32,6 +30,7 @@ public class DFBnBMasterScheduler {
 
 	private List<Schedule> partialSchedules = new ArrayList<>();
 	private int numCores;
+	private int processors;
 
 	private TaskGraph graph;
 	private int upperBound;
@@ -50,48 +49,73 @@ public class DFBnBMasterScheduler {
 	private List<TaskNode> initialNodes;
 
 	public DFBnBMasterScheduler(TaskGraph graph, int processors, int numCores) {
-		upperBound = Integer.MAX_VALUE;
+		this.graph = graph;
+		this.processors = processors;
 		this.numCores = numCores;
 		schedule = new Schedule(processors, graph);
 	}
 
-	/**
-	 * Runs a bfs to allocate a thread for each schedule
-	 */
-	private void runBFS() {
-		if (numCores<= schedule.getSchedulableNodes().size()) {
-			// Assign
-		} else {
-			int numOfChildren=0;
-			int depthBFS=0;
-			int nodeIndex;
-			nodeIndices = new ArrayList<>();
+	public void createSchedule() {
+		Schedule greedySchedule = new GreedyScheduler(graph, processors).createSchedule();
 
+		upperBound = greedySchedule.getBound();
 
+		while (greedySchedule.getScheduledNodes().size() > 0) {
+			greedySchedule.removeLastScheduledTask();
+		}
 
-//			List<TaskNode> parentNodes = schedule.getSchedulableNodes();
-//
-//			for (TaskNode tn: parentNodes) {
-//				schedule.addTask(tn, schedule.getProcessors().get(0), schedule.getEarliestSchedulableTime(tn,schedule.getProcessors().get(0)));
-//				numOfChildren += schedule.getSchedulableNodes().size() * schedule.getProcessors().size();
-//
-//				nodeIndex = nodeIndices.get(depthBFS);
-//				nodeIndices.add(depthBFS, nodeIndex);
-//
-//				nodeIndices.set(depthBFS, nodeIndices.get(depthBFS) + 1 );
-//
-//				schedule.removeLastScheduledTask();
-//
-//
-//			}
-//
+		initialisePartialSchedules();
 
-
+		//TODO set each slave to run on a separate thread
+		for (Schedule schedule : partialSchedules) {
+			DFBnBSlaveScheduler scheduler = new DFBnBSlaveScheduler(schedule.getGraph(), processors, schedule, upperBound);
+			scheduler.createSchedule();
 		}
 	}
 
 	public List<Schedule> getPartialSchedules() {
 		return partialSchedules;
+	}
+
+
+
+
+	public void initialisePartialSchedules() {
+
+		int scheduleIndex = 0;
+
+		while (partialSchedules.size() < numCores) {
+			for (int i = 0; i < schedule.getProcessors().size(); i++) {
+				try {
+					createPartialSchedules(schedule, i);
+				}
+				catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+				}
+			}
+			schedule = partialSchedules.get(scheduleIndex);
+			scheduleIndex++;
+
+		}
+
+	}
+
+
+
+	private void createPartialSchedules(Schedule s, int processorId) throws CloneNotSupportedException {
+		List<TaskNode> nodes = s.getSchedulableNodes();
+		for (int i = 0; i < s.getSchedulableNodes().size(); i++) {
+			s.addTask(nodes.get(i), s.getProcessors().get(processorId), s.getEarliestSchedulableTime(nodes.get(i), s.getProcessors().get(processorId)));
+			Schedule partialSchedule = (Schedule) deepClone(s);
+			s.removeLastScheduledTask();
+			partialSchedules.add(partialSchedule);
+		}
+
+		if (partialSchedules.contains(s)) {
+			partialSchedules.remove(s);
+		}
+
+
 	}
 
 	/**
@@ -110,52 +134,6 @@ public class DFBnBMasterScheduler {
 			e.printStackTrace();
 			return null;
 		}
-	}
-
-
-	public void initialisePartialSchedules() {
-
-		int scheduleIndex = 0;
-
-		while (partialSchedules.size() < numCores) {
-
-			try {
-				createPartialSchedules(schedule);
-			}
-			catch (CloneNotSupportedException e) {
-				e.printStackTrace();
-			}
-
-			schedule = partialSchedules.get(scheduleIndex);
-			scheduleIndex++;
-
-		}
-
-	}
-
-
-
-	private void createPartialSchedules(Schedule s) throws CloneNotSupportedException {
-		for (TaskNode node : s.getSchedulableNodes()) {
-			for(Processor p: s.getProcessors()) {
-
-				Schedule partialSchedule = (Schedule) deepClone(s);
-
-				//TODO nodes being schedule on multiple processes will already be scheduled on second iteration
-				// Of this loop. Means getEarliestSchedulableTime will be -1 and will cause not scheduled exception
-				int time = partialSchedule.getEarliestSchedulableTime(node, p);
-
-				partialSchedule.addTask(node, p, time);
-				partialSchedules.add(partialSchedule);
-			}
-
-		}
-
-		if (partialSchedules.contains(s)) {
-			partialSchedules.remove(s);
-		}
-
-
 	}
 
 }
