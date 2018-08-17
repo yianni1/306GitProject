@@ -105,21 +105,6 @@ public class ParallelDFS implements Serializable {
 
                 //Block for determining if initial nodes have been seen
                 if ((depth == minDepth) && (initialIteration == false) ) {
-
-//                    boolean addedNode = false;
-//                    int index = 0;
-//                    //Loop through initial nodes
-//                    while (addedNode == false) {
-//
-//                        TaskNode node = schedulableNodes.get(index);
-//                        //If initalNode not been seen, add it to list
-//                        // Then break to look through all of its children
-//                        if (!initialNodes.contains(node)) {
-//                            initialNodes.add(node);
-//                            addedNode = true;
-//                        }
-//                        index++;
-//                    }
                     //If all initial nodes have been seen, set finished to true to finish the algorithm
                     //As the optimal solution has been found
                     if (initialNodes.equals(schedulableNodes)) {
@@ -209,14 +194,6 @@ public class ParallelDFS implements Serializable {
             }
 
 
-            boolean eIsScheduled = false;
-            for (TaskNode node : schedule.getScheduledNodes()) {
-                if (node.getName().equals("e")) {
-                    eIsScheduled = true;
-                    break;
-                }
-            }
-            System.out.println(eIsScheduled + " that e is scheduled");
 
             depth--; //go to previous depth
 

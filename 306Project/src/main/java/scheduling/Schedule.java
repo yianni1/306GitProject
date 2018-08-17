@@ -289,7 +289,7 @@ public class Schedule implements Serializable {
 
         for (TaskEdge e : lastScheduledTask.getOutgoingEdges()) {
 //            if (e.getEndNode().isSchedulable()) {
-                schedulableNodes.remove(e.getEndNode());
+                schedulableNodes.removeIf(obj -> obj.getName().equals(e.getEndNode().getName()));
 //            }
         }
 

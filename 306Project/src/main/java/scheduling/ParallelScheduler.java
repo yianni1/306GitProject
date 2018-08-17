@@ -20,6 +20,8 @@ public class ParallelScheduler implements Scheduler {
     private List<TaskNode> schedulableNodes;
     private List<TaskNode> initialNodes;
 
+    private static TaskGraph taskGraph;
+
 
     /**
      * Constructor takes in two fields
@@ -27,7 +29,7 @@ public class ParallelScheduler implements Scheduler {
      * @param coreNumber
      */
     public ParallelScheduler(TaskGraph taskGraph, int processors, int coreNumber) {
-//        this.taskGraph = taskGraph;
+        ParallelScheduler.taskGraph = taskGraph;
         this.coreNumber = coreNumber;
         this.processors = processors;
 
@@ -35,6 +37,7 @@ public class ParallelScheduler implements Scheduler {
         GreedyScheduler scheduler = new GreedyScheduler(taskGraph, processors);
         Schedule greedySchedule = scheduler.createSchedule();
         int upperBound = greedySchedule.getBound();
+        optimalSchedule = (Schedule) DFBnBScheduler.deepClone(greedySchedule);
         while (greedySchedule.getScheduledNodes().size() > 0) {
             greedySchedule.removeLastScheduledTask();
         }
@@ -100,7 +103,6 @@ public class ParallelScheduler implements Scheduler {
      */
     private void runBFS() {
 
-        System.out.println("starting bfs");
         int numberOfSchedules = 0; //The number of schedules at the current depth
         List<ParallelSchedule> temporarySchedulers = new ArrayList<ParallelSchedule>(); //List to store temporarily the children of the schedules
 
@@ -189,12 +191,20 @@ public class ParallelScheduler implements Scheduler {
      * @param schedule
      */
     public static synchronized void setOptimalSchedule(Schedule schedule) {
+
         if (optimalSchedule == null) {
-            optimalSchedule = schedule;
+            if (schedule.getScheduledNodes().size() == taskGraph.getNodes().size()) {
+                optimalSchedule = schedule;
+            }
+
         }
-        if (optimalSchedule.getBound() > schedule.getBound()) {
-            optimalSchedule = schedule;
+        else if (schedule.getScheduledNodes().size() == taskGraph.getNodes().size()) {
+
+            if (schedule.getBound() > optimalSchedule.getBound()) {
+                optimalSchedule = schedule;
+            }
         }
+
     }
 
     private static ParallelSchedule deepCloneSchedule(ParallelSchedule parallelSchedule, int minDepth) {
