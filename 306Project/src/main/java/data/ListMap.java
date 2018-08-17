@@ -21,25 +21,9 @@ public class ListMap<K, V> implements Serializable{
      * @param value
      */
     public synchronized void add(K key, V value) {
-//        if (list.size() != map.size()) {
-//            System.out.println(key + " " + value);
-//            System.out.println(list.size() + " " + map.size());
-//            throw new ListException();
-//        }
-//        if (!list.contains(key)) {
-            list.add(key);
-            map.put(key, value);
-//        }
-//        if (list.size() != map.size()) {
-//            System.out.println(key + " " + value);
-//            System.out.println(list.size() + " " + map.size());
-//            String list = "";
-//            for (K listValue : this.list) {
-//                list += " " + listValue.toString();
-//            }
-//            System.out.println(list);
-//            throw new ListException();
-//        }
+        list.add(key);
+        map.put(key, value);
+        removeDuplicatesFromList();
     }
 
     /**
@@ -50,21 +34,8 @@ public class ListMap<K, V> implements Serializable{
     public synchronized void remove(K key) {
         list.remove(key);
         map.remove(key);
-//        if (key.equals("b")) {
-//            System.out.println("removing b");
-//        }
-//        if (list.size() != map.size()) {
-//            System.out.println("something went wrong");
-//            System.out.println(key);
-//            throw new ListException();
-//        }
-        List<K> newList = new ArrayList<>();
-        for (K k : list) {
-            if (!k.equals(key)) {
-                newList.add(k);
-            }
-        }
-        list = newList;
+        removeDuplicatesFromList();
+
     }
 
     /**
@@ -85,6 +56,7 @@ public class ListMap<K, V> implements Serializable{
      * @return the list of keys
      */
     public synchronized List<K> getList() {
+        removeDuplicatesFromList();
         return list;
     }
 
@@ -117,13 +89,31 @@ public class ListMap<K, V> implements Serializable{
         list = newList;
     }
 
+    /**
+     * Returns a list of all the values
+     * @return
+     */
     public List<V> getListOfValues() {
         List<V> values = new ArrayList<>();
+        removeDuplicatesFromList();
 
         for (K k : list) {
             values.add(this.map.get(k));
         }
 
         return values;
+    }
+
+    /**
+     * Removes all the duplicate values in the list
+     */
+    private void removeDuplicatesFromList() {
+        List<K> newList = new ArrayList<>();
+        for (K key : list) {
+            if (!newList.contains(key)) {
+                newList.add(key);
+            }
+        }
+        list = newList;
     }
 }

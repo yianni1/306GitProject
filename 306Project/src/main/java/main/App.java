@@ -50,7 +50,7 @@ public class App extends Application{
 
 		System.out.println("Starting Algorithm"); // FOR DEBUGGING ON CONSOLE
 
-		Parameters params = getParameters(); 
+		Parameters params = getParameters();
 		int size = params.getRaw().size();
 		String[] args = params.getRaw().toArray(new String[size]);
 
@@ -77,7 +77,7 @@ public class App extends Application{
 			//the exception and procedes to provide an error message
 			System.out.println("Insufficient arguments. Please specify input file and number of processors.");
 			System.exit(0);
-		} 
+		}
 		else {
 			//required arguments
 			String fileName = args[0];

@@ -46,7 +46,7 @@ public class Processor implements Serializable {
     public synchronized void addTask(TaskNode node, int startTime) throws NotSchedulableException {
 //        if (node != null) {
         if (startTime < this.getBound()) {
-//            System.out.println("this is the bad bound " + this.getBound() + " starttime was " + startTime);
+            System.out.println("this is the bad bound " + this.getBound() + " starttime was " + startTime);
             throw new TaskException("The startTime cannot be lower than the bound");
         }
 
@@ -80,23 +80,23 @@ public class Processor implements Serializable {
      * @return
      */
     public synchronized int getBound() {
-        int bound = 0;
-        for (String nodeName : tasks.getList()) {
-            TaskNode node = tasks.get(nodeName);
-//            try {
-            if (node != null) {
-                if (node.getEndTime() > bound) {
-                    bound = node.getEndTime();
-                }
-            }
-//            } catch (NullPointerException npex) {
-//                npex.printStackTrace();
-//                System.out.println("node name is " + nodeName);
+//        int bound = 0;
+//        for (String nodeName : tasks.getList()) {
+//            TaskNode node = tasks.get(nodeName);
+//            if (node != null) {
+//                if (node.getEndTime() > bound) {
+//                    bound = node.getEndTime();
+//                }
 //            }
+//
+//        }
+//        return bound;
 
-
+        //Seems faster this way
+        if (tasks.getList().size() == 0) {
+            return 0;
         }
-        return bound;
+        return tasks.get(tasks.getList().get(tasks.getList().size() - 1)).getEndTime();
     }
 
     /**
