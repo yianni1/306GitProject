@@ -13,7 +13,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -40,6 +42,8 @@ public class DFBnBScheduler implements Scheduler{
 
 	private List<TaskNode> initialNodes;
 
+	private Map<String, Integer> bottomLevelCosts = new HashMap<String ,Integer>();
+
 	public DFBnBScheduler(TaskGraph graph, int processors) {
 		this.graph = graph;
 
@@ -63,6 +67,11 @@ public class DFBnBScheduler implements Scheduler{
 		while (greedySchedule.getScheduledNodes().size() > 0) {
 			greedySchedule.removeLastScheduledTask();
 		}
+
+		for (TaskNode n : graph.getNodes()) {
+		    Integer blp = criticalPath(n);
+            bottomLevelCosts.put(n.getName(), blp);
+        }
 
 	}
 
@@ -311,13 +320,15 @@ public class DFBnBScheduler implements Scheduler{
 
 		// Loop through all the scheduled nodes, then the node we want to schedule and find the maxFbl out of them.
 		for (TaskNode tn : schedule.getScheduledNodes()) {
-			fblTemp = tn.getStartTime() + criticalPath(tn);
+            Integer value = bottomLevelCosts.get(nextTask.getName());
+			fblTemp = tn.getStartTime() + value;
 			fblMax = Math.max(fblMax, fblTemp);
 		}
 
 		// Can't call getStartTime on the child node because we haven't scheduled it yet.
 		int childStartTime = schedule.getEarliestSchedulableTime(nextTask, nextProcessor);
-		fblTemp = childStartTime + criticalPath(nextTask);
+        Integer value = bottomLevelCosts.get(nextTask.getName());
+		fblTemp = childStartTime + value;
 		fblMax = Math.max(fblMax, fblTemp);
 
 		// TODO: fDRT calculation
