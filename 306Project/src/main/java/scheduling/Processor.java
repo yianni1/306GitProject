@@ -86,6 +86,9 @@ public class Processor implements Serializable {
 //        return bound;
 
         //Seems faster this way
+        if (tasks.size() == 0) {
+            return 0;
+        }
         return tasks.get(tasks.size() - 1).getEndTime();
     }
 
