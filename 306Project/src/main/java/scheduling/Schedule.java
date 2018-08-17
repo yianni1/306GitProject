@@ -85,15 +85,15 @@ public class Schedule implements Serializable {
 
 
 
-        schedulableNodes = sortByCostFunction();
+       // schedulableNodes = sortByCostFunction();
         // Sort the schedulable nodes. Decide which sorting to use based on how many processors (and nodes).
         // TODO: Optimise the conditions for choosing the sorting mothod.
-//        if ((this.processors.size() > 1) && (graph.getNodes().size()>=10)) {
-//            this.schedulableNodes=sortSchedulableNodesByEET();
-//
-//        } else {
-//            this.schedulableNodes = sortSchedulableNodesAlphabetically();
-//        }
+        if ((this.processors.size() > 1) && (graph.getNodes().size()>=10)) {
+            this.schedulableNodes=sortSchedulableNodesByEET();
+
+        } else {
+            this.schedulableNodes = sortSchedulableNodesAlphabetically();
+        }
     	
 
         return this.schedulableNodes;
