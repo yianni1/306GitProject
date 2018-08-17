@@ -254,7 +254,7 @@ public class DFBnBScheduler implements Scheduler, Serializable {
 	/**
 	 * This method makes a "deep clone" of any object it is given.
 	 */
-	private static Object deepClone(Object object) {
+	public static Object deepClone(Object object) {
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			ObjectOutputStream oos = new ObjectOutputStream(baos);
