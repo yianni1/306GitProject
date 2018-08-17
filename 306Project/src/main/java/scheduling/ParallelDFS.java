@@ -132,102 +132,109 @@ public class ParallelDFS implements Serializable {
 
             while (schedulableNodes.size() > 0) { //while there are still nodes to schedule
 
+                //print statements for looking at the outputs that are produced
                 // System.out.println("Searching at depth " + depth + " with bound " + schedule.getBound());
-                //if the depth is less than the size of nodeIndices then the depth has been reached before
-
-                //Block for determining if initial nodes have been seen
-                if ((depth == minDepth) && (initialIteration == false) ) {
-                    //If all initial nodes have been seen, set finished to true to finish the algorithm
-                    //As the optimal solution has been found
-                    if (initialNodes.equals(schedulableNodes)) {
-                        finished = true;
-                    }
-
-                }
-
-                initialIteration = false;
-
-                if (finished) {
-                    break;
-                }
 
 
-                if (depth < nodeIndices.size()) {
-                    nodeIndex = nodeIndices.get(depth); //get the index of the next node at that depth
-                    processorIndex = processorIndices.get(depth); //get the index of the processor to schedule on
-                } else { //otherwise initialise the node index and processor index of that depth as 0
-                    nodeIndex = 0;
-                    processorIndex = 0;
-                    nodeIndices.add(depth, nodeIndex);
+                //generating the solution tree through looking at all the node and the branches
+                //checking if there are still anymore scheduble nodes
+                if (nodeIndex < schedulableNodes.size()) {
 
-                    processorIndices.add(depth, processorIndex);
+                    //get the next available one
+                    nextTask = schedulableNodes.get(nodeIndex);
+
+                    //get the processor to schedule on
+                    nextProcessor = schedule.getProcessors().get(processorIndex);
 
 
-                }
+                } else if (ProcessorIndex < schedule.getProcessors().size() - 1) {
 
-                if (nodeIndex < schedulableNodes.size()) { //if there is still schedulable nodes
-                    nextTask = schedulableNodes.get(nodeIndex); //get the next available one
-                    nextProcessor = schedule.getProcessors().get(processorIndex); //get the processor to schedule on
-                } else if (processorIndex < schedule.getProcessors().size() - 1){ //if there is still a processor that we haven't tried to schedule this node on
-                    nodeIndices.set(depth, 0); //reset the node index
-                    processorIndices.set(depth, processorIndices.get(depth) + 1); //increment the processor index
+                    //reset the node Index to that of zero
+                    nodeIndices.set(depth, 0);
 
+                    //change in the increment of the processor index
+                    processorIndices.set(depth, processorIndices.get(depth) + 1);
+
+                    //get the depth and processor index of the node
                     nodeIndex = nodeIndices.get(depth);
                     processorIndex = processorIndices.get(depth);
 
-                    nextTask = schedulableNodes.get(nodeIndex); //get the next available one
-                    nextProcessor = schedule.getProcessors().get(processorIndex); //get the processor to schedule on
+                    //get the next available node
+                    nextTask = schedulableNodes.get(nodeIndex);
 
-                } else { //otherwise no more nodes can be scheduled at this depth
-                    nodeIndices.set(depth, 0); //reset node index for that depth
+                    //get the processor to schedule on
+                    nextProcessor = schedule.getProcessors().get(processorIndex);
+
+                } else { //there are no more nodes that can be scheduled at this depth
+
+                    //reset node index for that depth
+                    nodeIndices.set(depth, 0);
+
+                    //reset processor index for the depth
                     processorIndices.set(depth, 0);
 
-                    depth--; //go to previous depth
+                    //go to the previous iterative depth
+                    depth--;
 
                     if (depth < minDepth) {
                         break;
                     }
 
-                    //if there are scheduled nodes
-                    if (schedule.getScheduledNodes().size() > minDepth) {
-                        schedule.removeLastScheduledTask(); //remove the last scheduled task from the most recent depth
+                    //if there are scheduled nodes the remove the last scheduled nodes and then
+                    //go to the previous depth
+                    if (schedule.getSchedulableNodes().size() > minDepth) {
 
-                        schedulableNodes = schedule.getSchedulableNodes(); //get schedulable nodes
+                        //remove the last scheduled task from the most recent depth
+                        schedule.removeLastScheduledTask();
+
+                        //get all the scheduable nodes
+                        schedulableNodes = schedule.getSchedulableNodes();
                     }
+
                     continue;
+
                 }
 
-                //TODO make better (hypothetical next bound)
+
+                //add the task to the schedule based on the earliest scheduable time
                 schedule.addTask(nextTask, nextProcessor, schedule.getEarliestSchedulableTime(nextTask, nextProcessor));
+
+                //get the current schedule-able nodes and change the depth
                 schedulableNodes = schedule.getSchedulableNodes();
                 nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 
-                // kind of pruning
+                //prunning occuring based on upperbound value being greater than the
+                //upperbound then it skips those values
                 if (schedule.getBound() > upperBound && depth != minDepth) {
                     try {
-//                    System.out.println("depth is " + depth + " mindepth is " + minDepth);
+                        //skips the task and checks for the scheduble nodes
                         schedule.removeLastScheduledTask();
                         schedulableNodes = schedule.getSchedulableNodes();
 
                         depth--;
 
-                        if (depth < minDepth ) {
+                        //if the depth is less than the mindepth then break
+                        if (depth < minDepth) {
                             break;
                         }
-                    }
-                    catch (NullPointerException npe) {
+
+                        //catching a null pointer exception based on a null value for the nodes
+                    } catch (NullPointerException npe) {
+
+                        //print the stacktrace and the depth
                         npe.printStackTrace();
                         System.out.println(depth);
+
                     }
+
 
                 }
 
-                depth++;
             }
 
 
-
-            depth--; //go to previous depth
+            //iterates back to the pervious depth
+            depth--;
 
             if (depth < minDepth) {
                 break;
@@ -236,37 +243,56 @@ public class ParallelDFS implements Serializable {
             if (finished) {
                 break;
             }
-            //TODO clone schedule and set optimal schedule to be this schedule
+
+            //clones the schedule and sets the optimal schedule to the current schedule
+            //checking if the bound is lower than the upper bound and the optimal schedule
+            //is set to null
             if (schedule.getBound() < upperBound || optimalSchedule == null) {
+                //create a deepclone of the schedule
                 optimalSchedule = (Schedule) DFBnBScheduler.deepClone(schedule);
                 upperBound = schedule.getBound();
-//                    System.out.println("Upper Bound updated to " + upperBound);
+
+                System.out.println("Upper Bound is update to" + upperBound);
             }
 
-            if (schedule.getScheduledNodes().size() > 0) {
+            //if the number of scheduleable nodes is greater than zero than iterate back
+            //through the tree
+            if (schedule.getSchedulableNodes().size() > 0) {
+
+                //removes the last schedulable nodes
                 schedule.removeLastScheduledTask();
+
             }
 
+            //get the other schedulable nodes
             schedulableNodes = schedule.getSchedulableNodes();
 
+            //if the amount of scheduable nodes size is greater than that of the graph size
             if (schedulableNodes.size() > graph.getNodes().size()) {
-                throw new NullPointerException("Something went wrong");
+
+                //throw an exception if this is the case
+                throw new NullPointerException("Something is wrong with code , check schedulable nodes");
+
             }
 
             nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 
-
         }
 
-//            System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
+        //print out the optimal schedule after it has been found
+        //System.out.println("Solution with the bound of " + optimalSchedule.getBound() + "found");
+
+        //if the optimal schedule is null then we get a deepclone fo the schedule and set an upperbound
+        //as the solution
         if (optimalSchedule == null) {
-            optimalSchedule = (Schedule) deepClone(schedule);
-            upperBound = optimalSchedule.getBound();
-        }
 
+            //get a deepclone of the schedule
+            optimalSchedule = (Schedule) deepClone(schedule);
+            //get the upperbound value as the bound
+            upperBound = optimalSchedule.getBound();
+
+        }
 
         return optimalSchedule;
-
     }
-
 }
