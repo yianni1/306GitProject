@@ -188,55 +188,47 @@ public class DFBnBScheduler implements Scheduler{
 					continue;
 				}
 
-				schedule.addTask(nextTask, nextProcessor, schedule.getEarliestSchedulableTime(nextTask, nextProcessor));
+				int est = schedule.getEarliestSchedulableTime(nextTask, nextProcessor);
 
-//				costFunction(nextTask);
+				// Don't add the task to the processor if the upper bound will be higher
+				if (est + nextTask.getWeight() < upperBound && !skip) {
+					//System.out.println("Task " + nextTask.getName() + " on schedule "+nextProcessor.getID()+" will be less than the upper bound. ("+est+" vs. "+ upperBound+")");
+					schedule.addTask(nextTask, nextProcessor, est);
 
-				// Run the cost function for each of the tasks children to determine which one to schedule first.
-				TaskNode minTask;			// The node and processor that has the lowest cost
-				Processor minProcessor;
+//				// Run the cost function for each of the tasks children to determine which one to schedule first.
+//				TaskNode minTask;			// The node and processor that has the lowest cost
+//				Processor minProcessor;
 
-                int costF;
-				for (TaskEdge e: nextTask.getOutgoingEdges()){
-					TaskNode tn = e.getEndNode();
-                    costF = Integer.MAX_VALUE;
+//                int costF;
+//				for (TaskEdge e: nextTask.getOutgoingEdges()){
+//					TaskNode tn = e.getEndNode();
+//                    costF = Integer.MAX_VALUE;
+//
+//                    for (Processor p: schedule.getProcessors()) {
+//
+//					    //costF = costFunction(tn, p);
+//                        int currentCF = costFunction(tn,p);
+//
+//					    if (currentCF <= costF) {
+//                            tn.setCostFunction(currentCF);
+//                        }
+//					}
+//				}
 
-                    for (Processor p: schedule.getProcessors()) {
-
-					    //costF = costFunction(tn, p);
-                        int currentCF = costFunction(tn,p);
-
-					    if (currentCF <= costF) {
-                            tn.setCostFunction(currentCF);
-                        }
-
-					}
-				}
-				// TODO: Actually make use of minTask and minProcessor
-
-				schedulableNodes = schedule.getSchedulableNodes();
-				nodeIndices.set(depth, nodeIndices.get(depth) + 1);
-
-				// kind of pruning
-				if ((schedule.getBound() > upperBound) || (skip == true)){
-					schedule.removeLastScheduledTask();
 					schedulableNodes = schedule.getSchedulableNodes();
+					nodeIndices.set(depth, nodeIndices.get(depth) + 1);
+					depth++;
 
+
+
+				} else {	// Pruning
+					nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 					branchesPruned++;
 					if (scheduleListener != null && (System.currentTimeMillis() % 100 == 0)) { //update visualisation with new number of branches pruned
 						scheduleListener.updateBranchesPruned(branchesPruned);
 					}
 
-
-					depth--;
-
-					if (depth < 0) {
-						break;
-					}
-
 				}
-
-				depth++;
 			}
 
 			if (depth < 0) {
