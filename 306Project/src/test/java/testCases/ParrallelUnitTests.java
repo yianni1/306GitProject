@@ -22,7 +22,7 @@ public class ParrallelUnitTests {
         GraphLoader loader = new GraphLoader();
         TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_11_OutTree.dot");
 
-        int cores = 3;
+        int cores = 5;
         int processors = 4;
 
         DFBnBMasterScheduler scheduler = new DFBnBMasterScheduler(graph, processors, cores);

@@ -18,6 +18,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -55,7 +57,7 @@ public class DFBnBMasterScheduler {
 		schedule = new Schedule(processors, graph);
 	}
 
-	public void createSchedule() {
+	public Schedule createSchedule() {
 		Schedule greedySchedule = new GreedyScheduler(graph, processors).createSchedule();
 
 		upperBound = greedySchedule.getBound();
@@ -66,12 +68,43 @@ public class DFBnBMasterScheduler {
 
 		initialisePartialSchedules();
 
-		//TODO set each slave to run on a separate thread
-		for (Schedule schedule : partialSchedules) {
-			DFBnBSlaveScheduler scheduler = new DFBnBSlaveScheduler(schedule.getGraph(), processors, schedule, upperBound);
-			scheduler.createSchedule();
-		}
-	}
+        ExecutorService executor = Executors.newFixedThreadPool(numCores);
+
+        System.out.println("Running on " + numCores + " threads with " + partialSchedules.size() + " slave schedulers.");
+
+        List<Schedule> locallyOptimalSchedules = new ArrayList<>();
+
+        for (Schedule schedule : partialSchedules) {
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    DFBnBSlaveScheduler scheduler = new DFBnBSlaveScheduler(schedule.getGraph(), processors, schedule, upperBound);
+                    locallyOptimalSchedules.add(scheduler.createSchedule());
+                }
+            });
+        }
+
+        executor.shutdown();
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+
+        }
+
+        int optimalBound = locallyOptimalSchedules.get(0).getBound();
+        Schedule optimalSchedule = (Schedule) deepClone(locallyOptimalSchedules.get(0));
+
+        for (Schedule schedule : locallyOptimalSchedules) {
+            if (schedule.getBound() < optimalBound) {
+                optimalBound = schedule.getBound();
+                optimalSchedule = (Schedule) deepClone(schedule);
+            }
+        }
+
+        System.out.println("Global optimal solution with bound of " + optimalSchedule.getBound() + " found!");
+        return optimalSchedule;
+
+    }
 
 	public List<Schedule> getPartialSchedules() {
 		return partialSchedules;
