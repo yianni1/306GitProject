@@ -5,17 +5,12 @@ import exceptions.NotDeschedulableException;
 import graph.TaskEdge;
 import graph.TaskGraph;
 import graph.TaskNode;
+import org.apache.commons.lang3.SerializationUtils;
 import view.VisualisationController;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -68,10 +63,10 @@ public class DFBnBScheduler implements Scheduler{
 			greedySchedule.removeLastScheduledTask();
 		}
 
-		for (TaskNode n : graph.getNodes()) {
-		    Integer blp = criticalPath(n);
-            bottomLevelCosts.put(n.getName(), blp);
-        }
+//		for (TaskNode n : graph.getNodes()) {
+//		    Integer blp = criticalPath(n);
+//            bottomLevelCosts.put(n.getName(), blp);
+//        }
 
 	}
 
@@ -109,21 +104,21 @@ public class DFBnBScheduler implements Scheduler{
 				//Determine whether initial nodes have been repeated
 				finished = removeReplicatedTree(initialIteration);
 
-                if (initialIteration) {
-                    int costF;
-                    for (TaskNode tn : schedulableNodes) {
-                        costF = Integer.MAX_VALUE;
-
-                        for (Processor p: schedule.getProcessors()) {
-                            //costF = costFunction(tn, p);
-                            int currentCF = costFunction(tn,p);
-                            if (currentCF <= costF) {
-                                tn.setCostFunction(currentCF);
-                            }
-
-                        }
-                    }
-                }
+//                if (initialIteration) {
+//                    int costF;
+//                    for (TaskNode tn : schedulableNodes) {
+//                        costF = Integer.MAX_VALUE;
+//
+//                        for (Processor p: schedule.getProcessors()) {
+//                            //costF = costFunction(tn, p);
+//                            int currentCF = costFunction(tn,p);
+//                            if (currentCF <= costF) {
+//                                tn.setCostFunction(currentCF);
+//                            }
+//
+//                        }
+//                    }
+//                }
 
 
 
@@ -279,7 +274,7 @@ public class DFBnBScheduler implements Scheduler{
 	/**
 	 * This method makes a "deep clone" of any object it is given.
 	 */
-	private static Object deepClone(Object object) {
+	public static Object deepClone(Object object) {
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			ObjectOutputStream oos = new ObjectOutputStream(baos);
