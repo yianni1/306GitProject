@@ -34,5 +34,6 @@ public class ParallelThread extends Thread implements Serializable {
         for (ParallelSchedule schedule : parallelSchedules) {
             schedule.setFinishedDFS(this);
         }
+        interrupt();
     }
 }

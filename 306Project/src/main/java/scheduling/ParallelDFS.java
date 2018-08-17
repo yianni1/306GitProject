@@ -124,20 +124,21 @@ public class ParallelDFS implements Serializable {
                 //if the depth is less than the size of nodeIndices then the depth has been reached before
 
                 //Block for determining if initial nodes have been seen
-                if ((depth == minDepth) && (initialIteration == false) ) {
-                    //If all initial nodes have been seen, set finished to true to finish the algorithm
-                    //As the optimal solution has been found
-                    if (initialNodes.equals(schedulableNodes)) {
-                        finished = true;
-                    }
+//                if ((depth == minDepth) && (initialIteration == false) ) {
+//                    //If all initial nodes have been seen, set finished to true to finish the algorithm
+//                    //As the optimal solution has been found
+////                    if (initialNodes.equals(schedulableNodes)) {
+//                        finished = true;
+//                        break;
+////                    }
+//
+//                }
 
-                }
-
-                initialIteration = false;
-
-                if (finished) {
-                    break;
-                }
+//                initialIteration = false;
+//
+//                if (finished) {
+//                    break;
+//                }
 
 
                 if (depth < nodeIndices.size()) {
@@ -179,6 +180,7 @@ public class ParallelDFS implements Serializable {
                     //if there are scheduled nodes
                     if (schedule.getScheduledNodes().size() > minDepth) {
                         schedule.removeLastScheduledTask(); //remove the last scheduled task from the most recent depth
+                        System.out.println(schedule.getScheduledNodes().size() + " Removed node" + " " + ((ParallelSchedule) schedule).getThread());
 
                         schedulableNodes = schedule.getSchedulableNodes(); //get schedulable nodes
                     }
@@ -187,6 +189,9 @@ public class ParallelDFS implements Serializable {
 
                 //TODO make better (hypothetical next bound)
                 schedule.addTask(nextTask, nextProcessor, schedule.getEarliestSchedulableTime(nextTask, nextProcessor));
+                System.out.println(schedule.getScheduledNodes().size() + " added node " + nextTask.getName() + " " + ((ParallelSchedule) schedule).getThread()
+                + " on processor " + nextProcessor.getID());
+
                 schedulableNodes = schedule.getSchedulableNodes();
                 nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 
@@ -195,11 +200,13 @@ public class ParallelDFS implements Serializable {
                     try {
 //                    System.out.println("depth is " + depth + " mindepth is " + minDepth);
                         schedule.removeLastScheduledTask();
+                        System.out.println(schedule.getScheduledNodes().size() + " Removed" + " " + ((ParallelSchedule) schedule).getThread());
+
                         schedulableNodes = schedule.getSchedulableNodes();
 
                         depth--;
 
-                        if (depth < 0) {
+                        if (depth < minDepth) {
                             break;
                         }
                     }
@@ -221,9 +228,9 @@ public class ParallelDFS implements Serializable {
                 break;
             }
 
-            if (finished) {
-                break;
-            }
+//            if (finished) {
+//                break;
+//            }
             //TODO clone schedule and set optimal schedule to be this schedule
             if (schedule.getBound() < upperBound || optimalSchedule == null) {
                 optimalSchedule = (Schedule) DFBnBScheduler.deepClone(schedule);
@@ -231,15 +238,13 @@ public class ParallelDFS implements Serializable {
 //                    System.out.println("Upper Bound updated to " + upperBound);
             }
 
-            if (schedule.getScheduledNodes().size() > 0) {
+            if (schedule.getScheduledNodes().size() > minDepth) {
                 schedule.removeLastScheduledTask();
+                System.out.println(schedule.getScheduledNodes().size() + " Removed last node" + " " + ((ParallelSchedule) schedule).getThread());
+
             }
 
             schedulableNodes = schedule.getSchedulableNodes();
-
-            if (schedulableNodes.size() > graph.getNodes().size()) {
-                throw new NullPointerException("Something went wrong");
-            }
 
             nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 

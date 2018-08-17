@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class ParallelScheduler implements Scheduler {
 
-//    private TaskGraph taskGraph;
+    //    private TaskGraph taskGraph;
     private List<ParallelSchedule> parallelSchedules = new ArrayList<ParallelSchedule>();
     private int coreNumber;
     private static Schedule optimalSchedule;
@@ -112,25 +112,25 @@ public class ParallelScheduler implements Scheduler {
         int depth = 0;
 
 
-//        for (TaskNode node : schedulableNodes) {
-//
-//            numberOfSchedules++; //INcreasing the number of schedules
-//            System.out.println("number of schedules " + numberOfSchedules);
-//            ParallelSchedule schedule = deepCloneSchedule(parallelSchedules.get(0), depth);
-//
-//            schedule.addTask(node, schedule.getProcessors().get(0), 0);
-//            if (!(numberOfSchedules <= coreNumber)) { //If there are now more threads than max cores
-//                schedule.setThread(temporarySchedulers.get(numberOverMaxCoreNumber), 1); //We give it the same thread
-//                numberOverMaxCoreNumber++;
-//
-//            }
-//            temporarySchedulers.add(schedule);
-//
-//        }
-//        depth++;
-//
-//        //Updating the list of schedules to make memory easier
-//        clearLists(temporarySchedulers);
+        for (TaskNode node : schedulableNodes) {
+
+            numberOfSchedules++; //INcreasing the number of schedules
+            System.out.println("number of schedules " + numberOfSchedules);
+            ParallelSchedule schedule = deepCloneSchedule(parallelSchedules.get(0), depth);
+
+            schedule.addTask(node, schedule.getProcessors().get(0), 0);
+            if (!(numberOfSchedules <= coreNumber)) { //If there are now more threads than max cores
+                schedule.setThread(temporarySchedulers.get(numberOverMaxCoreNumber), 1); //We give it the same thread
+                numberOverMaxCoreNumber++;
+
+            }
+            temporarySchedulers.add(schedule);
+
+        }
+        depth++;
+
+        //Updating the list of schedules to make memory easier
+        clearLists(temporarySchedulers);
 
         while (numberOfSchedules < coreNumber) {
             depth++;
@@ -170,7 +170,7 @@ public class ParallelScheduler implements Scheduler {
 
         }
 
-
+        System.out.println(parallelSchedules.get(0).getScheduledNodes().size() + " many nodes originally");
 
     }
 
@@ -193,17 +193,17 @@ public class ParallelScheduler implements Scheduler {
     public static synchronized void setOptimalSchedule(Schedule schedule) {
 
         if (optimalSchedule == null) {
-            if (schedule.getScheduledNodes().size() == taskGraph.getNodes().size()) {
-                optimalSchedule = schedule;
-            }
+//            if (schedule.getScheduledNodes().size() == taskGraph.getNodes().size()) {
+            optimalSchedule = schedule;
+//            }
 
         }
-        else if (schedule.getScheduledNodes().size() == taskGraph.getNodes().size()) {
+//        else if (schedule.getScheduledNodes().size() == taskGraph.getNodes().size()) {
 
-            if (schedule.getBound() > optimalSchedule.getBound()) {
-                optimalSchedule = schedule;
-            }
+        else if (schedule.getBound() > optimalSchedule.getBound()) {
+            optimalSchedule = schedule;
         }
+//        }
 
     }
 
