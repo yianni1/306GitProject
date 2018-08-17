@@ -140,7 +140,8 @@ public class Schedule implements Serializable {
 
             }
             sorted.add(nextNode);
-            schedCopy.remove(nextNode);
+            final TaskNode node = nextNode;
+            schedCopy.removeIf(obj -> obj.getName().equals(node.getName()));
         }
 
         return sorted;
@@ -182,7 +183,8 @@ public class Schedule implements Serializable {
 
             }
             sorted.add(nextNode);
-            schedCopy.remove(nextNode);
+            final TaskNode node = nextNode;
+            schedCopy.removeIf(obj -> obj.getName().equals(node.getName()));
         }
 
         return sorted;
