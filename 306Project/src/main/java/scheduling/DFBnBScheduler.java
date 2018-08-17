@@ -5,7 +5,6 @@ import exceptions.NotDeschedulableException;
 import graph.TaskEdge;
 import graph.TaskGraph;
 import graph.TaskNode;
-import org.apache.commons.lang3.SerializationUtils;
 import view.VisualisationController;
 
 
