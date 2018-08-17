@@ -109,6 +109,24 @@ public class DFBnBScheduler implements Scheduler{
 				//Determine whether initial nodes have been repeated
 				finished = removeReplicatedTree(initialIteration);
 
+                if (initialIteration) {
+                    int costF;
+                    for (TaskNode tn : schedulableNodes) {
+                        costF = Integer.MAX_VALUE;
+
+                        for (Processor p: schedule.getProcessors()) {
+                            //costF = costFunction(tn, p);
+                            int currentCF = costFunction(tn,p);
+                            if (currentCF <= costF) {
+                                tn.setCostFunction(currentCF);
+                            }
+
+                        }
+                    }
+                }
+
+
+
 				initialIteration = false;
 
 				if (finished) {
@@ -178,16 +196,20 @@ public class DFBnBScheduler implements Scheduler{
 				TaskNode minTask;			// The node and processor that has the lowest cost
 				Processor minProcessor;
 
-				int minCost = Integer.MAX_VALUE;
-				int minCostTemp;
+                int costF;
 				for (TaskEdge e: nextTask.getOutgoingEdges()){
 					TaskNode tn = e.getEndNode();
-					for (Processor p: schedule.getProcessors()) {
-						minCostTemp = costFunction(tn, p);
-						if (minCostTemp<minCost) {
-							minTask = tn;
-							minProcessor = p;
-						}
+                    costF = Integer.MAX_VALUE;
+
+                    for (Processor p: schedule.getProcessors()) {
+
+					    //costF = costFunction(tn, p);
+                        int currentCF = costFunction(tn,p);
+
+					    if (currentCF <= costF) {
+                            tn.setCostFunction(currentCF);
+                        }
+
 					}
 				}
 				// TODO: Actually make use of minTask and minProcessor
@@ -398,6 +420,13 @@ public class DFBnBScheduler implements Scheduler{
 			int index = 0;
 			//Loop through initial nodes
 			while (addedNode == false) {
+
+			    //If all initial nodes have been looped through, we are finished
+			    if (index == schedulableNodes.size()) {
+                    finished = true;
+			        break;
+                }
+
 				TaskNode node = schedulableNodes.get(index);
 				//If initialNode not been seen, add it to list
 				// Then break to look through all of its children 

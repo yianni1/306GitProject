@@ -1,5 +1,6 @@
 package scheduling;
 
+import comparators.CostFunctionComparator;
 import exceptions.NotDeschedulableException;
 import exceptions.NotSchedulableException;
 import graph.TaskEdge;
@@ -9,9 +10,7 @@ import javafx.concurrent.Task;
 
 import javax.xml.soap.Node;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import static java.util.Collections.sort;
 
@@ -84,39 +83,24 @@ public class Schedule implements Serializable {
      */
     public List<TaskNode> getSchedulableNodes() {
 
+
+
+        schedulableNodes = sortByCostFunction();
         // Sort the schedulable nodes. Decide which sorting to use based on how many processors (and nodes).
         // TODO: Optimise the conditions for choosing the sorting mothod.
-        if ((this.processors.size() > 1) && (graph.getNodes().size()>=10)) {
-            this.schedulableNodes=sortSchedulableNodesByEET();
-        	
-        } else {
-            this.schedulableNodes = sortSchedulableNodesAlphabetically();
-        }
-    	
-    /*	boolean sortingAlg = false;
-    	for (Processor p : this.getProcessors()) {
-    		if (p.getTasks().size() != 0) {
-    			sortingAlg = true;
-    			break;
-    		}
-    	}
-
-    	if (sortingAlg == false) {
-    		this.schedulableNodes = sortSchedulableNodesAlphabetically();
-    	}
-    	else {
-    		this.schedulableNodes = sortByCostFunction();
-    	}*/
-    	
-//        System.out.print("Schedulable nodes are: ");
-//        for(TaskNode tn: schedulableNodes) {
-//            System.out.print(tn.getName() + ", ");
+//        if ((this.processors.size() > 1) && (graph.getNodes().size()>=10)) {
+//            this.schedulableNodes=sortSchedulableNodesByEET();
+//
+//        } else {
+//            this.schedulableNodes = sortSchedulableNodesAlphabetically();
 //        }
-//        System.out.println();
+    	
+
         return this.schedulableNodes;
     }
 
     private List<TaskNode> sortByCostFunction() {
+
         List<TaskNode> schedCopy = schedulableNodes;
         List<TaskNode> sorted = new ArrayList<TaskNode>();
 
@@ -125,16 +109,16 @@ public class Schedule implements Serializable {
         while (schedCopy.size() > 0) {
             // Adapated from GreedyScheduler
             nextNode = schedCopy.get(0);
-            
+
             int costF = nextNode.getCostFunction();
-           
+
             //Go through all nodes and check earliest schedulable time on each processor to find next best node to schedule
             for (TaskNode n : schedCopy) {
 
-            	int otherCF = n.getCostFunction();
-            	
+                int otherCF = n.getCostFunction();
+
                 if (costF > otherCF) {
-                	costF = otherCF;
+                    costF = otherCF;
                     nextNode = n;
                 }
 
