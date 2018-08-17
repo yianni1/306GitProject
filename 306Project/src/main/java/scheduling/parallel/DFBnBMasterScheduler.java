@@ -49,10 +49,10 @@ public class DFBnBMasterScheduler {
 
 	private List<TaskNode> initialNodes;
 
-	private Map<String, Integer> bottomLevelCosts = new HashMap<String ,Integer>();
-
 	public DFBnBMasterScheduler(TaskGraph graph, int processors, int numCores) {
 		upperBound = Integer.MAX_VALUE;
+		this.numCores = numCores;
+		schedule = new Schedule(processors, graph);
 	}
 
 	/**
@@ -90,6 +90,9 @@ public class DFBnBMasterScheduler {
 		}
 	}
 
+	public List<Schedule> getPartialSchedules() {
+		return partialSchedules;
+	}
 
 	/**
 	 * This method makes a "deep clone" of any object it is given.
@@ -116,7 +119,13 @@ public class DFBnBMasterScheduler {
 
 		while (partialSchedules.size() < numCores) {
 
-			createPartialSchedules(schedule);
+			try {
+				createPartialSchedules(schedule);
+			}
+			catch (CloneNotSupportedException e) {
+				e.printStackTrace();
+			}
+
 			schedule = partialSchedules.get(scheduleIndex);
 			scheduleIndex++;
 
@@ -126,13 +135,20 @@ public class DFBnBMasterScheduler {
 
 
 
-	private void createPartialSchedules(Schedule s) {
+	private void createPartialSchedules(Schedule s) throws CloneNotSupportedException {
 		for (TaskNode node : s.getSchedulableNodes()) {
 			for(Processor p: s.getProcessors()) {
+
 				Schedule partialSchedule = (Schedule) deepClone(s);
-				partialSchedule.addTask(node, p, partialSchedule.getEarliestSchedulableTime(node, p));
+
+				//TODO nodes being schedule on multiple processes will already be scheduled on second iteration
+				// Of this loop. Means getEarliestSchedulableTime will be -1 and will cause not scheduled exception
+				int time = partialSchedule.getEarliestSchedulableTime(node, p);
+
+				partialSchedule.addTask(node, p, time);
 				partialSchedules.add(partialSchedule);
 			}
+
 		}
 
 		if (partialSchedules.contains(s)) {
