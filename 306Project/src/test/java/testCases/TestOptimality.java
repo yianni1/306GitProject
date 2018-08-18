@@ -9,6 +9,7 @@ import scala.util.parsing.combinator.testing.Str;
 import scheduling.DFBnBScheduler;
 import scheduling.Schedule;
 import scheduling.Scheduler;
+import scheduling.parallel.DFBnBMasterScheduler;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -53,7 +54,12 @@ public class TestOptimality {
 //            String fileName = file.getName();
 //            int processors = Integer.parseInt(Character.toString(fileName.charAt(0)));
 //
-//            Scheduler schedule = new DFBnBScheduler(graph, processors);
+//            //Use for parrallel
+//            int corenum = 4;
+//            Scheduler schedule = new DFBnBMasterScheduler(graph, processors, corenum);
+//
+//            //Use for sequential
+//            //Scheduler schedule = new DFBnBScheduler(graph, processors);
 //            Schedule solution = schedule.createSchedule();
 //
 //            //Finding the optimal

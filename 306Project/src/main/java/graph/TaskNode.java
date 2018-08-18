@@ -9,17 +9,27 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+/**
+ * This class is used to encapsulate a node on the input graph,
+ * as well as a task on the final solutionTree.
+ */
 public class TaskNode implements Serializable {
-    private int weight;
-    private String name;
-    private boolean scheduled;
-    private int startTime;
-    private Processor processor;
-    private int costFunction = Integer.MAX_VALUE;
+    private int weight; //The weight of the node
+    private String name; //The name of the node, used to identify it
 
-    private HashSet<TaskEdge> incomingEdges;
-    private HashSet<TaskEdge> outgoingEdges;
+    private boolean scheduled; //Whether the TaskNode is scheduled
+    private int startTime; //The starttime of the task. -1 if it is not scheduled
+    private Processor processor; //The processor on which it is scheduled
+    private int costFunction = Integer.MAX_VALUE; //The cost function
 
+    private HashSet<TaskEdge> incomingEdges; //The set of incoming edges
+    private HashSet<TaskEdge> outgoingEdges; //The set of outgoing edges
+
+    /**
+     * Constructor creates a TaskNode object with a given name and weight
+     * @param weight
+     * @param name
+     */
     public TaskNode(int weight, String name) {
         this.name = name;
         this.weight = weight;
@@ -30,6 +40,10 @@ public class TaskNode implements Serializable {
         outgoingEdges = new HashSet<TaskEdge>();
     }
 
+    /**
+     * Returns the cost function of the node
+     * @return
+     */
     public int getCostFunction() {
     	return costFunction;
     }
@@ -49,8 +63,7 @@ public class TaskNode implements Serializable {
      */
     public boolean schedule(int startTime, Processor processor) throws NotSchedulableException {
         if (!this.isSchedulable()) {
-            // System.out.println("Scheduling task " + this.name + " is invalid.");
-            throw new NotSchedulableException();
+            throw new NotSchedulableException(); //Throws an exception of the node is not schedulable
         }
         this.startTime = startTime;
         this.processor = processor;
@@ -64,7 +77,6 @@ public class TaskNode implements Serializable {
      */
     public boolean deschedule() throws NotDeschedulableException {
         if (!this.isDeschedulable()) {
-            // System.out.println("Unscheduled node attempted to be descheduled.");
             throw new NotDeschedulableException();
         }
         this.startTime = -1;
@@ -81,6 +93,10 @@ public class TaskNode implements Serializable {
         return this.startTime + this.weight;
     }
 
+    /**
+     * Returns the start time of the node, provided it is  scheduled
+     * @return
+     */
     public int getStartTime() {
     	return this.startTime;
     }

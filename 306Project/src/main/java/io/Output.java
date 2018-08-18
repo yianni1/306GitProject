@@ -25,8 +25,6 @@ public class Output {
      * @return
      */
     public static void createOutput(List<Processor> completedSolution, TaskGraph graph, String outputFileName) {
-
-
         //Creating the file
         String fileName = outputFileName;
         file = new File(fileName);

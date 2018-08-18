@@ -25,6 +25,12 @@ public class GreedyScheduler implements Scheduler {
     	schedulableNodes = schedule.getSchedulableNodes();
     }
 
+    /**
+     * Creates the greedy schedule. Fast, but the outputted
+     * solution is not optimal
+     * @return A "guess" for the optimal schedule
+     * @throws NotSchedulableException
+     */
     public Schedule createSchedule() throws NotSchedulableException {
     	
         //While there are still nodes to schedule

@@ -23,8 +23,12 @@ import graph.TaskNode;
  */
 public class GraphLoader {
 
-
-
+	/**
+	 * Loads a graph from an input dot file and outputs a
+	 * GraphStream graph
+	 * @param filePath
+	 * @return
+	 */
 	public Graph loadGraph(String filePath) {
 
 		Graph graph = new SingleGraph("graph"); // Creates graph
@@ -33,21 +37,14 @@ public class GraphLoader {
 		// Loads graph from filepath
 		try {
 			fs = FileSourceFactory.sourceFor(filePath);
-
 			fs.addSink(graph);
-
 			fs.readAll(filePath);
-
-
-		} catch( IOException e) {
-
-		} finally {
-//			try {
+		}
+		catch( IOException e) {
+			e.printStackTrace();
+		}
+		finally {
 			fs.removeSink(graph);
-//			}
-//			catch (NullPointerException npex) {
-//				System.out.println("Invalid input file");
-//			}
 		}
 
 		return graph;
@@ -68,16 +65,18 @@ public class GraphLoader {
 			sc.close();
 		}
 		catch (Exception ex) {
-
+			ex.printStackTrace();
 		}
 
+		//Loading the dot file into a GraphStrema graph
 		Graph graph = loadGraph(filePath);
 
+		//Converting from the GraphStream graph to the taskgraph
 		TaskGraph taskGraph = convertGraph(graph, graphTitle);
-		 
+
 		return taskGraph;
 	}
-	
+
 	/**
 	 * convertGraph method to convert GraphStream graph into TaskGraph data Structure
 	 * @param graph Taskgraph representation of dot file
@@ -97,47 +96,47 @@ public class GraphLoader {
 
 		//Creates Edges for the TaskGraph according to the GraphSteam input and TaskGraph Nodes
 		for (Edge edge : graph.getEdgeSet()) {
-			
+
 			//Gets the nodes of the taskGraph
 			HashSet<TaskNode> tNodesSet = taskGraph.getNodes();
 
 			//Gets the source and target nodes the edge of the GraphStream graph is attached too
 			Node source = edge.getSourceNode();
 			Node target = edge.getTargetNode();
-			
-			
+
+
 			//Gets the weights for the edge, source node and target node from the GraphStream graph
 			double edgeWeight = Double.parseDouble(edge.getAttribute("Weight").toString());
 			int edgeWeightInt = (int) edgeWeight;
-			
+
 			double sourceWeight = Double.parseDouble(source.getAttribute("Weight").toString());
 			int sourceWeightInt = (int) sourceWeight;
-			
+
 			double targetWeight = Double.parseDouble(target.getAttribute("Weight").toString());
 			int targetWeightInt = (int) targetWeight;
-			
+
 			//Creates new task nodes according to the edge for comparison to the Task Nodes created in createTaskNode()
 			TaskNode sourceTaskNode = new TaskNode(sourceWeightInt, source.toString());
 			TaskNode targetTaskNode = new TaskNode(targetWeightInt, target.toString());
-			
+
 			//Compare the taskNodes created above with the taskNodes in the TaskGraph
-			TaskEdge tEdge = null;
+			TaskEdge tEdge;
 			for (TaskNode tNode : tNodesSet) {
-				if (sourceTaskNode.getName().equals(tNode.getName())) { 
+				if (sourceTaskNode.getName().equals(tNode.getName())) {
 					for (TaskNode tNodeA : tNodesSet) {
 						if (targetTaskNode.getName().equals(tNodeA.getName())) {
-							
+
 							//When source node and target node have the same name as the corresponding TaskGraph nodes
 							//Create the TaskEdge according to the TaskGraph nodes and add the TaskEdge reference to the taskNodes
-							 tEdge = new TaskEdge(tNode, tNodeA, edgeWeightInt);
-							 tNode.addOutgoingEdge(tEdge);
-							 tNodeA.addIncomingEdge(tEdge); 
-							 taskGraph.addEdge(tEdge);
+							tEdge = new TaskEdge(tNode, tNodeA, edgeWeightInt);
+							tNode.addOutgoingEdge(tEdge);
+							tNodeA.addIncomingEdge(tEdge);
+							taskGraph.addEdge(tEdge);
 						}
 					}
-				}		
+				}
 			}
-			
+
 
 		}
 
@@ -151,11 +150,13 @@ public class GraphLoader {
 	 */
 	private TaskNode createTaskNode(Node node) {
 
+		//Getting the "weight" attribute from the .dot file
 		double nodeWeight =  Double.parseDouble(node.getAttribute("Weight").toString());
 		int nodeWeightInt = (int) nodeWeight;
 
+		//Setting the name of the node
 		String nodeName = node.toString();
-		
+
 		//Creates the TaskNode according to its weight and name
 		TaskNode taskNode = new TaskNode(nodeWeightInt, nodeName);
 
