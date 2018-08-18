@@ -197,59 +197,103 @@ public class DFBnBMasterScheduler implements  Scheduler {
 	public void initialisePartialSchedules() {
 
 		int scheduleIndex = 0;
+        int processorNumber = schedule.getProcessors().size();
+        int maxTaskNumber = 1;
+        boolean initialIteration = true;
+
+        List<Schedule> schedulesToCheck = new ArrayList<>();
+        schedulesToCheck.add(schedule);
 
 		//creates partial schedules if the number of partial schedules in the list is less than the number of cores
-		while (partialSchedules.size() < numCores) {
-			for (int i = 0; i < schedule.getProcessors().size(); i++) {
-				try {
-					createPartialSchedules(schedule, i);
-				} catch (CloneNotSupportedException e) {
-					e.printStackTrace();
-				}
-			}
+		while (schedulesToCheck.size() < numCores) {
+		    if (initialIteration) {
+                for (int i = 0; i < processorNumber; i = i + processorNumber ) {
+                    try {
+
+                        for (Schedule s : schedulesToCheck) {
+                            createPartialSchedules(s, i);
+                        }
+                    } catch (CloneNotSupportedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+            else {
+                for (int i = 0; i < processorNumber; i++) {
+                    try {
+
+                        for (Schedule s : schedulesToCheck) {
+                            createPartialSchedules(s, i);
+                        }
+                    } catch (CloneNotSupportedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+
+            //Loop through partial schedules and pick the max layer depth
+            for (Schedule s : partialSchedules) {
+                if ((s.getScheduledNodes().size()) > maxTaskNumber) {
+                    maxTaskNumber = s.getScheduledNodes().size();
+                }
+            }
+
+            //Gets the partial schedules not on the max depth and stores in list
+            List<Schedule> removeTheseSchedules = new ArrayList<>();
+            for (Schedule s : partialSchedules) {
+                if (s.getScheduledNodes().size() < maxTaskNumber) {
+                    removeTheseSchedules.add(s);
+                }
+            }
+
+            //Remove the partial schedules from the tree
+            for (Schedule s : removeTheseSchedules) {
+                partialSchedules.remove(s);
+            }
 
 			//moving to the next index value
-			schedule = partialSchedules.get(scheduleIndex);
-			scheduleIndex++;
-
+            schedulesToCheck = (List<Schedule>) deepClone(partialSchedules);
+            initialIteration = false;
 		}
 
-		List<Schedule> removeSchedule = new ArrayList<>();
-		//Code to remove duplicated initial nodes on partial schedules
-		for (int i = 0; i < partialSchedules.size(); i++) {
-			for (int j = i; j < partialSchedules.size(); j++)
-
-				if (equals(partialSchedules.get(i), partialSchedules.get(j))) {
-					removeSchedule.add(partialSchedules.get(i));
-				}
-		}
-
-		for(Schedule s :removeSchedule) {
-			partialSchedules.remove(s);
-		}
-
-
-
-		//Loop through partial schedules and pick the max layer depth
-		int maxSize = 0;
-		for (Schedule s : partialSchedules) {
-			if ((s.getScheduledNodes().size()) > maxSize) {
-				maxSize = s.getScheduledNodes().size();
-			}
-		}
-
-		//Gets the partial schedules not on the max depth and stores in list
-		List<Schedule> removeTheseSchedules = new ArrayList<>();
-		for (Schedule s : partialSchedules) {
-			if (s.getScheduledNodes().size() < maxSize) {
-				removeTheseSchedules.add(s);
-			}
-		}
-
-		//Remove the partial schedules from the tree
-		for (Schedule s : removeTheseSchedules) {
-			partialSchedules.remove(s);
-		}
+//		List<Schedule> removeSchedule = new ArrayList<>();
+//		//Code to remove duplicated initial nodes on partial schedules
+//		for (int i = 0; i < partialSchedules.size(); i++) {
+//			for (int j = i; j < partialSchedules.size(); j++)
+//
+//				if (equals(partialSchedules.get(i), partialSchedules.get(j))) {
+//					removeSchedule.add(partialSchedules.get(i));
+//				}
+//		}
+//
+//		for(Schedule s :removeSchedule) {
+//			partialSchedules.remove(s);
+//		}
+//
+//
+//
+//		//Loop through partial schedules and pick the max layer depth
+//		int maxSize = 0;
+//		for (Schedule s : partialSchedules) {
+//			if ((s.getScheduledNodes().size()) > maxSize) {
+//				maxSize = s.getScheduledNodes().size();
+//			}
+//		}
+//
+//		//Gets the partial schedules not on the max depth and stores in list
+//		List<Schedule> removeTheseSchedules = new ArrayList<>();
+//		for (Schedule s : partialSchedules) {
+//			if (s.getScheduledNodes().size() < maxSize) {
+//				removeTheseSchedules.add(s);
+//			}
+//		}
+//
+//		//Remove the partial schedules from the tree
+//		for (Schedule s : removeTheseSchedules) {
+//			partialSchedules.remove(s);
+//		}
 
 
 
