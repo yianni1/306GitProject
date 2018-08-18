@@ -403,7 +403,7 @@ public class VisualisationController implements Initializable{
             String parentPath = parent.getParent() + File.separator;
 
             if (outputFileName != null) {
-                parentPath = outputFileName;
+                outputN = outputFileName;
             }
 
             TaskGraph graph = loader.load(parentPath + fileName);
