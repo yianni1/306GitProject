@@ -225,15 +225,8 @@ public class DFBnBMasterScheduler implements Scheduler {
                             createPartialSchedules(s, i);
                         }
 
-                        //Loop through cloned schedules and remove the unused parent from partialSchedules
-//                        for (Schedule k : partialSchedules) {
-//                            if (equals(s, k)) {
-//                                //Removes the parent schedule of the new schedules created
-//                                partialSchedules.remove(k);
-//								System.out.println("Duplicate schedule found.");
-//                                break;
-//                            }
-//                        }
+
+
 
                         if (partialSchedules.size() >= numCores) {
                             break;
@@ -257,39 +250,7 @@ public class DFBnBMasterScheduler implements Scheduler {
 
     }
 
-	/**
-	 * Returns true if these two schedules are the same.
-	 *
-	 * @param s1 First schedule to be compared
-	 * @param s2 Second schedule to be compared
-	 * @return true if s1 and s2 are the same
-	 */
-    private boolean equals(Schedule s1, Schedule s2) {
 
-        boolean same = false;
-        for (Processor p : s1.getProcessors()) {
-            for (Processor c : s2.getProcessors()) {
-                if (p.getID() == c.getID()) {
-
-                    for (TaskNode task : p.getTasks()) {
-                        for (TaskNode otherTask : c.getTasks()) {
-                            if ((task.getName().equals(otherTask.getName())) && (task.getStartTime() == otherTask.getStartTime()) ) {
-                                same = true;
-                            }
-                            else {
-                                same = false;
-                                return false;
-                            }
-                        }
-                    }
-                }
-
-            }
-
-        }
-
-        return same;
-    }
 
 
 
@@ -319,14 +280,10 @@ public class DFBnBMasterScheduler implements Scheduler {
             partialSchedules.add(partialSchedule);
         }
 
+        // Remove the 'parent' partial schedule.
         partialSchedules.remove(s);
 
-        // Remove the value if the partial schedule already contains it
-		// NOTE: arraylist.contains() will not recognise our schedule objects.
-//        if (partialSchedules.contains(s)) {
-//            partialSchedules.remove(s);
-//			System.out.println("Parent removed.");
-//        }
+
 
 
     }
