@@ -101,7 +101,7 @@ public class DFBnBMasterScheduler implements Scheduler {
         try {
             executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {
-
+			e.printStackTrace();
         }
 
         //finding the optimal bound
@@ -199,9 +199,6 @@ public class DFBnBMasterScheduler implements Scheduler {
         int processorNumber = schedule.getProcessors().size();
         boolean initialIteration = true;
 
-        List<Schedule> schedulesToCheck = new ArrayList<>();
-        schedulesToCheck.add(schedule);
-
         //creates partial schedules if the number of partial schedules in the list is less than the number of cores
         while (partialSchedules.size() < numCores) {
 
@@ -228,14 +225,15 @@ public class DFBnBMasterScheduler implements Scheduler {
                             createPartialSchedules(s, i);
                         }
 
-                        //Loop through cloned schedules and remove the unused parent on from partialSchedules
-                        for (Schedule k : partialSchedules) {
-                            if (equals(s, k)) {
-                                //Removes the parent schedule of the new schedules created
-                                partialSchedules.remove(k);
-                                break;
-                            }
-                        }
+                        //Loop through cloned schedules and remove the unused parent from partialSchedules
+//                        for (Schedule k : partialSchedules) {
+//                            if (equals(s, k)) {
+//                                //Removes the parent schedule of the new schedules created
+//                                partialSchedules.remove(k);
+//								System.out.println("Duplicate schedule found.");
+//                                break;
+//                            }
+//                        }
 
                         if (partialSchedules.size() >= numCores) {
                             break;
@@ -259,7 +257,13 @@ public class DFBnBMasterScheduler implements Scheduler {
 
     }
 
-
+	/**
+	 * Returns true if these two schedules are the same.
+	 *
+	 * @param s1 First schedule to be compared
+	 * @param s2 Second schedule to be compared
+	 * @return true if s1 and s2 are the same
+	 */
     private boolean equals(Schedule s1, Schedule s2) {
 
         boolean same = false;
@@ -315,10 +319,14 @@ public class DFBnBMasterScheduler implements Scheduler {
             partialSchedules.add(partialSchedule);
         }
 
-        //remove the value if the partial schedule already contains it
-        if (partialSchedules.contains(s)) {
-            partialSchedules.remove(s);
-        }
+        partialSchedules.remove(s);
+
+        // Remove the value if the partial schedule already contains it
+		// NOTE: arraylist.contains() will not recognise our schedule objects.
+//        if (partialSchedules.contains(s)) {
+//            partialSchedules.remove(s);
+//			System.out.println("Parent removed.");
+//        }
 
 
     }
