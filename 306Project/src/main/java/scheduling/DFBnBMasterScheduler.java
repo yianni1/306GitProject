@@ -16,275 +16,243 @@ import static scheduling.Utilities.deepClone;
  * Master scheduler for parallelisation. Runs BFS to create subtrees and then runs slave schedulers on these subtrees
  * on separate threads.
  */
-public class DFBnBMasterScheduler implements  Scheduler {
+public class DFBnBMasterScheduler implements Scheduler {
 
-	private VisualisationController scheduleListener;
+    private VisualisationController scheduleListener;
 
-	private List<Schedule> partialSchedules = new ArrayList<>();
-	private List<DFBnBSlaveScheduler> slaves = new ArrayList<>();
-	private int numCores;
-	private int processors;
-	private TaskGraph graph;
-	private int upperBound;
-	private long numPaths;
-	private long branchesPruned;
-	private Schedule schedule;
+    private List<Schedule> partialSchedules = new ArrayList<>();
+    private List<DFBnBSlaveScheduler> slaves = new ArrayList<>();
+    private int numCores;
+    private int processors;
+    private TaskGraph graph;
+    private int upperBound;
+    private long numPaths;
+    private long branchesPruned;
+    private Schedule schedule;
 
-	/**
-	 * Constructor which generates an initial empty schedule based on the processors and the graph
-	 *
-	 * @param graph
-	 * @param processors
-	 * @param numCores
-	 */
-	public DFBnBMasterScheduler(TaskGraph graph, int processors, int numCores) {
-		this.graph = graph;
-		this.processors = processors;
-		this.numCores = numCores;
-		schedule = new Schedule(processors, graph);
-		numPaths = 0;
-		branchesPruned = 0;
-	}
+    /**
+     * Constructor which generates an initial empty schedule based on the processors and the graph
+     *
+     * @param graph
+     * @param processors
+     * @param numCores
+     */
+    public DFBnBMasterScheduler(TaskGraph graph, int processors, int numCores) {
+        this.graph = graph;
+        this.processors = processors;
+        this.numCores = numCores;
+        schedule = new Schedule(processors, graph);
+        numPaths = 0;
+        branchesPruned = 0;
+    }
 
-	/**
-	 * Creates the optimal schedule through thread and parallelisation which involves assigning threads with the layers
-	 * to each of the schedules
-	 *
-	 * @return optimal schedule
-	 */
-	public Schedule createSchedule() {
+    /**
+     * Creates the optimal schedule through thread and parallelisation which involves assigning threads with the layers
+     * to each of the schedules
+     *
+     * @return optimal schedule
+     */
+    public Schedule createSchedule() {
 
 
-		Schedule greedySchedule = new GreedyScheduler(graph, processors).createSchedule();
-		Schedule defaultGreedy = (Schedule) deepClone(greedySchedule); //Default greedy schedule to use if no better schedule found in slave
-		updateSchedule(defaultGreedy);
+        Schedule greedySchedule = new GreedyScheduler(graph, processors).createSchedule();
+        Schedule defaultGreedy = (Schedule) deepClone(greedySchedule); //Default greedy schedule to use if no better schedule found in slave
+        updateSchedule(defaultGreedy);
 
-		//intializing the upperbound
-		upperBound = greedySchedule.getBound();
+        //intializing the upperbound
+        upperBound = greedySchedule.getBound();
 
-		//iterating through the tree by checking if there were any more schedulable tasks
-		while (greedySchedule.getScheduledNodes().size() > 0) {
-			greedySchedule.removeLastScheduledTask();
-		}
+        //iterating through the tree by checking if there were any more schedulable tasks
+        while (greedySchedule.getScheduledNodes().size() > 0) {
+            greedySchedule.removeLastScheduledTask();
+        }
 
-		initialisePartialSchedules();
+        initialisePartialSchedules();
 
-		//Thread pool assigned with the number of cores
-		ExecutorService executor = Executors.newFixedThreadPool(numCores);
+        //Thread pool assigned with the number of cores
+        ExecutorService executor = Executors.newFixedThreadPool(numCores);
+
+        // System.out.println("Running on " + numCores + " threads with " + partialSchedules.size() + " slave schedulers.");
 
         List<Schedule> locallyOptimalSchedules = new ArrayList<>();
 
-		//generating the number of threads associative to the number of cores
-		for (Schedule schedule : partialSchedules) {
-			final DFBnBMasterScheduler master = this;
-			executor.execute(new Runnable() {
-				@Override
-				public void run() {
-					DFBnBSlaveScheduler scheduler = new DFBnBSlaveScheduler(schedule.getGraph(), processors, schedule, upperBound, master);
-					slaves.add(scheduler);
-					Schedule s = scheduler.createSchedule();
+        //generating the number of threads associative to the number of cores
+        for (Schedule schedule : partialSchedules) {
+            final DFBnBMasterScheduler master = this;
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    DFBnBSlaveScheduler scheduler = new DFBnBSlaveScheduler(schedule.getGraph(), processors, schedule, upperBound, master);
+                    slaves.add(scheduler);
+                    Schedule s = scheduler.createSchedule();
 
-					//If bound found by thread is null, use default greedy
-					if (s == null) {
-						locallyOptimalSchedules.add(defaultGreedy);
-					} else {
-						locallyOptimalSchedules.add(s);
-					}
+                    //If bound found by thread is null, use default greedy
+                    if (s == null) {
+                        locallyOptimalSchedules.add(defaultGreedy);
+                    } else {
+                        locallyOptimalSchedules.add(s);
+                    }
 
-				}
-			});
-		}
+                }
+            });
+        }
 
-		executor.shutdown();
-		try {
-			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-		} catch (InterruptedException e) {
+        executor.shutdown();
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+			e.printStackTrace();
+        }
 
-		}
+        //finding the optimal bound
+        int optimalBound = locallyOptimalSchedules.get(0).getBound();
 
-		//finding the optimal bound
-		int optimalBound = locallyOptimalSchedules.get(0).getBound();
+        //deepcloning the value in the optimal schedule
+        Schedule optimalSchedule = (Schedule) deepClone(locallyOptimalSchedules.get(0));
 
-		//deepcloning the value in the optimal schedule
-		Schedule optimalSchedule = (Schedule) deepClone(locallyOptimalSchedules.get(0));
+        //searching for bounds less than the optimal bound and replacing those bounds
+        for (Schedule schedule : locallyOptimalSchedules) {
 
-		//searching for bounds less than the optimal bound and replacing those bounds
-		for (Schedule schedule : locallyOptimalSchedules) {
-
-			//if bound is lower than the optimal bound , change optimal bound and deepclone the schedule
-			if (schedule.getBound() < optimalBound) {
-				optimalBound = schedule.getBound();
-				optimalSchedule = (Schedule) deepClone(schedule);
-			}
-
-
-		}
-
-		System.out.println("Global optimal solution with bound of " + optimalSchedule.getBound() + " found!");
-		return optimalSchedule;
-
-	}
-
-	public void setScheduleListener(VisualisationController scheduleListener) {
-		this.scheduleListener = scheduleListener;
-	}
+            //if bound is lower than the optimal bound , change optimal bound and deepclone the schedule
+            if (schedule.getBound() < optimalBound) {
+                optimalBound = schedule.getBound();
+                optimalSchedule = (Schedule) deepClone(schedule);
+            }
 
 
-	/**
-	 * Updates GUI with new optimal schedule and also notifies slaves of a better bound if necessary.
-	 *
-	 * @param schedule
-	 */
-	public void updateSchedule(Schedule schedule) {
-		if (this.scheduleListener != null) {
-			if (schedule.getBound() < upperBound) {
-				upperBound = schedule.getBound();
-				for (DFBnBSlaveScheduler slave : slaves) {
-					slave.updateUpperBound(upperBound);
-				}
-				scheduleListener.updateSchedule(schedule);
-				try {
-					TimeUnit.MILLISECONDS.sleep(200);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
+        }
 
-	public void updateBranchesPruned(long branchesPruned) {
-		this.branchesPruned = this.branchesPruned + branchesPruned;
-		if (this.scheduleListener != null) {
-			scheduleListener.updateBranchesPruned(this.branchesPruned);
-		}
-	}
+        System.out.println("Global optimal solution with bound of " + optimalSchedule.getBound() + " found!");
+        return optimalSchedule;
 
-	public void updateNumPaths(long numPaths) {
-		this.numPaths = this.numPaths + numPaths;
-		if (this.scheduleListener != null) {
-			scheduleListener.updateNumPaths(this.numPaths);
-		}
+    }
 
-	}
-
-	public void finish() {
-		if (this.scheduleListener != null) {
-			for (DFBnBSlaveScheduler slave : slaves) {
-				if (!slave.isFinished()) {
-					return;
-				}
-			}
-			scheduleListener.finish();
-		}
-	}
-
-	/**
-	 * Gets the list of the partial schedules
-	 *
-	 * @return partialSchedules
-	 */
-	public List<Schedule> getPartialSchedules() {
-		return partialSchedules;
-	}
+    public void setScheduleListener(VisualisationController scheduleListener) {
+        this.scheduleListener = scheduleListener;
+    }
 
 
-	/**
-	 * initializes the partial schedules through iteratively searching for the size of the list of partial schedules
-	 * to be greater than than that of the size of the number of cores
-	 */
-	public void initialisePartialSchedules() {
+    /**
+     * Updates GUI with new optimal schedule and also notifies slaves of a better bound if necessary.
+     *
+     * @param schedule
+     */
+    public void updateSchedule(Schedule schedule) {
+        if (this.scheduleListener != null) {
+            if (schedule.getBound() < upperBound) {
+                upperBound = schedule.getBound();
+                for (DFBnBSlaveScheduler slave : slaves) {
+                    slave.updateUpperBound(upperBound);
+                }
+                scheduleListener.updateSchedule(schedule);
+                try {
+                    TimeUnit.MILLISECONDS.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
-		int scheduleIndex = 0;
+    public void updateBranchesPruned(long branchesPruned) {
+        this.branchesPruned = this.branchesPruned + branchesPruned;
+        if (this.scheduleListener != null) {
+            scheduleListener.updateBranchesPruned(this.branchesPruned);
+        }
+    }
 
-		//creates partial schedules if the number of partial schedules in the list is less than the number of cores
-		while (partialSchedules.size() < numCores) {
-			for (int i = 0; i < schedule.getProcessors().size(); i++) {
-				try {
-					createPartialSchedules(schedule, i);
-				} catch (CloneNotSupportedException e) {
-					e.printStackTrace();
-				}
-			}
+    public void updateNumPaths(long numPaths) {
+        this.numPaths = this.numPaths + numPaths;
+        if (this.scheduleListener != null) {
+            scheduleListener.updateNumPaths(this.numPaths);
+        }
 
-			//moving to the next index value
-			schedule = partialSchedules.get(scheduleIndex);
-			scheduleIndex++;
+    }
 
-		}
+    public void finish() {
+        if (this.scheduleListener != null) {
+            for (DFBnBSlaveScheduler slave : slaves) {
+                if (!slave.isFinished()) {
+                    return;
+                }
+            }
+            scheduleListener.finish();
+        }
+    }
 
-		List<Schedule> removeSchedule = new ArrayList<>();
-		//Code to remove duplicated initial nodes on partial schedules
-		for (int i = 0; i < partialSchedules.size(); i++) {
-			for (int j = i; j < partialSchedules.size(); j++)
+    /**
+     * Gets the list of the partial schedules
+     *
+     * @return partialSchedules
+     */
+    public List<Schedule> getPartialSchedules() {
+        return partialSchedules;
+    }
 
-				if (equals(partialSchedules.get(i), partialSchedules.get(j))) {
-					removeSchedule.add(partialSchedules.get(i));
-				}
-		}
 
-		for(Schedule s :removeSchedule) {
-			partialSchedules.remove(s);
-		}
+    /**
+     * initializes the partial schedules through iteratively searching for the size of the list of partial schedules
+     * to be greater than than that of the size of the number of cores
+     */
+    public void initialisePartialSchedules() {
+
+        int processorNumber = schedule.getProcessors().size();
+        boolean initialIteration = true;
+
+        //creates partial schedules if the number of partial schedules in the list is less than the number of cores
+        while (partialSchedules.size() < numCores) {
+
+            //No loop needed for initial iteration to remove instances of duplicate schedules at start of tree
+            if (initialIteration) {
+                try {
+                    createPartialSchedules(schedule, 0);
+                } catch (CloneNotSupportedException e) {
+                    e.printStackTrace();
+                }
+
+            } else {
+
+                //Used to avoid concurrent exception when removing parent schedule
+                List<Schedule> schedulesToLoop = new ArrayList<>();
+                schedulesToLoop = (List<Schedule>) deepClone(partialSchedules);
+                try {
+                    //Loop through other schedules avalible until core num is met
+                    //If core num not met, repeat while loop
+                    for (Schedule s : schedulesToLoop) {
+
+                        //Creates new schedules for this iteration
+                        for (int i = 0; i < processorNumber; i++) {
+                            createPartialSchedules(s, i);
+                        }
 
 
 
-		//Loop through partial schedules and pick the max layer depth
-		int maxSize = 0;
-		for (Schedule s : partialSchedules) {
-			if ((s.getScheduledNodes().size()) > maxSize) {
-				maxSize = s.getScheduledNodes().size();
-			}
-		}
 
-		//Gets the partial schedules not on the max depth and stores in list
-		List<Schedule> removeTheseSchedules = new ArrayList<>();
-		for (Schedule s : partialSchedules) {
-			if (s.getScheduledNodes().size() < maxSize) {
-				removeTheseSchedules.add(s);
-			}
-		}
+                        if (partialSchedules.size() >= numCores) {
+                            break;
+                        }
+                    }
+                } catch (CloneNotSupportedException e) {
+                    e.printStackTrace();
+                }
 
-		//Remove the partial schedules from the tree
-		for (Schedule s : removeTheseSchedules) {
-			partialSchedules.remove(s);
-		}
+                if (partialSchedules.size() >= numCores) {
+                    break;
+                }
 
 
+            }
 
-	}
 
-	/**
-	 * Equals method to compare schedules
-	 * @param s1
-	 * @param s2
-	 * @return
-	 */
-	private boolean equals(Schedule s1, Schedule s2) {
+            //Next iteration not initial
+            initialIteration = false;
+        }
 
-		boolean same = false;
-		for (Processor p : s1.getProcessors()) {
-			for (Processor c : s2.getProcessors()) {
-				if (p.getID() != c.getID()) {
+    }
 
-					for (TaskNode task : p.getTasks()) {
-						for (TaskNode otherTask : c.getTasks()) {
-							if ((task.getName().equals(otherTask.getName())) && (task.getStartTime() == otherTask.getStartTime()) ) {
-								same = true;
-							}
-							else {
-								same = false;
-								return false;
-							}
-						}
-					}
-				}
 
-			}
 
-		}
 
-		return same;
-	}
 
 
 
@@ -295,28 +263,28 @@ public class DFBnBMasterScheduler implements  Scheduler {
      * @param processorId
      * @throws CloneNotSupportedException
      */
-	private void createPartialSchedules(Schedule s, int processorId) throws CloneNotSupportedException {
+    private void createPartialSchedules(Schedule s, int processorId) throws CloneNotSupportedException {
 
-		List<TaskNode> nodes = s.getSchedulableNodes();
+        List<TaskNode> nodes = s.getSchedulableNodes();
 
-		//creating partial schedules for the amount of schedulable nodes
-		for (int i = 0; i < s.getSchedulableNodes().size(); i++) {
+        //creating partial schedules for the amount of schedulable nodes
+        for (int i = 0; i < s.getSchedulableNodes().size(); i++) {
 
-			s.addTask(nodes.get(i), s.getProcessors().get(processorId), s.getEarliestSchedulableTime(nodes.get(i), s.getProcessors().get(processorId)));
+            s.addTask(nodes.get(i), s.getProcessors().get(processorId), s.getEarliestSchedulableTime(nodes.get(i), s.getProcessors().get(processorId)));
 
-			//deep clone the object and remove the last scheduled task
-			Schedule partialSchedule = (Schedule) deepClone(s);
-			s.removeLastScheduledTask();
+            //deep clone the object and remove the last scheduled task
+            Schedule partialSchedule = (Schedule) deepClone(s);
+            s.removeLastScheduledTask();
 
-			partialSchedules.add(partialSchedule);
-		}
-
-		//remove the value if the partial schedule already contains it
-        if (partialSchedules.contains(s)) {
-            partialSchedules.remove(s);
+            partialSchedules.add(partialSchedule);
         }
 
+        // Remove the 'parent' partial schedule.
+        partialSchedules.remove(s);
 
-	}
+
+
+
+    }
 
 }

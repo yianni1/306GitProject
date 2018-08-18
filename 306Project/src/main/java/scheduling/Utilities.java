@@ -1,5 +1,7 @@
 package scheduling;
 
+import graph.TaskNode;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -23,5 +25,39 @@ public class Utilities {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * Returns true if these two schedules are the same. Generally only used for testing because of it's time cost.
+     *
+     * @param s1 First schedule to be compared
+     * @param s2 Second schedule to be compared
+     * @return true if s1 and s2 are the same
+     */
+    private boolean equals(Schedule s1, Schedule s2) {
+
+        boolean same = false;
+        for (Processor p : s1.getProcessors()) {
+            for (Processor c : s2.getProcessors()) {
+                if (p.getID() == c.getID()) {
+
+                    for (TaskNode task : p.getTasks()) {
+                        for (TaskNode otherTask : c.getTasks()) {
+                            if ((task.getName().equals(otherTask.getName())) && (task.getStartTime() == otherTask.getStartTime()) ) {
+                                same = true;
+                            }
+                            else {
+                                same = false;
+                                return false;
+                            }
+                        }
+                    }
+                }
+
+            }
+
+        }
+
+        return same;
     }
 }
