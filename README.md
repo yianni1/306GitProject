@@ -1,7 +1,7 @@
 # 306 Scheduling Project
 
 ## Contributors
-Name: Yianni Bares,   Username: ybar417,  ID: 533468329,  GitHub name: yianni1
+Name: Yianni Bares,		Username: ybar417,  ID: 533468329,  GitHub name: yianni1
 
 Name: Raymond Young,  Username: ryou681,  ID: 564122195,  GitHub name: rayyoung122
 
@@ -24,23 +24,26 @@ In order to run the program, place the input .dot file into the same directory a
 ```
 java -jar [JAR-NAME].jar [INPUT-NAME].dot [NUMBER]
 ```
-where [JAR-NAME] is the name of the jar, [INPUT-NAME] is the name of the input file, and [NUMBER] is the number of processors. The output file should then be generated, which should be named [INPUT-NAME]-output.dot. Please make sure the format of your input is correct.
+- [JAR-NAME] is the name of the jar
+- [INPUT-NAME] is the name of the input file
+- [NUMBER] is the number of processors you wish to schedule tasks on 
+The output file should then be generated in the same directory as the jar. Please make sure the format of your input is correct.
 
 ## Options
 
-It's possible to change the way the program runs via a number of options available.
-- The -o option allows the user to specify the name of the output file
-- The -v option will display a GUI visualisation
-- The -p option allows the user to specify the number of 'cores' (or threads) to run the program on
+It's possible to change the way the program runs via a number of options available. Any combination of these options may be used.
+- The -o option allows the user to specify the name of the output file. This defaults to [INPUT-NAME]-output.dot if this option is not selected.
+- The -v option will display a GUI visualisation is selected.
+- The -p option allows the user to specify the number of 'cores' (or threads) to run the program on. This defaults to 1 if this option is not selected.
 
-They should be used thus:
+They should be used as such:
 
 ```
 java -jar [JAR-NAME].jar [INPUT-NAME].dot [NUMBER] -o [DESIRED-OUTPUT-NAME] -p [NUMBER-OF-CORES] -v
 ```
-where [DESIRED-OUTPUT-NAME] is name you wish the output file to be stored as. The output file generated should thus have the name [DESIRED-OUTPUT-NAME].dot.
+where [DESIRED-OUTPUT-NAME] is name you wish the output file to be stored as. The output file generated will have the name [DESIRED-OUTPUT-NAME].dot.
 
-An example use would be 
+An example use would be:
 
 ```
 java -jar program.jar sample-input.dot 3 -o NEW_OUTPUT -p 2 -v
