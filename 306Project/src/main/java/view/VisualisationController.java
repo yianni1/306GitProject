@@ -28,10 +28,7 @@ import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.Viewer;
-import scheduling.DFBnBScheduler;
-import scheduling.Processor;
-import scheduling.Schedule;
-import scheduling.Scheduler;
+import scheduling.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -394,10 +391,18 @@ public class VisualisationController implements Initializable{
 
             TaskGraph graph = loader.load(parentPath + fileName);
 
+            Schedule finalSolution;
+
             //Doing the algorithm
-            Scheduler solution = new DFBnBScheduler(graph, processorNumber);
-            ((DFBnBScheduler) solution).setScheduleListener(this);
-            Schedule finalSolution = solution.createSchedule();
+            if (coreNumber > 1) {
+                Scheduler solution = new DFBnBMasterScheduler(graph, processorNumber, coreNumber);
+                ((DFBnBMasterScheduler) solution).setScheduleListener(this);
+                finalSolution = solution.createSchedule();
+            } else {
+                Scheduler solution = new DFBnBScheduler(graph, processorNumber);
+                ((DFBnBScheduler) solution).setScheduleListener(this);
+                finalSolution = solution.createSchedule();
+            }
 
             //Transporting to output
             Output.createOutput(finalSolution.getProcessors(), graph, parentPath + outputN + "-output.dot");

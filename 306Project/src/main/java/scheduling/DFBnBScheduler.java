@@ -26,14 +26,14 @@ public class DFBnBScheduler implements Scheduler{
 	protected int upperBound;
 	protected int depth;
 	protected int minDepth;
-	private long numPaths;
-	private long branchesPruned;
+	protected long numPaths;
+	protected long branchesPruned;
 
 	// Index of the children of the schedule.
 	private List<Integer> nodeIndices;
 	private List<Integer> processorIndices;
 
-	private Schedule optimalSchedule;
+	protected Schedule optimalSchedule;
 	protected Schedule schedule;
 	protected List<TaskNode> schedulableNodes;
 
@@ -87,11 +87,8 @@ public class DFBnBScheduler implements Scheduler{
 	 */
 	public Schedule createSchedule() throws NotDeschedulableException, NotSchedulableException {
 
-		if (scheduleListener != null) { //update initial best schedule in gui
-			updateGUISchedule();
-			scheduleListener.updateNumPaths(numPaths);
-		}
-
+	    updateSchedule();
+	    updateNumPaths();
 
 		TaskNode nextTask;
 		Processor nextProcessor;
@@ -229,7 +226,7 @@ public class DFBnBScheduler implements Scheduler{
 					nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 					branchesPruned++;
 					if (scheduleListener != null && (System.currentTimeMillis() % 100 == 0)) { //update visualisation with new number of branches pruned
-						scheduleListener.updateBranchesPruned(branchesPruned);
+						updateBranchesPruned();
 					}
 
 				}
@@ -248,17 +245,16 @@ public class DFBnBScheduler implements Scheduler{
 			if (schedule.getBound() < upperBound || optimalSchedule == null) {
 				optimalSchedule = (Schedule) deepClone(schedule);
 				upperBound = schedule.getBound();
-				if (scheduleListener != null) { //update visualisation with new optimal schedule
-					updateGUISchedule();
-					scheduleListener.updateNumPaths(numPaths);
-				}
+				//update visualisation with new optimal schedule
+                updateSchedule();
+                updateNumPaths();
 			}
 
 			if (schedule.getScheduledNodes().size() > 0) {
 				schedule.removeLastScheduledTask();
 				numPaths++;
-				if (scheduleListener != null && (System.currentTimeMillis() % 100 == 0)) { //update visualisation with new number of paths
-					scheduleListener.updateNumPaths(numPaths);
+				if ((System.currentTimeMillis() % 100 == 0)) { //update visualisation with new number of paths
+					updateNumPaths();
 				}
 			}
 
@@ -274,12 +270,10 @@ public class DFBnBScheduler implements Scheduler{
         } else {
             System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
         }
-		if (scheduleListener != null) {
-            updateGUISchedule();;
-			scheduleListener.updateNumPaths(numPaths);
-			scheduleListener.updateBranchesPruned(branchesPruned);
-			scheduleListener.finish();
-        }
+            updateSchedule();
+			updateNumPaths();
+			updateBranchesPruned();
+			finish();
 		return optimalSchedule;
 
 	}
@@ -497,13 +491,47 @@ public class DFBnBScheduler implements Scheduler{
 		this.scheduleListener = listener;
 	}
 
-	private void updateGUISchedule () {
-		scheduleListener.updateSchedule(optimalSchedule);
-		try {
-			TimeUnit.MILLISECONDS.sleep(200);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+    /**
+     * Notifies listener of new optimal schedule.
+     */
+	public void updateSchedule() {
+	    if (scheduleListener != null) {
+            scheduleListener.updateSchedule(optimalSchedule);
+            try {
+                TimeUnit.MILLISECONDS.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 	}
+
+    /**
+     * Updates listener with number of branches pruned.
+     */
+	public void updateBranchesPruned() {
+	    if (scheduleListener != null) {
+            scheduleListener.updateBranchesPruned(branchesPruned);       }
+
+    }
+
+    /**
+     * Updates listener with number of paths searched.
+     */
+    public void updateNumPaths() {
+        if (scheduleListener != null) {
+            scheduleListener.updateNumPaths(numPaths);
+        }
+    }
+
+    /**
+     * Updates listener that algorithm has finished.
+     */
+    public void finish() {
+        if (scheduleListener != null) {
+            scheduleListener.finish();
+        }
+    }
+
+
 
 }
