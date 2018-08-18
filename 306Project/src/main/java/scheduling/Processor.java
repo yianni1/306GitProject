@@ -14,8 +14,8 @@ import java.util.List;
  */
 public class Processor implements Serializable {
 
-    private int procID;
-    private List<TaskNode> tasks = new ArrayList<TaskNode>();
+    private int procID; //The ID of the processor
+    private List<TaskNode> tasks = new ArrayList<TaskNode>(); //The list of tasks on that processor
 
     /**
      * The processor with a number
