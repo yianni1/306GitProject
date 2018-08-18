@@ -87,8 +87,8 @@ public class DFBnBScheduler implements Scheduler{
 	 */
 	public Schedule createSchedule() throws NotDeschedulableException, NotSchedulableException {
 
-	    updateSchedule();
-	    updateNumPaths();
+		updateSchedule();
+		updateNumPaths();
 
 		TaskNode nextTask;
 		Processor nextProcessor;
@@ -105,7 +105,6 @@ public class DFBnBScheduler implements Scheduler{
 		while (depth >= minDepth) {
 
 			while (schedulableNodes.size() > 0) { //while there are still nodes to schedule
-				// System.out.println("Searching at depth " + depth + " with bound " + schedule.getBound());
 
 				//Determine whether initial nodes have been repeated
 				finished = removeReplicatedTree(initialIteration);
@@ -176,16 +175,10 @@ public class DFBnBScheduler implements Scheduler{
 
 				// Don't add the task to the processor if the upper bound will be higher
 				if (est + nextTask.getWeight() < upperBound && !skip) {
-					//System.out.println("Task " + nextTask.getName() + " on schedule "+nextProcessor.getID()+" will be less than the upper bound. ("+est+" vs. "+ upperBound+")");
 					schedule.addTask(nextTask, nextProcessor, est);
-
-
 					schedulableNodes = schedule.getSchedulableNodes();
 					nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 					depth++;
-
-
-
 				} else {	// Pruning
 					nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 					branchesPruned++;
@@ -196,6 +189,8 @@ public class DFBnBScheduler implements Scheduler{
 				}
 			}
 
+			//Ending the algorithm if the depth is lower than the
+			//Minimum depth
 			if (depth < minDepth) {
 				break;
 			}
@@ -206,14 +201,17 @@ public class DFBnBScheduler implements Scheduler{
 				break;
 			}
 
+			//Updating the optimal schedule
 			if (schedule.getBound() < upperBound || optimalSchedule == null) {
-				optimalSchedule = (Schedule) deepClone(schedule);
+				optimalSchedule = (Schedule) deepClone(schedule); //Creating a clone for the optimal schedule
 				upperBound = schedule.getBound();
 				//update visualisation with new optimal schedule
-                updateSchedule();
-                updateNumPaths();
+				updateSchedule();
+				updateNumPaths();
 			}
 
+			//If there are scheduled nodes, we remove the last one and
+			//Go back up on the tree
 			if (schedule.getScheduledNodes().size() > 0) {
 				schedule.removeLastScheduledTask();
 				numPaths++;
@@ -222,22 +220,21 @@ public class DFBnBScheduler implements Scheduler{
 				}
 			}
 
-
-
 			schedulableNodes = schedule.getSchedulableNodes();
 
-
+		}
+		if (optimalSchedule == null) {
+			System.out.println("No solution better than initial upper bound found on this branch.");
+		} else {
+			System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
 		}
 
-		if (optimalSchedule == null) {
-		    System.out.println("No solution better than initial upper bound found on this branch.");
-        } else {
-            System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
-        }
-            updateSchedule();
-			updateNumPaths();
-			updateBranchesPruned();
-			finish();
+		//Updating the fields
+		updateSchedule();
+		updateNumPaths();
+		updateBranchesPruned();
+		finish();
+
 		return optimalSchedule;
 
 	}
@@ -282,14 +279,14 @@ public class DFBnBScheduler implements Scheduler{
 
 		// Loop through all the scheduled nodes, then the node we want to schedule and find the maxFbl out of them.
 		for (TaskNode tn : schedule.getScheduledNodes()) {
-            Integer value = bottomLevelCosts.get(tn.getName());
+			Integer value = bottomLevelCosts.get(tn.getName());
 			fblTemp = tn.getStartTime() + value;
 			fblMax = Math.max(fblMax, fblTemp);
 		}
 
 		// Can't call getStartTime on the child node because we haven't scheduled it yet.
 		int childStartTime = schedule.getEarliestSchedulableTime(nextTask, nextProcessor);
-        Integer value = bottomLevelCosts.get(nextTask.getName());
+		Integer value = bottomLevelCosts.get(nextTask.getName());
 		fblTemp = childStartTime + value;
 		fblMax = Math.max(fblMax, fblTemp);
 
@@ -361,11 +358,11 @@ public class DFBnBScheduler implements Scheduler{
 			//Loop through initial nodes
 			while (addedNode == false) {
 
-			    //If all initial nodes have been looped through, we are finished
-			    if (index == schedulableNodes.size()) {
-                    finished = true;
-			        break;
-                }
+				//If all initial nodes have been looped through, we are finished
+				if (index == schedulableNodes.size()) {
+					finished = true;
+					break;
+				}
 
 				TaskNode node = schedulableNodes.get(index);
 				//If initialNode not been seen, add it to list
@@ -429,7 +426,7 @@ public class DFBnBScheduler implements Scheduler{
 
 					//Loop through parent nodes of this task
 					for (TaskEdge edge : nextTask.getIncomingEdges()) {
-						TaskNode parent = edge.getStartNode();    
+						TaskNode parent = edge.getStartNode();
 						//If the node scheduled on this processor was the parent of the the 
 						//Current node, means it is a duplicate situation
 						if (latestTask.equals(parent)) {
@@ -455,46 +452,46 @@ public class DFBnBScheduler implements Scheduler{
 		this.scheduleListener = listener;
 	}
 
-    /**
-     * Notifies listener of new optimal schedule.
-     */
+	/**
+	 * Notifies listener of new optimal schedule.
+	 */
 	public void updateSchedule() {
-	    if (scheduleListener != null) {
-            scheduleListener.updateSchedule(optimalSchedule);
-            try {
-                TimeUnit.MILLISECONDS.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+		if (scheduleListener != null) {
+			scheduleListener.updateSchedule(optimalSchedule);
+			try {
+				TimeUnit.MILLISECONDS.sleep(200);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
-    /**
-     * Updates listener with number of branches pruned.
-     */
+	/**
+	 * Updates listener with number of branches pruned.
+	 */
 	public void updateBranchesPruned() {
-	    if (scheduleListener != null) {
-            scheduleListener.updateBranchesPruned(branchesPruned);       }
+		if (scheduleListener != null) {
+			scheduleListener.updateBranchesPruned(branchesPruned);       }
 
-    }
+	}
 
-    /**
-     * Updates listener with number of paths searched.
-     */
-    public void updateNumPaths() {
-        if (scheduleListener != null) {
-            scheduleListener.updateNumPaths(numPaths);
-        }
-    }
+	/**
+	 * Updates listener with number of paths searched.
+	 */
+	public void updateNumPaths() {
+		if (scheduleListener != null) {
+			scheduleListener.updateNumPaths(numPaths);
+		}
+	}
 
-    /**
-     * Updates listener that algorithm has finished.
-     */
-    public void finish() {
-        if (scheduleListener != null) {
-            scheduleListener.finish();
-        }
-    }
+	/**
+	 * Updates listener that algorithm has finished.
+	 */
+	public void finish() {
+		if (scheduleListener != null) {
+			scheduleListener.finish();
+		}
+	}
 
 
 
