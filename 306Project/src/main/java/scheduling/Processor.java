@@ -64,14 +64,17 @@ public class Processor implements Serializable {
      * @return
      */
     public int getBound() {
-        int bound = 0;
-        for (TaskNode node : tasks) {
-            if (node.getEndTime() > bound) {
-                bound = node.getEndTime();
-            }
-        }
+//        int bound = 0;
+//        for (TaskNode node : tasks) {
+//            if (node.getEndTime() > bound) {
+//                bound = node.getEndTime();
+//            }
+//        }
+//
+//        return bound;
 
-        return bound;
+        //Returns the end time of the last task added
+        return tasks.get(tasks.size() - 1).getEndTime();  //Faster than looping through
     }
 
     /**
