@@ -139,6 +139,8 @@ public class App extends Application{
 					controller.setProcessorNumber(processorNumber);
 					controller.setCoreNumber(numCores);
 
+					//if the option is o as well as the V then we can set the output name in the controller to be ouputted
+					//properly when the output file is generated
 					if (cmd.hasOption("o")) {
 						controller.setOutputFileName(cmd.getOptionValue("o"));
 					}
@@ -161,38 +163,49 @@ public class App extends Application{
 					controller.createGraph();
 					primaryStage.show();
 
+					//catching an input and output exception
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			} else {
+
+				//checking if the option is output which shall have an additional argument that determines the filesname
                 if (cmd.hasOption("o")) {
 
                     //Block for the user specificed option
                     String sendToOutputClass = cmd.getOptionValue("o");
 
-                    GraphLoader loader = new GraphLoader(); //Loading the graph
+                    //loading the specific graph
+                    GraphLoader loader = new GraphLoader();
+
+                    //get the path of the graph file (Must be in the target folder)
                     String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+
                     File parent = new File(path);
                     String parentPath = parent.getParent() + File.separator;
 
+                    //load the graph value
                     TaskGraph graph = loader.load(parentPath + fileName);
 
                     //Doing the algorithm
                     Scheduler solution = new DFBnBScheduler(graph, processorNumber);
                     Schedule finalSolution = solution.createSchedule();
 
-                    //Transporting to output
+                    //Transporting to output. and output with either -output for a default output or the name of the output file
                     Output.createOutput(finalSolution.getProcessors(), graph, parentPath + sendToOutputClass + ".dot");
+
+                    //exiting the system
 					System.exit(0);
                 }
                 else {
 
-                	//output value which only prints out a default -output on the name if a proper name is not specificied
+                	//checking for other input arguments such as that of p and v
                     boolean inputOk = checkArgs(args);
 
                     if (inputOk) {
 
-                    	//Block for non specified option
+                    	//this is teh output defualt name which takes the name of the output and adds a -output to the
+						//end of it
                         String outputN = fileName.substring(0, fileName.length() - 4);
 
 
@@ -201,7 +214,7 @@ public class App extends Application{
                         //loading the graph
                         GraphLoader loader = new GraphLoader();
 
-
+                        //get the path of the location for the dot file
                         String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
                         File parent = new File(path);
                         String parentPath = parent.getParent() + File.separator;
@@ -218,6 +231,8 @@ public class App extends Application{
 						System.exit(0);
                     }
                     else {
+
+                    	//if an incorrect argument format is obtained then the exit the system and notify the user
                         System.out.println("Incorrect argument format");
                         System.exit(0);
                     }
@@ -227,7 +242,7 @@ public class App extends Application{
             }
 
 
-
+			//print statement to keep track for debugging
 			System.out.println("Scheduling on " + processorNumber + " processors using " + numCores + " cores.");
 		}
 	}
@@ -235,13 +250,14 @@ public class App extends Application{
 	/**
 	 * Checks the args of the input to ensure it is correct when there is no -o selected
 	 * @param args
-	 * @return
+	 * @return boolean (True or False)
 	 */
 	private boolean checkArgs(String[] args) {
 
 		if (args.length > 2) {
 			String thirdArg = args[2];
 
+			//checking if the third argument is either a -p or a -v
 			if (thirdArg.equals("-p") || thirdArg.equals("-v")) {
 				return true;
 			}
@@ -256,67 +272,86 @@ public class App extends Application{
 	}
 
 	/**
-	 * Checks input args to ensure it is vaild
+	 * Checks input arguments for validity and ensures statements are provided in those cases
 	 * @return
 	 * @throws URISyntaxException 
 	 */
 	private void checkOptions(String[] args) throws URISyntaxException {
 
+		//the counter for the amount of times the particular option is called since there is no use for double ups
 		int vCount = 0;
 		int oCount = 0;
 		int pCount = 0;
 		
-		//Checks if the filename exists
+		//Checks if the filename exists, if it doesn't sends a validity statement
 		if (args.length > 0) {
 
+			//finding the location of the file
 			String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
 			File parent = new File(path);
 			String parentPath = parent.getParent() + File.separator;
-			
+
+
 			File tmpDir = new File(parentPath + args[0]);
+
+			//checking if the file exists
 			boolean exists = tmpDir.exists();
+
+			//if the file doesn't exist in that location send a user a message
 			if (exists == false) {
 				System.out.println("File name does not exist in current directory where jar is located");
 				System.exit(0);
 			}
 		}
-		
+
+		//checking for the processor number
 		if (args.length > 1) {
 			int processorNumber = 0;
 
 			try{
 				processorNumber = Integer.parseInt(args[1]);
 			}
+
+			//checking if the integer which is passed is positive
 			catch (NumberFormatException ex) {
 				System.out.println("Please enter a positive integer for the processor number");
+
+				//exit the system
 				System.exit(0);
 			}
 		}
 		
-
+		//iterating through all the arguments that have been parsed
 		for (int i = 0; i < args.length; i++) {
 
-			//Checks all arguments for options (indicated by -)
+			//checking all of "-" type arguments and options
 			if (args[i].charAt(0) == '-') {
-				//Ensures the initial arguments, filename and processor num are not options
+
+				//Ensures that the intial arguments that have been provide such as the
+				//-> File path is not an option argument
+				//-> the number of processors to use
 				if (args.length < 3) {
 					System.out.println("Please enter a filename and or processor number without - at the front");
 					System.exit(0);
 				}
-				//Ensures the option length is 2 for -o, -p, -v
+				//Ensuring that all the lengths for the options are 2 which involve -p , -v, -o, if that is not the case
+				//a validity check is initiated
 				if (args[i].length() != 2) {
 					System.out.println("Please enter a valid option");
+
+					//exiting the system
 					System.exit(0);
 				}
 
 				//Ensures the options are either -o, -p or -v
 				if ((args[i].charAt(1) == 'o') || (args[i].charAt(1) == 'p') || args[i].charAt(1) == 'v') {
 					
-					//Counts the numebr of -o and -p args
+					//Counts the numebr of -o args
 					if (args[i].charAt(1) == 'o') {
 						oCount++;
 					}
-					
+
+					//Counts the number of the -p args
 					if (args[i].charAt(1) == 'p') {
 						pCount++;
 					}
@@ -324,6 +359,8 @@ public class App extends Application{
 					//If -v, next argument should be an option or nothing
 					if (args[i].charAt(1) == 'v') {
 						vCount++;
+
+						//chceking if the option argument has any other problems
 						if (i + 1 > args.length - 1) {
 						}
 						else if (args[i + 1].charAt(0) != '-') {
@@ -386,7 +423,7 @@ public class App extends Application{
 
 
 	/**
-	 * Main method. Handles the args
+	 * Main method. Handles the arguments which are parsed into command line
 	 * @param args
 	 */
 	public static void main(String[] args) {
