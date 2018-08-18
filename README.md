@@ -28,19 +28,24 @@ where [JAR-NAME] is the name of the jar, [INPUT-NAME] is the name of the input f
 
 ## Options
 
-Some options are available for use in the program. Right now, the only option that is done right now is the -o option, which allows the user to specify the name of the output file. This should be used thus:
+It's possible to change the way the program runs via a number of options available.
+- The -o option allows the user to specify the name of the output file
+- The -v option will display a GUI visualisation
+- The -p option allows the user to specify the number of 'cores' (or threads) to run the program on
+
+They should be used thus:
 
 ```
-java -jar [JAR-NAME].jar [INPUT-NAME].dot [NUMBER] -o [DESIRED-OUTPUT-NAME]
+java -jar [JAR-NAME].jar [INPUT-NAME].dot [NUMBER] -o [DESIRED-OUTPUT-NAME] -p [NUMBER-OF-CORES] -v
 ```
-where [DESIRED-OUTPUT-NAME] is, as the name suggests, the output name which you want. The output file generated should thus have the name [DESIRED-OUTPUT-NAME].dot.
+where [DESIRED-OUTPUT-NAME] is name you wish the output file to be stored as. The output file generated should thus have the name [DESIRED-OUTPUT-NAME].dot.
 
 An example use would be 
 
 ```
-java -jar program.jar sample-input.dot 3 -o OUTPUT
+java -jar program.jar sample-input.dot 3 -o NEW_OUTPUT -p 2 -v
 ```
-which will create a file called OUTPUT.dot
+which will schedule tasks on 3 processors, create a file called NEW_OUTPUT.dot, run on 2 cores, and display a visualisation.
 
 ## External Libraries
 
