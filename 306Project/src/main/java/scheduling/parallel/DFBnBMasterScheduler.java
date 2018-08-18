@@ -72,6 +72,7 @@ public class DFBnBMasterScheduler implements  Scheduler {
 
 
 		Schedule greedySchedule = new GreedyScheduler(graph, processors).createSchedule();
+		Schedule defaultGreedy = (Schedule) deepClone(greedySchedule); //Default greedy schedule to use if no better schedule found in slave
 
 		//intializing the upperbound
 		upperBound = greedySchedule.getBound();
@@ -86,7 +87,7 @@ public class DFBnBMasterScheduler implements  Scheduler {
 		//Thread pool assigned with the number of cores
         ExecutorService executor = Executors.newFixedThreadPool(numCores);
 
-        System.out.println("Running on " + numCores + " threads with " + partialSchedules.size() + " slave schedulers.");
+       // System.out.println("Running on " + numCores + " threads with " + partialSchedules.size() + " slave schedulers.");
 
         List<Schedule> locallyOptimalSchedules = new ArrayList<>();
 
@@ -97,7 +98,15 @@ public class DFBnBMasterScheduler implements  Scheduler {
                 public void run() {
                     DFBnBSlaveScheduler scheduler = new DFBnBSlaveScheduler(schedule.getGraph(), processors, schedule, upperBound);
 					Schedule s = scheduler.createSchedule();
-                    locallyOptimalSchedules.add(s);
+
+					//If bound found by thread is null, use default greedy
+					if (s == null) {
+						locallyOptimalSchedules.add(defaultGreedy);
+					}
+					else {
+						locallyOptimalSchedules.add(s);
+					}
+
                 }
             });
         }
@@ -164,6 +173,27 @@ public class DFBnBMasterScheduler implements  Scheduler {
 			schedule = partialSchedules.get(scheduleIndex);
 			scheduleIndex++;
 
+		}
+
+		//Loop through partial schedules and pick the max layer depth
+		int maxSize = 0;
+		for (Schedule s : partialSchedules) {
+			if ((s.getScheduledNodes().size()) > maxSize) {
+				maxSize = s.getScheduledNodes().size();
+			}
+		}
+
+		//Gets the partial schedules not on the max depth and stores in list
+		List<Schedule> removeTheseSchedules = new ArrayList<>();
+		for (Schedule s : partialSchedules) {
+			if (s.getScheduledNodes().size() < maxSize) {
+				removeTheseSchedules.add(s);
+			}
+		}
+
+		//Remove the partial schedules from the tree
+		for (Schedule s : removeTheseSchedules) {
+			partialSchedules.remove(s);
 		}
 
 	}

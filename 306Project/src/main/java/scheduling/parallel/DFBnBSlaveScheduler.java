@@ -63,6 +63,19 @@ public class DFBnBSlaveScheduler implements Scheduler{
 		nodeIndices = new ArrayList<>(Collections.nCopies((graph.getNodes().size()), 0)); //depth of all nodes in the nodeIndices array is set to zero
 		processorIndices = new ArrayList<>(Collections.nCopies((graph.getNodes().size()), 0));
 
+//		int pindex = 0;
+//
+//		for (Processor p : initialSchedule.getProcessors()) {
+//			int nindex = 0;
+//			for (TaskNode n : p.getTasks()) {
+//				processorIndices.set(Integer.parseInt(n.getName()), pindex);
+//				//nodeIndices.set(, nindex);
+//				nindex++;
+//			}
+//			pindex++;
+//		}
+
+
 		//initializing the initial blank schedule and getting the amount schedulable nodes within the graph
 		schedule = initialSchedule;
 		schedulableNodes = schedule.getSchedulableNodes();
@@ -296,9 +309,9 @@ public class DFBnBSlaveScheduler implements Scheduler{
 
 		//robustness handling
 		if (optimalSchedule != null) {
-			System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
+		//	System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
 		} else {
-			System.out.println("No solution better than upper bound found on this branch.");
+		//	System.out.println("No solution better than upper bound found on this branch.");
 		}
 
 		if (scheduleListener != null) {
@@ -307,6 +320,7 @@ public class DFBnBSlaveScheduler implements Scheduler{
 			scheduleListener.updateBranchesPruned(branchesPruned);
 			scheduleListener.finish();
         }
+
 		return optimalSchedule;
 
 	}
