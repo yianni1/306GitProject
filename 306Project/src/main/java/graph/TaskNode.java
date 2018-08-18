@@ -10,25 +10,39 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
- * This class is used to encapsulate a node on the input graph,
- * as well as a task on the final solutionTree.
+ * The TaskNode is a class which encapsulates the node in the graph as well as in the tasks in the solution tree
  */
 public class TaskNode implements Serializable {
-    private int weight; //The weight of the node
-    private String name; //The name of the node, used to identify it
 
-    private boolean scheduled; //Whether the TaskNode is scheduled
-    private int startTime; //The starttime of the task. -1 if it is not scheduled
-    private Processor processor; //The processor on which it is scheduled
-    private int costFunction = Integer.MAX_VALUE; //The cost function
+    //the weight of the node
+    private int weight;
 
-    private HashSet<TaskEdge> incomingEdges; //The set of incoming edges
-    private HashSet<TaskEdge> outgoingEdges; //The set of outgoing edges
+    //the name identification for the node
+    private String name;
+
+    //Checking if the tasknode is scheduled
+    private boolean scheduled;
+
+    //checking the start time which defaults to - 1 if it it is not_scheduled
+    private int startTime;
+
+    //the processor on which the task is scheduled
+    private Processor processor;
+
+    //the cost function intial value
+    private int costFunction = Integer.MAX_VALUE;
+
+    //the set to store the incoming edges
+    private HashSet<TaskEdge> incomingEdges;
+
+    //the set to store the outgoing edges
+    private HashSet<TaskEdge> outgoingEdges;
 
     /**
-     * Constructor creates a TaskNode object with a given name and weight
-     * @param weight
-     * @param name
+     * The TaskNode Constructor creates a TaskNode object through the usage of the parameter of weight and name storing
+     * various other features for that node which allow it to be scheduled
+     * @param weight of the node
+     * @param name of the node
      */
     public TaskNode(int weight, String name) {
         this.name = name;
@@ -36,18 +50,24 @@ public class TaskNode implements Serializable {
         this.scheduled = false;
         this.startTime = -1;
         this.processor = null;
+
+        //storing the incoming and outgoing edges of the node
         incomingEdges = new HashSet<TaskEdge>();
         outgoingEdges = new HashSet<TaskEdge>();
     }
 
     /**
-     * Returns the cost function of the node
+     * the Get method returns the cost Function of the node
      * @return
      */
     public int getCostFunction() {
     	return costFunction;
     }
-    
+
+    /**
+     * This sets the cost function for a particular node
+     * @param costFunction
+     */
     public void setCostFunction(int costFunction) {
     	this.costFunction = costFunction;
     }
@@ -55,16 +75,22 @@ public class TaskNode implements Serializable {
     
     /**
      *
-     * The Status of the node is set to scheduled which assigns the attributes of start time and a processor.
+     * The Node becomes scheduled which updates its status and provides the processor and the start - time
      *
      * @param startTime The time that the node is scheduled in the scheduler
      * @param processor the processor that the particular node is scheduled on
      * @return
      */
     public boolean schedule(int startTime, Processor processor) throws NotSchedulableException {
+
+        //checking if node is schedulable
         if (!this.isSchedulable()) {
-            throw new NotSchedulableException(); //Throws an exception of the node is not schedulable
+
+            //throws an exception if the node is not able to be scheduled
+            throw new NotSchedulableException();
         }
+
+
         this.startTime = startTime;
         this.processor = processor;
         this.scheduled = true;
@@ -72,13 +98,18 @@ public class TaskNode implements Serializable {
     }
 
     /**
-     * Resets this node to its unscheduled state.
+     * Changes the node back to an unscheduled state
      * @return
      */
     public boolean deschedule() throws NotDeschedulableException {
+
+        //checking if the node can be descheduled if it cannot be descheduled then
         if (!this.isDeschedulable()) {
+
+            //throws an exception
             throw new NotDeschedulableException();
         }
+
         this.startTime = -1;
         this.processor = null;
         this.scheduled = false;
@@ -86,7 +117,7 @@ public class TaskNode implements Serializable {
     }
 
     /**
-     * Gets the time at which this node ends.
+     * Gets the time when the node ends
      * @return
      */
     public int getEndTime() {
@@ -94,7 +125,7 @@ public class TaskNode implements Serializable {
     }
 
     /**
-     * Returns the start time of the node, provided it is  scheduled
+     * Gets the start time of the node but the prerequisite for this is that the node needs to be scheduled
      * @return
      */
     public int getStartTime() {
@@ -102,23 +133,23 @@ public class TaskNode implements Serializable {
     }
 
     /**
-     * Adds an incoming edge to this node.
-     * @param edge the edge to be added
+     * Adds an incoming edge to the node , which serves as its parent
+     * @param edge the incoming edge that is added
      */
     public void addIncomingEdge(TaskEdge edge) {
         incomingEdges.add(edge);
     }
 
     /**
-     * Adds an outgoing edge to this node.
-     * @param edge the edge to be added
+     * Adds the outgoing edge to the node, which serves as the nodes child
+     * @param edge the outgoing edge which is added
      */
     public void addOutgoingEdge(TaskEdge edge) {
         outgoingEdges.add(edge);
     }
 
     /**
-     * Retrieves incoming edges of this node.
+     * Retrieves a list of all the incoming edges
      * @return
      */
     public HashSet<TaskEdge> getIncomingEdges() {
@@ -126,7 +157,7 @@ public class TaskNode implements Serializable {
     }
 
     /**
-     * Retrieves outgoing edges of this node.
+     * Retrieves list of all the outgoing edges
      * @return
      */
     public HashSet<TaskEdge> getOutgoingEdges() {
@@ -158,6 +189,7 @@ public class TaskNode implements Serializable {
             return false;
         }
 
+        //check if the startnode is scheduled
         for (TaskEdge e : incomingEdges) {
             if (!e.getStartNode().isScheduled()) {
                 return false;
@@ -167,13 +199,14 @@ public class TaskNode implements Serializable {
     }
 
     /**
-     * Checks if the node is deschedulable (it's children are not scheduled).
+     * Checks if the node is deschedulable, can only deschedule if the children of the node haven't been scheduled
      */
     public boolean isDeschedulable() {
         if (!this.isScheduled()) {
             return false;
         }
 
+        //get the end node and check if it is scheduled which serves as the outgoing edge
         for (TaskEdge e: outgoingEdges) {
             if (e.getEndNode().isScheduled()) {
                 return false;
