@@ -57,7 +57,7 @@ public class DFBnBMasterScheduler implements Scheduler {
 
         Schedule greedySchedule = new GreedyScheduler(graph, processors).createSchedule();
         Schedule defaultGreedy = (Schedule) deepClone(greedySchedule); //Default greedy schedule to use if no better schedule found in slave
-        updateSchedule(defaultGreedy);
+        updateSchedule(defaultGreedy, true);
 
         //intializing the upperbound
         upperBound = greedySchedule.getBound();
@@ -137,9 +137,9 @@ public class DFBnBMasterScheduler implements Scheduler {
      *
      * @param schedule
      */
-    public void updateSchedule(Schedule schedule) {
+    public void updateSchedule(Schedule schedule, boolean forced) {
         if (this.scheduleListener != null) {
-            if (schedule.getBound() < upperBound) {
+            if (schedule.getBound() < upperBound || forced) {
                 upperBound = schedule.getBound();
                 for (DFBnBSlaveScheduler slave : slaves) {
                     slave.updateUpperBound(upperBound);
@@ -156,14 +156,14 @@ public class DFBnBMasterScheduler implements Scheduler {
 
     public void updateBranchesPruned(long branchesPruned) {
         this.branchesPruned = this.branchesPruned + branchesPruned;
-        if (this.scheduleListener != null) {
+        if (scheduleListener != null && (System.currentTimeMillis() % 40 == 0)) {
             scheduleListener.updateBranchesPruned(this.branchesPruned);
         }
     }
 
     public void updateNumPaths(long numPaths) {
         this.numPaths = this.numPaths + numPaths;
-        if (this.scheduleListener != null) {
+        if (scheduleListener != null) {
             scheduleListener.updateNumPaths(this.numPaths);
         }
 

@@ -81,12 +81,12 @@
          </children></AnchorPane>
       <AnchorPane fx:id="numPathsPane" layoutX="544.0" layoutY="75.0" prefHeight="90.0" prefWidth="300.0" styleClass="num-paths-pane" stylesheets="@/css/app.css" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="80.0">
          <children>
-            <Label fx:id="lblNumPaths" text="0" textFill="WHITE" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="15.0">
+            <Label fx:id="lblNumPaths" text="0" textFill="WHITE" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="25.0">
                <font>
-                  <Font name="Roboto Light" size="36.0" />
+                  <Font name="Roboto Light" size="24.0" />
                </font>
             </Label>
-            <Label text="schedules searched" textFill="WHITE" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="60.0">
+            <Label text="complete schedules searched" textFill="WHITE" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="60.0">
                <font>
                   <Font name="Roboto Light" size="14.0" />
                </font>
@@ -95,9 +95,9 @@
       </AnchorPane>
       <AnchorPane fx:id="branchesPrunedPane" layoutX="974.0" layoutY="90.0" prefHeight="90.0" prefWidth="300.0" styleClass="branches-pruned-pane" stylesheets="@/css/app.css" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="190.0">
          <children>
-            <Label fx:id="lblBranchesPruned" text="0" textFill="WHITE" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="15.0">
+            <Label fx:id="lblBranchesPruned" text="0" textFill="WHITE" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="25.0">
                <font>
-                  <Font name="Roboto Light" size="36.0" />
+                  <Font name="Roboto Light" size="24.0" />
                </font>
             </Label>
             <Label text="branches pruned" textFill="WHITE" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="60.0">

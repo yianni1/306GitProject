@@ -40,7 +40,7 @@ public class DFBnBSlaveScheduler extends DFBnBScheduler {
     @Override
     public void updateSchedule () {
         if (optimalSchedule != null) {
-            master.updateSchedule(optimalSchedule);
+            master.updateSchedule(optimalSchedule, false);
         }
     }
 
