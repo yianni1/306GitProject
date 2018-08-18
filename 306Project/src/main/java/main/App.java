@@ -139,6 +139,10 @@ public class App extends Application{
 					controller.setProcessorNumber(processorNumber);
 					controller.setCoreNumber(numCores);
 
+					if (cmd.hasOption("o")) {
+						controller.setOutputFileName(cmd.getOptionValue("o"));
+					}
+
 					primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 						@Override
 						public void handle(WindowEvent t) {
@@ -156,6 +160,7 @@ public class App extends Application{
 					primaryStage.sizeToScene();
 					controller.createGraph();
 					primaryStage.show();
+
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
