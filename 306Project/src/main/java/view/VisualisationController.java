@@ -402,9 +402,7 @@ public class VisualisationController implements Initializable{
             File parent = new File(path);
             String parentPath = parent.getParent() + File.separator;
 
-            if (outputFileName != null) {
-                outputN = outputFileName;
-            }
+
 
             TaskGraph graph = loader.load(parentPath + fileName);
 
@@ -414,7 +412,13 @@ public class VisualisationController implements Initializable{
             Schedule finalSolution = solution.createSchedule();
 
             //Transporting to output
-            Output.createOutput(finalSolution.getProcessors(), graph, parentPath + outputN + "-output.dot");
+            if (outputFileName != null) {
+                outputN = outputFileName + ".dot";
+            }
+            else {
+                outputN += "-output.dot";
+            }
+            Output.createOutput(finalSolution.getProcessors(), graph, parentPath);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
