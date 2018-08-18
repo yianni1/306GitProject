@@ -30,12 +30,13 @@ public class DFBnBMasterScheduler implements  Scheduler {
 	private long branchesPruned;
 	private Schedule schedule;
 
-    /**
-     * Constructor which generates an initial empty schedule based on the processors and the graph
-     * @param graph
-     * @param processors
-     * @param numCores
-     */
+	/**
+	 * Constructor which generates an initial empty schedule based on the processors and the graph
+	 *
+	 * @param graph
+	 * @param processors
+	 * @param numCores
+	 */
 	public DFBnBMasterScheduler(TaskGraph graph, int processors, int numCores) {
 		this.graph = graph;
 		this.processors = processors;
@@ -45,11 +46,12 @@ public class DFBnBMasterScheduler implements  Scheduler {
 		branchesPruned = 0;
 	}
 
-    /**
-     * Creates the optimal schedule through thread and parallelisation which involves assigning threads with the layers
-     * to each of the schedules
-     * @return optimal schedule
-     */
+	/**
+	 * Creates the optimal schedule through thread and parallelisation which involves assigning threads with the layers
+	 * to each of the schedules
+	 *
+	 * @return optimal schedule
+	 */
 	public Schedule createSchedule() {
 
 
@@ -68,72 +70,72 @@ public class DFBnBMasterScheduler implements  Scheduler {
 		initialisePartialSchedules();
 
 		//Thread pool assigned with the number of cores
-        ExecutorService executor = Executors.newFixedThreadPool(numCores);
+		ExecutorService executor = Executors.newFixedThreadPool(numCores);
 
         List<Schedule> locallyOptimalSchedules = new ArrayList<>();
 
-        //generating the number of threads associative to the number of cores
-        for (Schedule schedule : partialSchedules) {
-        	final DFBnBMasterScheduler master = this;
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    DFBnBSlaveScheduler scheduler = new DFBnBSlaveScheduler(schedule.getGraph(), processors, schedule, upperBound, master);
-                    slaves.add(scheduler);
+		//generating the number of threads associative to the number of cores
+		for (Schedule schedule : partialSchedules) {
+			final DFBnBMasterScheduler master = this;
+			executor.execute(new Runnable() {
+				@Override
+				public void run() {
+					DFBnBSlaveScheduler scheduler = new DFBnBSlaveScheduler(schedule.getGraph(), processors, schedule, upperBound, master);
+					slaves.add(scheduler);
 					Schedule s = scheduler.createSchedule();
 
 					//If bound found by thread is null, use default greedy
 					if (s == null) {
 						locallyOptimalSchedules.add(defaultGreedy);
-					}
-					else {
+					} else {
 						locallyOptimalSchedules.add(s);
 					}
 
-                }
-            });
-        }
+				}
+			});
+		}
 
-        executor.shutdown();
-        try {
-            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-        } catch (InterruptedException e) {
+		executor.shutdown();
+		try {
+			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+		} catch (InterruptedException e) {
 
-        }
+		}
 
-        //finding the optimal bound
-        int optimalBound = locallyOptimalSchedules.get(0).getBound();
+		//finding the optimal bound
+		int optimalBound = locallyOptimalSchedules.get(0).getBound();
 
-        //deepcloning the value in the optimal schedule
-        Schedule optimalSchedule = (Schedule) deepClone(locallyOptimalSchedules.get(0));
+		//deepcloning the value in the optimal schedule
+		Schedule optimalSchedule = (Schedule) deepClone(locallyOptimalSchedules.get(0));
 
-        //searching for bounds less than the optimal bound and replacing those bounds
-        for (Schedule schedule : locallyOptimalSchedules) {
+		//searching for bounds less than the optimal bound and replacing those bounds
+		for (Schedule schedule : locallyOptimalSchedules) {
 
-            //if bound is lower than the optimal bound , change optimal bound and deepclone the schedule
-            if (schedule.getBound() < optimalBound) {
-                optimalBound = schedule.getBound();
-                optimalSchedule = (Schedule) deepClone(schedule);
-            }
+			//if bound is lower than the optimal bound , change optimal bound and deepclone the schedule
+			if (schedule.getBound() < optimalBound) {
+				optimalBound = schedule.getBound();
+				optimalSchedule = (Schedule) deepClone(schedule);
+			}
 
 
-        }
+		}
 
-        System.out.println("Global optimal solution with bound of " + optimalSchedule.getBound() + " found!");
-        return optimalSchedule;
+		System.out.println("Global optimal solution with bound of " + optimalSchedule.getBound() + " found!");
+		return optimalSchedule;
 
-    }
+	}
 
-    public void setScheduleListener(VisualisationController scheduleListener) {
+	public void setScheduleListener(VisualisationController scheduleListener) {
 		this.scheduleListener = scheduleListener;
 	}
 
 
 	/**
 	 * Updates GUI with new optimal schedule and also notifies slaves of a better bound if necessary.
+	 *
 	 * @param schedule
 	 */
-    public void updateSchedule (Schedule schedule) {
+	public void updateSchedule(Schedule schedule) {
 		if (this.scheduleListener != null) {
 			if (schedule.getBound() < upperBound) {
 				upperBound = schedule.getBound();
@@ -152,12 +154,12 @@ public class DFBnBMasterScheduler implements  Scheduler {
 
 	public void updateBranchesPruned(long branchesPruned) {
 		this.branchesPruned = this.branchesPruned + branchesPruned;
-    	if (this.scheduleListener != null) {
+		if (this.scheduleListener != null) {
 			scheduleListener.updateBranchesPruned(this.branchesPruned);
 		}
 	}
 
-	public void updateNumPaths (long numPaths) {
+	public void updateNumPaths(long numPaths) {
 		this.numPaths = this.numPaths + numPaths;
 		if (this.scheduleListener != null) {
 			scheduleListener.updateNumPaths(this.numPaths);
@@ -166,7 +168,7 @@ public class DFBnBMasterScheduler implements  Scheduler {
 	}
 
 	public void finish() {
-    	if (this.scheduleListener != null) {
+		if (this.scheduleListener != null) {
 			for (DFBnBSlaveScheduler slave : slaves) {
 				if (!slave.isFinished()) {
 					return;
@@ -176,19 +178,20 @@ public class DFBnBMasterScheduler implements  Scheduler {
 		}
 	}
 
-    /**
-     * Gets the list of the partial schedules
-     * @return partialSchedules
-     */
+	/**
+	 * Gets the list of the partial schedules
+	 *
+	 * @return partialSchedules
+	 */
 	public List<Schedule> getPartialSchedules() {
 		return partialSchedules;
 	}
 
 
-    /**
-     * initializes the partial schedules through iteratively searching for the size of the list of partial schedules
-     * to be greater than than that of the size of the number of cores
-     */
+	/**
+	 * initializes the partial schedules through iteratively searching for the size of the list of partial schedules
+	 * to be greater than than that of the size of the number of cores
+	 */
 	public void initialisePartialSchedules() {
 
 		int scheduleIndex = 0;
@@ -198,8 +201,7 @@ public class DFBnBMasterScheduler implements  Scheduler {
 			for (int i = 0; i < schedule.getProcessors().size(); i++) {
 				try {
 					createPartialSchedules(schedule, i);
-				}
-				catch (CloneNotSupportedException e) {
+				} catch (CloneNotSupportedException e) {
 					e.printStackTrace();
 				}
 			}
@@ -209,6 +211,22 @@ public class DFBnBMasterScheduler implements  Scheduler {
 			scheduleIndex++;
 
 		}
+
+		List<Schedule> removeSchedule = new ArrayList<>();
+		//Code to remove duplicated initial nodes on partial schedules
+		for (int i = 0; i < partialSchedules.size(); i++) {
+			for (int j = i; j < partialSchedules.size(); j++)
+
+				if (equals(partialSchedules.get(i), partialSchedules.get(j))) {
+					removeSchedule.add(partialSchedules.get(i));
+				}
+		}
+
+		for(Schedule s :removeSchedule) {
+			partialSchedules.remove(s);
+		}
+
+
 
 		//Loop through partial schedules and pick the max layer depth
 		int maxSize = 0;
@@ -231,7 +249,43 @@ public class DFBnBMasterScheduler implements  Scheduler {
 			partialSchedules.remove(s);
 		}
 
+
+
 	}
+
+	/**
+	 * Equals method to compare schedules
+	 * @param s1
+	 * @param s2
+	 * @return
+	 */
+	private boolean equals(Schedule s1, Schedule s2) {
+
+		boolean same = false;
+		for (Processor p : s1.getProcessors()) {
+			for (Processor c : s2.getProcessors()) {
+				if (p.getID() != c.getID()) {
+
+					for (TaskNode task : p.getTasks()) {
+						for (TaskNode otherTask : c.getTasks()) {
+							if ((task.getName().equals(otherTask.getName())) && (task.getStartTime() == otherTask.getStartTime()) ) {
+								same = true;
+							}
+							else {
+								same = false;
+								return false;
+							}
+						}
+					}
+				}
+
+			}
+
+		}
+
+		return same;
+	}
+
 
 
     /**
