@@ -110,26 +110,6 @@ public class DFBnBScheduler implements Scheduler{
 				//Determine whether initial nodes have been repeated
 				finished = removeReplicatedTree(initialIteration);
 
-				if (initialIteration) {
-					int costF;
-					int currentBestCF;
-					for (TaskNode tn : schedulableNodes) {
-						currentBestCF = Integer.MAX_VALUE;
-
-						for (Processor p : schedule.getProcessors()) {
-							costF = costFunction(tn, p);
-//							System.out.println("Reachin the cost function " +costF);
-
-							if (costF <= currentBestCF) {
-								currentBestCF = costF;
-								tn.setCostFunction(costF);
-
-							}
-						}
-					}
-				}
-
-
 
 				initialIteration = false;
 
@@ -199,28 +179,6 @@ public class DFBnBScheduler implements Scheduler{
 					//System.out.println("Task " + nextTask.getName() + " on schedule "+nextProcessor.getID()+" will be less than the upper bound. ("+est+" vs. "+ upperBound+")");
 					schedule.addTask(nextTask, nextProcessor, est);
 
-				// Run the cost function for each of the tasks children to determine which one to schedule first.
-				//TaskNode minTask;			// The node and processor that has the lowest cost
-				//Processor minProcessor;
-
-//					int costF;
-//						int currentBestCF;
-//						for (TaskEdge e : nextTask.getOutgoingEdges()) {
-//							TaskNode tn = e.getEndNode();
-//							currentBestCF = Integer.MAX_VALUE;
-//
-//						for (Processor p : schedule.getProcessors()) {
-//
-//							costF = costFunction(tn, p);
-////							System.out.println("Reachin the cost function (NON INITIAL " +costF);
-//
-//							if (costF <= currentBestCF) {
-//								currentBestCF = costF;
-//								tn.setCostFunction(costF);
-//
-//							}
-//						}
-//					}
 
 					schedulableNodes = schedule.getSchedulableNodes();
 					nodeIndices.set(depth, nodeIndices.get(depth) + 1);

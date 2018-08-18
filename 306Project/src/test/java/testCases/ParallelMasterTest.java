@@ -13,7 +13,7 @@ import java.net.URISyntaxException;
 
 import static junit.framework.TestCase.assertEquals;
 
-public class ParrallelMasterTest {
+public class ParallelMasterTest {
 
     @Test
     public void testNode7OptimalTwoProcesses() throws URISyntaxException {
