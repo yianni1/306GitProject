@@ -9,7 +9,7 @@ import scala.util.parsing.combinator.testing.Str;
 import scheduling.DFBnBScheduler;
 import scheduling.Schedule;
 import scheduling.Scheduler;
-import scheduling.parallel.DFBnBMasterScheduler;
+import scheduling.DFBnBMasterScheduler;
 
 import java.io.File;
 import java.util.ArrayList;
