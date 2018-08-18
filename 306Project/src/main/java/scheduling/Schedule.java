@@ -83,12 +83,13 @@ public class Schedule implements Serializable {
      */
     public List<TaskNode> getSchedulableNodes() {
 
-//        schedulableNodes = sortByCostFunction();
+        this.schedulableNodes = sortSchedulableNodesAlphabetically();
+//      this.schedulableNodes = sortByCostFunction();
         // Sort the schedulable nodes. Decide which sorting to use based on how many processors (and nodes).
 //        if ((this.processors.size() > 1) && (graph.getNodes().size()>=10)) {
 //            this.schedulableNodes=sortSchedulableNodesByEET();
 //        } else {
-            this.schedulableNodes = sortSchedulableNodesAlphabetically();
+//            this.schedulableNodes = sortSchedulableNodesAlphabetically();
 //        }
     	
 
