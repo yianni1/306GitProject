@@ -10,12 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class represents a processor, with a list of tasks
+ * This class represents a processor, with a list of tasks which are assigned to it
  */
 public class Processor implements Serializable {
 
-    private int procID; //The ID of the processor
-    private List<TaskNode> tasks = new ArrayList<TaskNode>(); //The list of tasks on that processor
+    //The ID of the processor
+    private int procID;
+
+    //the list of tasks on that processor
+    private List<TaskNode> tasks = new ArrayList<TaskNode>();
 
     /**
      * The processor with a number
@@ -33,23 +36,30 @@ public class Processor implements Serializable {
     	return procID;
     }
 
+    /**
+     * Set the particular processors ID
+     * @param procID
+     */
     public void setProcID(int procID) {
         this.procID = procID;
     }
 
     /**
-     * Adds a new task, with the node.
-     * Called by TaskNode.
+     * Adds a new task, with the node this is known as the TaskNode
      * @param node The node to be added.
-     * @param startTime The starttime
+     * @param startTime The startTime
      */
     public void addTask(TaskNode node, int startTime) throws NotSchedulableException {
+
+        //the Starttime cannot be lower than the bound that it has obtained
         if (startTime < this.getBound()) {
             throw new TaskException("The startTime cannot be lower than the bound");
         }
 
+        //add the nodes to the tasks
         tasks.add(node);
 
+        //schedule the node to the starttime and the processor which it is used on
         node.schedule(startTime, this);
 
     }
