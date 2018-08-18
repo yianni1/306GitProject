@@ -72,10 +72,10 @@ public class DFBnBScheduler implements Scheduler{
 
 
 
-//		for (TaskNode n : graph.getNodes()) {
-//		    Integer blp = criticalPath(n);
-//            bottomLevelCosts.put(n.getName(), blp);
-//        }
+		for (TaskNode n : graph.getNodes()) {
+		    Integer blp = criticalPath(n);
+            bottomLevelCosts.put(n.getName(), blp);
+        }
 
 	}
 
@@ -113,21 +113,24 @@ public class DFBnBScheduler implements Scheduler{
 				//Determine whether initial nodes have been repeated
 				finished = removeReplicatedTree(initialIteration);
 
-//                if (initialIteration) {
-//                    int costF;
-//                    for (TaskNode tn : schedulableNodes) {
-//                        costF = Integer.MAX_VALUE;
-//
-//                        for (Processor p: schedule.getProcessors()) {
-//                            //costF = costFunction(tn, p);
-//                            int currentCF = costFunction(tn,p);
-//                            if (currentCF <= costF) {
-//                                tn.setCostFunction(currentCF);
-//                            }
-//
-//                        }
-//                    }
-//                }
+				if (initialIteration) {
+					int costF;
+					int currentBestCF;
+					for (TaskNode tn : schedulableNodes) {
+						currentBestCF = Integer.MAX_VALUE;
+
+						for (Processor p : schedule.getProcessors()) {
+							costF = costFunction(tn, p);
+//							System.out.println("Reachin the cost function " +costF);
+
+							if (costF <= currentBestCF) {
+								currentBestCF = costF;
+								tn.setCostFunction(costF);
+
+							}
+						}
+					}
+				}
 
 
 
@@ -199,25 +202,28 @@ public class DFBnBScheduler implements Scheduler{
 					//System.out.println("Task " + nextTask.getName() + " on schedule "+nextProcessor.getID()+" will be less than the upper bound. ("+est+" vs. "+ upperBound+")");
 					schedule.addTask(nextTask, nextProcessor, est);
 
-//				// Run the cost function for each of the tasks children to determine which one to schedule first.
-//				TaskNode minTask;			// The node and processor that has the lowest cost
-//				Processor minProcessor;
+				// Run the cost function for each of the tasks children to determine which one to schedule first.
+				//TaskNode minTask;			// The node and processor that has the lowest cost
+				//Processor minProcessor;
 
-//                int costF;
-//				for (TaskEdge e: nextTask.getOutgoingEdges()){
-//					TaskNode tn = e.getEndNode();
-//                    costF = Integer.MAX_VALUE;
+//					int costF;
+//						int currentBestCF;
+//						for (TaskEdge e : nextTask.getOutgoingEdges()) {
+//							TaskNode tn = e.getEndNode();
+//							currentBestCF = Integer.MAX_VALUE;
 //
-//                    for (Processor p: schedule.getProcessors()) {
+//						for (Processor p : schedule.getProcessors()) {
 //
-//					    //costF = costFunction(tn, p);
-//                        int currentCF = costFunction(tn,p);
+//							costF = costFunction(tn, p);
+////							System.out.println("Reachin the cost function (NON INITIAL " +costF);
 //
-//					    if (currentCF <= costF) {
-//                            tn.setCostFunction(currentCF);
-//                        }
+//							if (costF <= currentBestCF) {
+//								currentBestCF = costF;
+//								tn.setCostFunction(costF);
+//
+//							}
+//						}
 //					}
-//				}
 
 					schedulableNodes = schedule.getSchedulableNodes();
 					nodeIndices.set(depth, nodeIndices.get(depth) + 1);
@@ -324,7 +330,7 @@ public class DFBnBScheduler implements Scheduler{
 
 		// Loop through all the scheduled nodes, then the node we want to schedule and find the maxFbl out of them.
 		for (TaskNode tn : schedule.getScheduledNodes()) {
-            Integer value = bottomLevelCosts.get(nextTask.getName());
+            Integer value = bottomLevelCosts.get(tn.getName());
 			fblTemp = tn.getStartTime() + value;
 			fblMax = Math.max(fblMax, fblTemp);
 		}
@@ -335,18 +341,18 @@ public class DFBnBScheduler implements Scheduler{
 		fblTemp = childStartTime + value;
 		fblMax = Math.max(fblMax, fblTemp);
 
-		// TODO: fDRT calculation
-// fDRT CALCULATION -------------------------------------------------------------------------
+		// fDRT CALCULATION -------------------------------------------------------------------------
 		// fDRT(s) = max{tdr(n) + blw(n) for every free node.
-		// tdr(n) = min (tdr(n,P) min of all processors
-		// tdr(n,P) is earliest schedulable time
-		// If nj is a source task, then tdr(nj,P)=0
+		// tdr(n) = min (tdr(n,P) i.e. earliest schedulable node.
+		// tdr(n,P) is earliest schedulable time.
 
-		int fDRT = schedule.getEarliestSchedulableTime(nextTask,nextProcessor) + childStartTime;
+//		int fDRT = schedule.getEarliestSchedulableTime(nextTask,nextProcessor) + childStartTime;
 
 //		child.setCostFunction(Math.max(fblMax, fIdle));
 
-		return Math.max(Math.max(fblMax, fIdle), fDRT);
+//		return Math.max(Math.max(fblMax, fIdle), fDRT);
+//		System.out.println("Cost function is: " + Math.max(fblMax,fIdle));
+		return Math.max(fblMax,fIdle);
 	}
 
 	/**

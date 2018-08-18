@@ -83,17 +83,13 @@ public class Schedule implements Serializable {
      */
     public List<TaskNode> getSchedulableNodes() {
 
-
-
-       // schedulableNodes = sortByCostFunction();
+//        schedulableNodes = sortByCostFunction();
         // Sort the schedulable nodes. Decide which sorting to use based on how many processors (and nodes).
-        // TODO: Optimise the conditions for choosing the sorting mothod.
 //        if ((this.processors.size() > 1) && (graph.getNodes().size()>=10)) {
 //            this.schedulableNodes=sortSchedulableNodesByEET();
-//
 //        } else {
             this.schedulableNodes = sortSchedulableNodesAlphabetically();
-        //}
+//        }
     	
 
         return this.schedulableNodes;
@@ -102,32 +98,19 @@ public class Schedule implements Serializable {
     private List<TaskNode> sortByCostFunction() {
 
         List<TaskNode> schedCopy = schedulableNodes;
-        List<TaskNode> sorted = new ArrayList<TaskNode>();
+        List<TaskNode> sorted = new ArrayList<>();
 
         TaskNode nextNode;
 
-        while (schedCopy.size() > 0) {
-            // Adapated from GreedyScheduler
-            nextNode = schedCopy.get(0);
+       Collections.sort(schedCopy, new CostFunctionComparator());
 
-            int costF = nextNode.getCostFunction();
+//        System.out.print("These should be in order of cost function: ");
+//        for (TaskNode tn: schedCopy) {
+//            System.out.print(tn.getCostFunction() + ", ");
+//        }
+//        System.out.println();
 
-            //Go through all nodes and check earliest schedulable time on each processor to find next best node to schedule
-            for (TaskNode n : schedCopy) {
-
-                int otherCF = n.getCostFunction();
-
-                if (costF > otherCF) {
-                    costF = otherCF;
-                    nextNode = n;
-                }
-
-            }
-            sorted.add(nextNode);
-            schedCopy.remove(nextNode);
-        }
-
-        return sorted;
+        return schedCopy;
     }
     
     
