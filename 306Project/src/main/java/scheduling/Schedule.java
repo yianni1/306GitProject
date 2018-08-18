@@ -6,9 +6,6 @@ import exceptions.NotSchedulableException;
 import graph.TaskEdge;
 import graph.TaskGraph;
 import graph.TaskNode;
-import javafx.concurrent.Task;
-
-import javax.xml.soap.Node;
 import java.io.Serializable;
 import java.util.*;
 
@@ -24,12 +21,21 @@ public class Schedule implements Serializable {
     private TaskGraph graph;
     private List<TaskNode> scheduleOrder; // The order in which the tasks have been scheduled.
 
+    /**
+     * Constructor creates a Schedule object, representing a node on the
+     * schedule tree
+     * @param numberOfProcessors the number of processors
+     * @param graph the taskgraph on which the tree is based
+     */
     public Schedule(int numberOfProcessors, TaskGraph graph) {
+
+        //Creating the list of processors
         List<Processor> processors = new ArrayList<Processor>();
         for (int i = 0; i < numberOfProcessors; i++) {
             processors.add(new Processor(i));
         }
 
+        //Initialising fields
         this.processors = processors;
         this.graph = graph;
         this.scheduleOrder = new ArrayList<TaskNode>();
@@ -46,9 +52,13 @@ public class Schedule implements Serializable {
      * @return schedulable: the list of schedulable nodes.
      */
     private void initializeSchedulableNodes(TaskGraph tg) {
+
+        //Initialising variables
         List<TaskNode> initialNodes = new ArrayList<TaskNode>();
         HashSet<TaskNode> nodes = tg.getNodes();
 
+        //Looping trough all the nodes, to see if it
+        //is an initial node.
         for (TaskNode n : nodes) {
             if (n.getIncomingEdges().size() == 0) {
             	initialNodes.add(n);
@@ -96,16 +106,17 @@ public class Schedule implements Serializable {
         return this.schedulableNodes;
     }
 
+    /**
+     * Sorts all of the nodes by their cost function, to make the algorithm as fast
+     * as possible
+     * @return
+     */
     private List<TaskNode> sortByCostFunction() {
 
+        //Copying and sorting scheduled nodes
         List<TaskNode> schedCopy = schedulableNodes;
-        List<TaskNode> sorted = new ArrayList<>();
+        Collections.sort(schedCopy, new CostFunctionComparator());
 
-        TaskNode nextNode;
-
-       Collections.sort(schedCopy, new CostFunctionComparator());
-
-//        System.out.print("These should be in order of cost function: ");
 //        for (TaskNode tn: schedCopy) {
 //            System.out.print(tn.getCostFunction() + ", ");
 //        }
@@ -197,6 +208,11 @@ public class Schedule implements Serializable {
         return sorted;
     }
 
+    /**
+     * Sorts all of the schedulable nodes
+     * alphabetically, based on their names
+     * @return the sorted list of scheduled nodes
+     */
     private List<TaskNode> sortSchedulableNodesAlphabetically() {
 
         // Sort the tasknodes aphabetically.
@@ -206,6 +222,7 @@ public class Schedule implements Serializable {
         }
         sort(taskNames);
 
+        //Duplicating the schedulable nodes
         List<TaskNode> sortedTN = new ArrayList<TaskNode>();
         for(String s: taskNames) {
             for(TaskNode tn: schedulableNodes ) {
@@ -231,6 +248,8 @@ public class Schedule implements Serializable {
         // Updates the schedulable nodes.
         schedulableNodes.remove(node);
 
+        //Looping through its outgoing edges
+        //To add the child task if it is schedulable
         for (TaskEdge e : node.getOutgoingEdges()) {
             if (e.getEndNode().isSchedulable()) {
                 schedulableNodes.add(e.getEndNode());
@@ -244,9 +263,11 @@ public class Schedule implements Serializable {
     public void removeLastScheduledTask() throws NotDeschedulableException {
         TaskNode lastScheduledTask = scheduleOrder.get(scheduleOrder.size() - 1);
 
+        //Removing the task from its corresponding processor
         for (Processor p : processors) {
             if (p.getTasks().contains(lastScheduledTask)) {
                 p.removeTask(lastScheduledTask);
+                break;
             }
         }
 
@@ -255,12 +276,13 @@ public class Schedule implements Serializable {
 //        TaskNode tn = scheduleOrder.get(scheduleOrder.size()-1);
         schedulableNodes.add(lastScheduledTask);
 
+        //Removing all the schedulable nodes from the outoging edges
         for (TaskEdge e : lastScheduledTask.getOutgoingEdges()) {
-//            if (e.getEndNode().isSchedulable()) {
-                schedulableNodes.remove(e.getEndNode());
-//            }
+            schedulableNodes.remove(e.getEndNode());
         }
 
+        //Removing the task from the list of tasks
+        //In the schedule
         scheduleOrder.remove(scheduleOrder.size()-1);
     }
 
@@ -274,11 +296,14 @@ public class Schedule implements Serializable {
         int earliestStartTime = -1;
 
         if (node.isSchedulable()) {
+            //Loop through all of its incoming edges to see its end time
             for (TaskEdge e : node.getIncomingEdges()) {
-                int endTime = e.getStartNode().getEndTime();
+                int endTime = e.getStartNode().getEndTime(); //Getting the end time
                 if (endTime > earliestStartTime) {
                     earliestStartTime = endTime;
                 }
+
+                //Taking the edge weight into account, if they are scheduled on different processors
                 if (!e.getStartNode().getProcessor().equals(p)) {
                     if (earliestStartTime < endTime + e.getWeight()) {
                         earliestStartTime = endTime + e.getWeight();
@@ -291,8 +316,14 @@ public class Schedule implements Serializable {
         return earliestStartTime;
     }
 
+    /**
+     * Returns the current bound on the schedule
+     * @return the current bound
+     */
     public int getBound() {
         int bound = 0;
+
+        //Looping through the processors to get its bound
         for (Processor processor: processors) {
             if (processor.getBound() > bound) {
                 bound = processor.getBound();
@@ -302,6 +333,10 @@ public class Schedule implements Serializable {
         return bound;
     }
 
+    /**
+     * Retusn the taskgraph
+     * @return
+     */
     public TaskGraph getGraph() {
         return graph;
     }

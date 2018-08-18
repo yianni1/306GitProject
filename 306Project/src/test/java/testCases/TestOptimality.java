@@ -21,17 +21,18 @@ import static org.junit.Assert.*;
  */
 public class TestOptimality {
 
-    private List<File> files = new ArrayList<File>();
-
+//    private List<File> files = new ArrayList<File>();
+//
+//
 //    @Before
 //    public void setUp() {
 //        File folder = new File("src/main/resources/DotFiles/");
 //        File[] paths = folder.listFiles();
 //        for (File file : paths) {
 //            if (file.getName().startsWith("2p")) //||
-//                  //  file.getName().startsWith("4p") ||
-//                  //  file.getName().startsWith("8p")) {
-//                    {files.add(file);
+//            //  file.getName().startsWith("4p") ||
+//            //  file.getName().startsWith("8p")) {
+//            {files.add(file);
 //            }
 //
 //        }
@@ -52,11 +53,11 @@ public class TestOptimality {
 //            int processors = Integer.parseInt(Character.toString(fileName.charAt(0)));
 //
 //            //Use for parrallel
-//            int corenum = 4;
-//            Scheduler schedule = new DFBnBMasterScheduler(graph, processors, corenum);
+////            int corenum = 4;
+////            Scheduler schedule = new DFBnBMasterScheduler(graph, processors, corenum);
 //
 //            //Use for sequential
-//            //Scheduler schedule = new DFBnBScheduler(graph, processors);
+//            Scheduler schedule = new DFBnBScheduler(graph, processors);
 //            Schedule solution = schedule.createSchedule();
 //
 //            //Finding the optimal

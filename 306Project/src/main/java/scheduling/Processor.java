@@ -69,6 +69,8 @@ public class Processor implements Serializable {
      */
     public int getBound() {
         int bound = 0;
+
+        //Looping through all of the nodes to get the lowest bound
         for (TaskNode node : tasks) {
             if (node.getEndTime() > bound) {
                 bound = node.getEndTime();

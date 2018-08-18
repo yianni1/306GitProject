@@ -72,9 +72,7 @@ public class DFBnBMasterScheduler implements  Scheduler {
 		//Thread pool assigned with the number of cores
 		ExecutorService executor = Executors.newFixedThreadPool(numCores);
 
-		// System.out.println("Running on " + numCores + " threads with " + partialSchedules.size() + " slave schedulers.");
-
-		List<Schedule> locallyOptimalSchedules = new ArrayList<>();
+        List<Schedule> locallyOptimalSchedules = new ArrayList<>();
 
 		//generating the number of threads associative to the number of cores
 		for (Schedule schedule : partialSchedules) {
