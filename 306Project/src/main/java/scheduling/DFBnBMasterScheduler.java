@@ -1,26 +1,16 @@
-package scheduling.parallel;
+package scheduling;
 
-import exceptions.NotSchedulableException;
-import exceptions.NotDeschedulableException;
-import graph.TaskEdge;
 import graph.TaskGraph;
 import graph.TaskNode;
-import scheduling.GreedyScheduler;
-import scheduling.Processor;
-import scheduling.Schedule;
-import scheduling.Scheduler;
 import view.VisualisationController;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import static scheduling.Utilities.deepClone;
 
 /**
  * Created by Ray on 28/07/2018.
@@ -28,27 +18,13 @@ import java.util.concurrent.TimeUnit;
  */
 public class DFBnBMasterScheduler implements  Scheduler {
 
-	private VisualisationController scheduleListener;
 
 	private List<Schedule> partialSchedules = new ArrayList<>();
 	private int numCores;
 	private int processors;
-
 	private TaskGraph graph;
 	private int upperBound;
-	private int depth;
-	private long numPaths;
-	private long branchesPruned;
-
-	// Index of the children of the schedule.
-	private List<Integer> nodeIndices;
-	private List<Integer> processorIndices;
-
-	private Schedule optimalSchedule;
 	private Schedule schedule;
-	private List<TaskNode> schedulableNodes;
-
-	private List<TaskNode> initialNodes;
 
     /**
      * Constructor which generates an initial empty schedule based on the processors and the graph
@@ -96,7 +72,7 @@ public class DFBnBMasterScheduler implements  Scheduler {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    DFBnBSlaveScheduler scheduler = new DFBnBSlaveScheduler(schedule.getGraph(), processors, schedule, upperBound);
+                    DFBnBScheduler scheduler = new DFBnBSlaveScheduler(schedule.getGraph(), processors, schedule, upperBound);
 					Schedule s = scheduler.createSchedule();
 
 					//If bound found by thread is null, use default greedy
@@ -228,24 +204,6 @@ public class DFBnBMasterScheduler implements  Scheduler {
         }
 
 
-	}
-
-	/**
-	 * This method makes a "deep clone" of any object it is given.
-	 */
-	private static Object deepClone(Object object) {
-		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(baos);
-			oos.writeObject(object);
-			ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-			ObjectInputStream ois = new ObjectInputStream(bais);
-			return ois.readObject();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
 	}
 
 }

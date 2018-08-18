@@ -5,8 +5,7 @@ import graph.TaskNode;
 import io.GraphLoader;
 import org.junit.Test;
 import scheduling.*;
-import scheduling.parallel.DFBnBMasterScheduler;
-import scheduling.parallel.DFBnBSlaveScheduler;
+import scheduling.DFBnBMasterScheduler;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

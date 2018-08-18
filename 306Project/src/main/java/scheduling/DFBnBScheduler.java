@@ -12,6 +12,8 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static scheduling.Utilities.deepClone;
+
 /**
  * Created by Ray on 28/07/2018.
  * Written by Kevin & Ray.
@@ -21,8 +23,9 @@ public class DFBnBScheduler implements Scheduler{
 	private VisualisationController scheduleListener;
 
 	private TaskGraph graph;
-	private int upperBound;
-	private int depth;
+	protected int upperBound;
+	protected int depth;
+	protected int minDepth;
 	private long numPaths;
 	private long branchesPruned;
 
@@ -31,8 +34,8 @@ public class DFBnBScheduler implements Scheduler{
 	private List<Integer> processorIndices;
 
 	private Schedule optimalSchedule;
-	private Schedule schedule;
-	private List<TaskNode> schedulableNodes;
+	protected Schedule schedule;
+	protected List<TaskNode> schedulableNodes;
 
 	private List<TaskNode> initialNodes;
 
@@ -41,26 +44,33 @@ public class DFBnBScheduler implements Scheduler{
 	public DFBnBScheduler(TaskGraph graph, int processors) {
 		this.graph = graph;
 
-		initialNodes = new ArrayList<>();
-		nodeIndices = new ArrayList<>();
-		processorIndices = new ArrayList<>();
+        //storing the initial nodes, indexs for the nodes and processors
+        initialNodes = new ArrayList<>();
+        nodeIndices = new ArrayList<>(Collections.nCopies((graph.getNodes().size()), 0)); //depth of all nodes in the nodeIndices array is set to zero
+        processorIndices = new ArrayList<>(Collections.nCopies((graph.getNodes().size()), 0));
 		schedule = new Schedule(processors, graph);
 		schedulableNodes = schedule.getSchedulableNodes();
 
 		//initialize depth, upperBound, and current time of the schedule
-		depth = 0;
+		minDepth = 0;
+		depth = minDepth;
 		numPaths = 1;
 		branchesPruned = 0;
 
-		Schedule greedySchedule = new GreedyScheduler(graph, processors).createSchedule();
+		// only initialise upper bound for non slave instances of the scheduler
+		if (!(this instanceof DFBnBSlaveScheduler)) {
+            Schedule greedySchedule = new GreedyScheduler(graph, processors).createSchedule();
 
-		optimalSchedule = (Schedule) deepClone(greedySchedule); //set greedy schedule to be initial optimal schedule
+            optimalSchedule = (Schedule) deepClone(greedySchedule); //set greedy schedule to be initial optimal schedule
 
-		upperBound = greedySchedule.getBound();
+            upperBound = greedySchedule.getBound();
 
-		while (greedySchedule.getScheduledNodes().size() > 0) {
-			greedySchedule.removeLastScheduledTask();
-		}
+            while (greedySchedule.getScheduledNodes().size() > 0) {
+                greedySchedule.removeLastScheduledTask();
+            }
+        }
+
+
 
 //		for (TaskNode n : graph.getNodes()) {
 //		    Integer blp = criticalPath(n);
@@ -95,7 +105,7 @@ public class DFBnBScheduler implements Scheduler{
 		boolean initialIteration = true;
 
 		//while there are branches to explore from depth 0, keep looping through all branches
-		while (depth >= 0) {
+		while (depth >= minDepth) {
 
 			while (schedulableNodes.size() > 0) { //while there are still nodes to schedule
 				// System.out.println("Searching at depth " + depth + " with bound " + schedule.getBound());
@@ -169,7 +179,7 @@ public class DFBnBScheduler implements Scheduler{
 
 					depth--; //go to previous depth
 
-					if (depth < 0) {
+					if (depth < minDepth) {
 						break;
 					}
 
@@ -225,7 +235,7 @@ public class DFBnBScheduler implements Scheduler{
 				}
 			}
 
-			if (depth < 0) {
+			if (depth < minDepth) {
 				break;
 			}
 
@@ -259,7 +269,11 @@ public class DFBnBScheduler implements Scheduler{
 
 		}
 
-		System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
+		if (optimalSchedule == null) {
+		    System.out.println("No solution better than initial upper bound found on this branch.");
+        } else {
+            System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
+        }
 		if (scheduleListener != null) {
             updateGUISchedule();;
 			scheduleListener.updateNumPaths(numPaths);
@@ -268,24 +282,6 @@ public class DFBnBScheduler implements Scheduler{
         }
 		return optimalSchedule;
 
-	}
-
-	/**
-	 * This method makes a "deep clone" of any object it is given.
-	 */
-	public static Object deepClone(Object object) {
-		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(baos);
-			oos.writeObject(object);
-			ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-			ObjectInputStream ois = new ObjectInputStream(bais);
-			return ois.readObject();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
 	}
 
 	/**
