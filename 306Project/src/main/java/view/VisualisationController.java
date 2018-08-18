@@ -418,7 +418,7 @@ public class VisualisationController implements Initializable{
             else {
                 outputN += "-output.dot";
             }
-            Output.createOutput(finalSolution.getProcessors(), graph, parentPath);
+            Output.createOutput(finalSolution.getProcessors(), graph, parentPath + outputN);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
