@@ -36,6 +36,22 @@ public class Schedule implements Serializable {
 
         initializeSchedulableNodes(graph);
 
+        map = new HashMap<>();
+
+    }
+
+    private Map<String, Integer> map;
+    public String identify() {
+        String str = "";
+
+        for (Processor p : processors) {
+            for (TaskNode task : p.getTasks()) {
+                map.put(task.getName(), p.getID());
+            }
+        }
+        str = map.keySet().toString() + map.values().toString();
+        map.clear();
+        return str;
     }
 
     /**

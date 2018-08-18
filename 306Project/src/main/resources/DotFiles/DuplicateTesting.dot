@@ -1,0 +1,8 @@
+digraph "Graph1" {
+	a	 [Weight=6];
+	b	 [Weight=7];
+	c	 [Weight=2];
+	a -> c	 [Weight=4];
+	a -> b	 [Weight=6];
+
+}

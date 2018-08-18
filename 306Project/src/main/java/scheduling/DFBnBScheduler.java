@@ -44,7 +44,7 @@ public class DFBnBScheduler implements Scheduler{
 
 	private Map<String, Integer> bottomLevelCosts = new HashMap<String ,Integer>();
 
-	private HashSet<Integer> seenSchedules = new HashSet<>();
+	private HashSet<String> seenSchedules = new HashSet<>();
 
 	public DFBnBScheduler(TaskGraph graph, int processors) {
 		this.graph = graph;
@@ -199,41 +199,34 @@ public class DFBnBScheduler implements Scheduler{
 
 				int est = schedule.getEarliestSchedulableTime(nextTask, nextProcessor);
 
-               // Integer hash = schedule.hashCode();
-                boolean dup = false;
-               // if (seenSchedules.contains(hash)) {
-//
-//                    Schedule testSchedule = (Schedule) deepClone(schedule);
-//
-//                    for (TaskNode n : testSchedule.getSchedulableNodes()) {
-//                        for (Processor p : testSchedule.getProcessors()) {
-//                            testSchedule.addTask(n, p, testSchedule.getEarliestSchedulableTime(n, p));
-//                            int h = testSchedule.hashCode();
-//                            if (seenSchedules.contains(h)) {
-//                                  System.out.println("Found dup");
-//                                dup = true;
-//                            }
-//                            else {
-//                                dup = false;
-//                                break;
-//                            }
-//                            testSchedule.removeLastScheduledTask();
-//                        }
-//
-//                        if (dup) {
-//                            break;
-//                        }
-//                    }
-//
-                // }
-
 				// Don't add the task to the processor if the upper bound will be higher
-				if ( (est + nextTask.getWeight() < upperBound && !skip) && (!dup) ) {
+				if ( (est + nextTask.getWeight() < upperBound && !skip) ) {
 					//System.out.println("Task " + nextTask.getName() + " on schedule "+nextProcessor.getID()+" will be less than the upper bound. ("+est+" vs. "+ upperBound+")");
-					schedule.addTask(nextTask, nextProcessor, est);
 
-				//	int clonedSchedule = schedule.hashCode();
-					//seenSchedules.add(clonedSchedule);
+
+                    schedule.addTask(nextTask, nextProcessor, est);
+
+
+                    boolean dontDo = false;
+                    if (seenSchedules.size() < 5000000) {
+                        String id = schedule.identify();
+
+                        if (seenSchedules.contains(id)) {
+                            schedule.removeLastScheduledTask();
+
+                            nodeIndices.set(depth, nodeIndices.get(depth) + 1);
+                            branchesPruned++;
+                            if (scheduleListener != null && (System.currentTimeMillis() % 100 == 0)) { //update visualisation with new number of branches pruned
+                                scheduleListener.updateBranchesPruned(branchesPruned);
+                            }
+                            dontDo = true;
+
+                        }
+                        else {
+                            seenSchedules.add(id);
+                        }
+                    }
+
 
 
 //				// Run the cost function for each of the tasks children to determine which one to schedule first.
@@ -255,10 +248,12 @@ public class DFBnBScheduler implements Scheduler{
 //                        }
 //					}
 //				}
+                    if (dontDo == false) {
+                        schedulableNodes = schedule.getSchedulableNodes();
+                        nodeIndices.set(depth, nodeIndices.get(depth) + 1);
+                        depth++;
+                    }
 
-					schedulableNodes = schedule.getSchedulableNodes();
-					nodeIndices.set(depth, nodeIndices.get(depth) + 1);
-					depth++;
 
 
 
@@ -270,6 +265,7 @@ public class DFBnBScheduler implements Scheduler{
 					}
 
 				}
+
 			}
 
 			if (depth < minDepth) {
@@ -317,6 +313,7 @@ public class DFBnBScheduler implements Scheduler{
 			scheduleListener.updateBranchesPruned(branchesPruned);
 			scheduleListener.finish();
         }
+
 		return optimalSchedule;
 
 	}
