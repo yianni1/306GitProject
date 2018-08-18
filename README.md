@@ -1,4 +1,5 @@
-# 306 Scheduling Project
+# Team K.O.D.Y.R Task Scheduler
+![Screenshot](Documentation/gui.PNG)
 
 ## Contributors
 Name: Yianni Bares,		Username: ybar417,  ID: 533468329,  GitHub name: yianni1
