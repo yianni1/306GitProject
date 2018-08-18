@@ -4,17 +4,16 @@ import graph.TaskGraph;
 import io.GraphLoader;
 import main.App;
 import org.junit.Test;
-import scheduling.DFBnBScheduler;
 import scheduling.Schedule;
 import scheduling.Scheduler;
-import scheduling.parallel.DFBnBMasterScheduler;
+import scheduling.DFBnBMasterScheduler;
 
 import java.io.File;
 import java.net.URISyntaxException;
 
 import static junit.framework.TestCase.assertEquals;
 
-public class ParrallelMasterTest {
+public class ParallelMasterTest {
 
     @Test
     public void testNode7OptimalTwoProcesses() throws URISyntaxException {

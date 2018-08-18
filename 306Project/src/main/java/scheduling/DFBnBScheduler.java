@@ -12,6 +12,8 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static scheduling.Utilities.deepClone;
+
 /**
  * Created by Ray on 28/07/2018.
  * Written by Kevin & Ray.
@@ -21,18 +23,19 @@ public class DFBnBScheduler implements Scheduler{
 	private VisualisationController scheduleListener;
 
 	private TaskGraph graph;
-	private int upperBound;
-	private int depth;
-	private long numPaths;
-	private long branchesPruned;
+	protected int upperBound;
+	protected int depth;
+	protected int minDepth;
+	protected long numPaths;
+	protected long branchesPruned;
 
 	// Index of the children of the schedule.
 	private List<Integer> nodeIndices;
 	private List<Integer> processorIndices;
 
-	private Schedule optimalSchedule;
-	private Schedule schedule;
-	private List<TaskNode> schedulableNodes;
+	protected Schedule optimalSchedule;
+	protected Schedule schedule;
+	protected List<TaskNode> schedulableNodes;
 
 	private List<TaskNode> initialNodes;
 
@@ -41,31 +44,38 @@ public class DFBnBScheduler implements Scheduler{
 	public DFBnBScheduler(TaskGraph graph, int processors) {
 		this.graph = graph;
 
-		initialNodes = new ArrayList<>();
-		nodeIndices = new ArrayList<>();
-		processorIndices = new ArrayList<>();
+        //storing the initial nodes, indexs for the nodes and processors
+        initialNodes = new ArrayList<>();
+        nodeIndices = new ArrayList<>(Collections.nCopies((graph.getNodes().size()), 0)); //depth of all nodes in the nodeIndices array is set to zero
+        processorIndices = new ArrayList<>(Collections.nCopies((graph.getNodes().size()), 0));
 		schedule = new Schedule(processors, graph);
 		schedulableNodes = schedule.getSchedulableNodes();
 
 		//initialize depth, upperBound, and current time of the schedule
-		depth = 0;
+		minDepth = 0;
+		depth = minDepth;
 		numPaths = 1;
 		branchesPruned = 0;
 
-		Schedule greedySchedule = new GreedyScheduler(graph, processors).createSchedule();
+		// only initialise upper bound for non slave instances of the scheduler
+		if (!(this instanceof DFBnBSlaveScheduler)) {
+            Schedule greedySchedule = new GreedyScheduler(graph, processors).createSchedule();
 
-		optimalSchedule = (Schedule) deepClone(greedySchedule); //set greedy schedule to be initial optimal schedule
+            optimalSchedule = (Schedule) deepClone(greedySchedule); //set greedy schedule to be initial optimal schedule
 
-		upperBound = greedySchedule.getBound();
+            upperBound = greedySchedule.getBound();
 
-		while (greedySchedule.getScheduledNodes().size() > 0) {
-			greedySchedule.removeLastScheduledTask();
-		}
+            while (greedySchedule.getScheduledNodes().size() > 0) {
+                greedySchedule.removeLastScheduledTask();
+            }
+        }
 
-//		for (TaskNode n : graph.getNodes()) {
-//		    Integer blp = criticalPath(n);
-//            bottomLevelCosts.put(n.getName(), blp);
-//        }
+
+
+		for (TaskNode n : graph.getNodes()) {
+		    Integer blp = criticalPath(n);
+            bottomLevelCosts.put(n.getName(), blp);
+        }
 
 	}
 
@@ -77,11 +87,8 @@ public class DFBnBScheduler implements Scheduler{
 	 */
 	public Schedule createSchedule() throws NotDeschedulableException, NotSchedulableException {
 
-		if (scheduleListener != null) { //update initial best schedule in gui
-			updateGUISchedule();
-			scheduleListener.updateNumPaths(numPaths);
-		}
-
+	    updateSchedule();
+	    updateNumPaths();
 
 		TaskNode nextTask;
 		Processor nextProcessor;
@@ -95,30 +102,13 @@ public class DFBnBScheduler implements Scheduler{
 		boolean initialIteration = true;
 
 		//while there are branches to explore from depth 0, keep looping through all branches
-		while (depth >= 0) {
+		while (depth >= minDepth) {
 
 			while (schedulableNodes.size() > 0) { //while there are still nodes to schedule
 				// System.out.println("Searching at depth " + depth + " with bound " + schedule.getBound());
 
 				//Determine whether initial nodes have been repeated
 				finished = removeReplicatedTree(initialIteration);
-
-//                if (initialIteration) {
-//                    int costF;
-//                    for (TaskNode tn : schedulableNodes) {
-//                        costF = Integer.MAX_VALUE;
-//
-//                        for (Processor p: schedule.getProcessors()) {
-//                            //costF = costFunction(tn, p);
-//                            int currentCF = costFunction(tn,p);
-//                            if (currentCF <= costF) {
-//                                tn.setCostFunction(currentCF);
-//                            }
-//
-//                        }
-//                    }
-//                }
-
 
 
 				initialIteration = false;
@@ -169,7 +159,7 @@ public class DFBnBScheduler implements Scheduler{
 
 					depth--; //go to previous depth
 
-					if (depth < 0) {
+					if (depth < minDepth) {
 						break;
 					}
 
@@ -189,25 +179,6 @@ public class DFBnBScheduler implements Scheduler{
 					//System.out.println("Task " + nextTask.getName() + " on schedule "+nextProcessor.getID()+" will be less than the upper bound. ("+est+" vs. "+ upperBound+")");
 					schedule.addTask(nextTask, nextProcessor, est);
 
-//				// Run the cost function for each of the tasks children to determine which one to schedule first.
-//				TaskNode minTask;			// The node and processor that has the lowest cost
-//				Processor minProcessor;
-
-//                int costF;
-//				for (TaskEdge e: nextTask.getOutgoingEdges()){
-//					TaskNode tn = e.getEndNode();
-//                    costF = Integer.MAX_VALUE;
-//
-//                    for (Processor p: schedule.getProcessors()) {
-//
-//					    //costF = costFunction(tn, p);
-//                        int currentCF = costFunction(tn,p);
-//
-//					    if (currentCF <= costF) {
-//                            tn.setCostFunction(currentCF);
-//                        }
-//					}
-//				}
 
 					schedulableNodes = schedule.getSchedulableNodes();
 					nodeIndices.set(depth, nodeIndices.get(depth) + 1);
@@ -219,13 +190,13 @@ public class DFBnBScheduler implements Scheduler{
 					nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 					branchesPruned++;
 					if (scheduleListener != null && (System.currentTimeMillis() % 100 == 0)) { //update visualisation with new number of branches pruned
-						scheduleListener.updateBranchesPruned(branchesPruned);
+						updateBranchesPruned();
 					}
 
 				}
 			}
 
-			if (depth < 0) {
+			if (depth < minDepth) {
 				break;
 			}
 
@@ -238,17 +209,16 @@ public class DFBnBScheduler implements Scheduler{
 			if (schedule.getBound() < upperBound || optimalSchedule == null) {
 				optimalSchedule = (Schedule) deepClone(schedule);
 				upperBound = schedule.getBound();
-				if (scheduleListener != null) { //update visualisation with new optimal schedule
-					updateGUISchedule();
-					scheduleListener.updateNumPaths(numPaths);
-				}
+				//update visualisation with new optimal schedule
+                updateSchedule();
+                updateNumPaths();
 			}
 
 			if (schedule.getScheduledNodes().size() > 0) {
 				schedule.removeLastScheduledTask();
 				numPaths++;
-				if (scheduleListener != null && (System.currentTimeMillis() % 100 == 0)) { //update visualisation with new number of paths
-					scheduleListener.updateNumPaths(numPaths);
+				if ((System.currentTimeMillis() % 100 == 0)) { //update visualisation with new number of paths
+					updateNumPaths();
 				}
 			}
 
@@ -259,33 +229,17 @@ public class DFBnBScheduler implements Scheduler{
 
 		}
 
-		System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
-		if (scheduleListener != null) {
-            updateGUISchedule();;
-			scheduleListener.updateNumPaths(numPaths);
-			scheduleListener.updateBranchesPruned(branchesPruned);
-			scheduleListener.finish();
+		if (optimalSchedule == null) {
+		    System.out.println("No solution better than initial upper bound found on this branch.");
+        } else {
+            System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
         }
+            updateSchedule();
+			updateNumPaths();
+			updateBranchesPruned();
+			finish();
 		return optimalSchedule;
 
-	}
-
-	/**
-	 * This method makes a "deep clone" of any object it is given.
-	 */
-	public static Object deepClone(Object object) {
-		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(baos);
-			oos.writeObject(object);
-			ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-			ObjectInputStream ois = new ObjectInputStream(bais);
-			return ois.readObject();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
 	}
 
 	/**
@@ -328,7 +282,7 @@ public class DFBnBScheduler implements Scheduler{
 
 		// Loop through all the scheduled nodes, then the node we want to schedule and find the maxFbl out of them.
 		for (TaskNode tn : schedule.getScheduledNodes()) {
-            Integer value = bottomLevelCosts.get(nextTask.getName());
+            Integer value = bottomLevelCosts.get(tn.getName());
 			fblTemp = tn.getStartTime() + value;
 			fblMax = Math.max(fblMax, fblTemp);
 		}
@@ -339,18 +293,18 @@ public class DFBnBScheduler implements Scheduler{
 		fblTemp = childStartTime + value;
 		fblMax = Math.max(fblMax, fblTemp);
 
-		// TODO: fDRT calculation
-// fDRT CALCULATION -------------------------------------------------------------------------
+		// fDRT CALCULATION -------------------------------------------------------------------------
 		// fDRT(s) = max{tdr(n) + blw(n) for every free node.
-		// tdr(n) = min (tdr(n,P) min of all processors
-		// tdr(n,P) is earliest schedulable time
-		// If nj is a source task, then tdr(nj,P)=0
+		// tdr(n) = min (tdr(n,P) i.e. earliest schedulable node.
+		// tdr(n,P) is earliest schedulable time.
 
-		int fDRT = schedule.getEarliestSchedulableTime(nextTask,nextProcessor) + childStartTime;
+//		int fDRT = schedule.getEarliestSchedulableTime(nextTask,nextProcessor) + childStartTime;
 
 //		child.setCostFunction(Math.max(fblMax, fIdle));
 
-		return Math.max(Math.max(fblMax, fIdle), fDRT);
+//		return Math.max(Math.max(fblMax, fIdle), fDRT);
+//		System.out.println("Cost function is: " + Math.max(fblMax,fIdle));
+		return Math.max(fblMax,fIdle);
 	}
 
 	/**
@@ -501,13 +455,47 @@ public class DFBnBScheduler implements Scheduler{
 		this.scheduleListener = listener;
 	}
 
-	private void updateGUISchedule () {
-		scheduleListener.updateSchedule(optimalSchedule);
-		try {
-			TimeUnit.MILLISECONDS.sleep(200);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+    /**
+     * Notifies listener of new optimal schedule.
+     */
+	public void updateSchedule() {
+	    if (scheduleListener != null) {
+            scheduleListener.updateSchedule(optimalSchedule);
+            try {
+                TimeUnit.MILLISECONDS.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 	}
+
+    /**
+     * Updates listener with number of branches pruned.
+     */
+	public void updateBranchesPruned() {
+	    if (scheduleListener != null) {
+            scheduleListener.updateBranchesPruned(branchesPruned);       }
+
+    }
+
+    /**
+     * Updates listener with number of paths searched.
+     */
+    public void updateNumPaths() {
+        if (scheduleListener != null) {
+            scheduleListener.updateNumPaths(numPaths);
+        }
+    }
+
+    /**
+     * Updates listener that algorithm has finished.
+     */
+    public void finish() {
+        if (scheduleListener != null) {
+            scheduleListener.finish();
+        }
+    }
+
+
 
 }

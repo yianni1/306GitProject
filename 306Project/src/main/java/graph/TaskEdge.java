@@ -6,12 +6,18 @@ import java.io.Serializable;
  * Created by Dweep on 29/7/2018
  * This is the class which creates a the Edge data structure which stores the startNode , EndNode and the weight of the
  * Edge which will later be delivered into the scheduler class and the algorithim iteration.
+ * cleaned by Oliver and Dweep
  */
 public class TaskEdge implements Serializable {
 
-    private TaskNode startNode; //The node that makrs the entry point of the edge
-    private TaskNode endNode; //The node that marks the end of the edge
-    private int weight; //The value of the weight of the edge
+    //the node that marks the entry point of the edge
+    private TaskNode startNode;
+
+    //the node that marks the end of the edge
+    private TaskNode endNode;
+
+    //The value of the weight
+    private int weight;
 
     /**
      * Creates an edge with a start and end node. Attaches references to the nodes
@@ -26,15 +32,15 @@ public class TaskEdge implements Serializable {
     }
 
     /**
-     * Returns the startnode of the edge
-     * @return the starting node
+     * Returns the startnode of the edge within the graph
+     * @return the starting node of the edge
      */
     public TaskNode getStartNode() {
         return startNode;
     }
 
     /**
-     * Returns the end node of the edge
+     * Returns the end node of the edge within the graph
      * @return the end node of the edge
      */
     public TaskNode getEndNode() {
@@ -42,8 +48,8 @@ public class TaskEdge implements Serializable {
     }
 
     /**
-     * Returns the weight of the edge
-     * @return
+     * Returns the weight of the edge within the graph
+     * @return weight of the edge
      */
     public int getWeight() {
         return weight;

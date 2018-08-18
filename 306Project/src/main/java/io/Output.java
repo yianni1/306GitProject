@@ -12,23 +12,32 @@ import java.util.List;
 
 /**
  * Created by olive on 1/08/2018.
+ * Cleaned by Dweep and Oliver
  */
 public class Output {
- 
+
+    //store a file object
     private static File file;
 
     /**
-     * Creates the output file. For the first submission, we will be using
-     * a simple scheduler which only has one processor.
-     * Returns the output file.
+     * Creates an Ouput based on the CompletedSolution , graph and the outputFileName which basically writes the
+     * completed solution into a dotFile
      * @param completedSolution
-     * @return
+     * @param graph
+     * @param outputFileName
      */
     public static void createOutput(List<Processor> completedSolution, TaskGraph graph, String outputFileName) {
+
         //Creating the file
         String fileName = outputFileName;
+
+        //creating the new file Object
         file = new File(fileName);
+
+
         try {
+
+            //create a new file
             file.createNewFile();
 
             //Writing to the file
@@ -57,6 +66,7 @@ public class Output {
             writer.close();
         }
         catch (IOException ioex) {
+            //catching and input and output exception
             ioex.printStackTrace();
         }
     }

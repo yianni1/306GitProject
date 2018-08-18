@@ -20,33 +20,45 @@ import graph.TaskNode;
 
 /**
  * Created by yianni on 28/07/2018.
+ * Cleaned by Dweep and Oliver
  */
 public class GraphLoader {
 
 	/**
-	 * Loads a graph from an input dot file and outputs a
-	 * GraphStream graph
-	 * @param filePath
-	 * @return
+	 * The Dotfile is taken in and and loaded as a graph which is then outputted
+	 * as a Graphstream graph using the graph stream library
+	 *
+	 * @param filePath of the Dot file
+	 * @return Graph from the Dot file
 	 */
 	public Graph loadGraph(String filePath) {
 
-		Graph graph = new SingleGraph("graph"); // Creates graph
+		//creates the graph
+		Graph graph = new SingleGraph("graph");
+
 		FileSource fs = null;
 
-		// Loads graph from filepath
+		// the graph is loaded from the filepath
 		try {
 			fs = FileSourceFactory.sourceFor(filePath);
 			fs.addSink(graph);
 			fs.readAll(filePath);
 		}
 		catch( IOException e) {
+
+			//catches and input and output exception
 			e.printStackTrace();
+
+			//validity check
+			System.out.println("Please check that the filepath for the Dotfile is correctly inputtted");
 		}
 		finally {
+
+
 			fs.removeSink(graph);
 		}
 
+		//returns the loaded graph
 		return graph;
 	}
 
@@ -56,9 +68,12 @@ public class GraphLoader {
 	 * @return graph representation of dot file
 	 */
 	public TaskGraph load(String filePath) {
+
 		//Finding the name of the graph
 		String graphTitle = null;
 		try {
+
+			//seperates based on dot file seperators
 			File file = new File(filePath);
 			Scanner sc = new Scanner(file);
 			graphTitle = sc.nextLine().split("\"")[1];
@@ -68,7 +83,7 @@ public class GraphLoader {
 			ex.printStackTrace();
 		}
 
-		//Loading the dot file into a GraphStrema graph
+		//Loading the dot file into a GraphStream graph
 		Graph graph = loadGraph(filePath);
 
 		//Converting from the GraphStream graph to the taskgraph
