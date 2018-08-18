@@ -5,6 +5,10 @@ package exceptions;
  */
 public class TaskException extends RuntimeException {
 
+    /**
+     * Creates a TaskException with a message
+     * @param message
+     */
     public TaskException(String message) {
         super(message);
     }

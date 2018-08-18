@@ -95,6 +95,8 @@ public class VisualisationController implements Initializable{
 
     private String fileName;
 
+    private String outputFileName;
+
     private int processorNumber;
 
     private int coreNumber;
@@ -377,6 +379,14 @@ public class VisualisationController implements Initializable{
     }
 
     /**
+     * Sets the output file name
+     * @param outputFileName
+     */
+    public void setOutputFileName(String outputFileName) {
+        this.outputFileName = outputFileName;
+    }
+
+    /**
      * Starts the scheduler.
      */
     private void runTask() {
@@ -388,6 +398,8 @@ public class VisualisationController implements Initializable{
             String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
             File parent = new File(path);
             String parentPath = parent.getParent() + File.separator;
+
+
 
             TaskGraph graph = loader.load(parentPath + fileName);
 
@@ -405,7 +417,13 @@ public class VisualisationController implements Initializable{
             }
 
             //Transporting to output
-            Output.createOutput(finalSolution.getProcessors(), graph, parentPath + outputN + "-output.dot");
+            if (outputFileName != null) {
+                outputN = outputFileName + ".dot";
+            }
+            else {
+                outputN += "-output.dot";
+            }
+            Output.createOutput(finalSolution.getProcessors(), graph, parentPath + outputN);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
