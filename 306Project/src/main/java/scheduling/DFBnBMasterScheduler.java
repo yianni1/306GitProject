@@ -214,6 +214,22 @@ public class DFBnBMasterScheduler implements  Scheduler {
 
 		}
 
+		List<Schedule> removeSchedule = new ArrayList<>();
+		//Code to remove duplicated initial nodes on partial schedules
+		for (int i = 0; i < partialSchedules.size(); i++) {
+			for (int j = i; j < partialSchedules.size(); j++)
+
+				if (equals(partialSchedules.get(i), partialSchedules.get(j))) {
+					removeSchedule.add(partialSchedules.get(i));
+				}
+		}
+
+		for(Schedule s :removeSchedule) {
+			partialSchedules.remove(s);
+		}
+
+
+
 		//Loop through partial schedules and pick the max layer depth
 		int maxSize = 0;
 		for (Schedule s : partialSchedules) {
@@ -236,24 +252,15 @@ public class DFBnBMasterScheduler implements  Scheduler {
 		}
 
 
-		List<Schedule> removeSchedule = new ArrayList<>();
-
-		for (int i = 0; i < partialSchedules.size(); i++) {
-			for (int j = i; j < partialSchedules.size(); j++)
-
-				if (equals(partialSchedules.get(i), partialSchedules.get(j))) {
-					removeSchedule.add(partialSchedules.get(i));
-				}
-		}
-
-		for(Schedule s :removeSchedule) {
-			partialSchedules.remove(s);
-		}
-
 
 	}
 
-
+	/**
+	 * Equals method to compare schedules
+	 * @param s1
+	 * @param s2
+	 * @return
+	 */
 	private boolean equals(Schedule s1, Schedule s2) {
 
 		boolean same = false;
