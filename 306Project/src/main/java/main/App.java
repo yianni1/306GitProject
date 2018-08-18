@@ -22,6 +22,7 @@ import org.apache.commons.cli.Options;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import scheduling.DFBnBMasterScheduler;
 import scheduling.DFBnBScheduler;
 import scheduling.Schedule;
 import scheduling.Scheduler;
@@ -122,7 +123,6 @@ public class App extends Application{
 					System.exit(0);
 				}
 
-
 			}
 
 			//this is the option for the visualisation which opens the GUI element of the algorithim
@@ -187,9 +187,17 @@ public class App extends Application{
                     //load the graph value
                     TaskGraph graph = loader.load(parentPath + fileName);
 
-                    //Doing the algorithm
-                    Scheduler solution = new DFBnBScheduler(graph, processorNumber);
-                    Schedule finalSolution = solution.createSchedule();
+					Schedule finalSolution = null;
+                    if (cmd.hasOption("p")) {
+						//Doing the algorithm
+						Scheduler solution = new DFBnBMasterScheduler(graph, processorNumber, numCores);
+						finalSolution = solution.createSchedule();
+					}
+					else {
+						//Doing the algorithm
+						Scheduler solution = new DFBnBScheduler(graph, processorNumber);
+						 finalSolution = solution.createSchedule();
+					}
 
                     //Transporting to output. and output with either -output for a default output or the name of the output file
                     Output.createOutput(finalSolution.getProcessors(), graph, parentPath + sendToOutputClass + ".dot");
@@ -222,9 +230,18 @@ public class App extends Application{
 
                         TaskGraph graph = loader.load(parentPath + fileName);
 
-                        //Doing the algorithm
-                        Scheduler solution = new DFBnBScheduler(graph, processorNumber);
-                        Schedule finalSolution = solution.createSchedule();
+
+						Schedule finalSolution = null;
+						if (cmd.hasOption("p")) {
+							//Doing the algorithm
+							Scheduler solution = new DFBnBMasterScheduler(graph, processorNumber, numCores);
+							finalSolution = solution.createSchedule();
+						}
+						else {
+							//Doing the algorithm
+							Scheduler solution = new DFBnBScheduler(graph, processorNumber);
+							finalSolution = solution.createSchedule();
+						}
 
                         //Transporting to output
                         Output.createOutput(finalSolution.getProcessors(), graph, parentPath + sendToOutputClass + "-output.dot");

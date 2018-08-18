@@ -32,7 +32,11 @@ public class Processor implements Serializable {
     public int getID() {
     	return procID;
     }
-    
+
+    public void setProcID(int procID) {
+        this.procID = procID;
+    }
+
     /**
      * Adds a new task, with the node.
      * Called by TaskNode.
