@@ -28,10 +28,7 @@ import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.Viewer;
-import scheduling.DFBnBScheduler;
-import scheduling.Processor;
-import scheduling.Schedule;
-import scheduling.Scheduler;
+import scheduling.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -97,6 +94,8 @@ public class VisualisationController implements Initializable{
     private StackedBarChart stackedBarChart;
 
     private String fileName;
+
+    private String outputFileName;
 
     private int processorNumber;
 
@@ -380,6 +379,14 @@ public class VisualisationController implements Initializable{
     }
 
     /**
+     * Sets the output file name
+     * @param outputFileName
+     */
+    public void setOutputFileName(String outputFileName) {
+        this.outputFileName = outputFileName;
+    }
+
+    /**
      * Starts the scheduler.
      */
     private void runTask() {
@@ -392,15 +399,31 @@ public class VisualisationController implements Initializable{
             File parent = new File(path);
             String parentPath = parent.getParent() + File.separator;
 
+
+
             TaskGraph graph = loader.load(parentPath + fileName);
 
+            Schedule finalSolution;
+
             //Doing the algorithm
-            Scheduler solution = new DFBnBScheduler(graph, processorNumber);
-            ((DFBnBScheduler) solution).setScheduleListener(this);
-            Schedule finalSolution = solution.createSchedule();
+            if (coreNumber > 1) {
+                Scheduler solution = new DFBnBMasterScheduler(graph, processorNumber, coreNumber);
+                ((DFBnBMasterScheduler) solution).setScheduleListener(this);
+                finalSolution = solution.createSchedule();
+            } else {
+                Scheduler solution = new DFBnBScheduler(graph, processorNumber);
+                ((DFBnBScheduler) solution).setScheduleListener(this);
+                finalSolution = solution.createSchedule();
+            }
 
             //Transporting to output
-            Output.createOutput(finalSolution.getProcessors(), graph, parentPath + outputN + "-output.dot");
+            if (outputFileName != null) {
+                outputN = outputFileName + ".dot";
+            }
+            else {
+                outputN += "-output.dot";
+            }
+            Output.createOutput(finalSolution.getProcessors(), graph, parentPath + outputN);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
