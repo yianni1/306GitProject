@@ -318,6 +318,10 @@ public class Schedule implements Serializable {
         return bound;
     }
 
+    public TaskGraph getGraph() {
+        return graph;
+    }
+
     public void printSchedule(){
         for(Processor p: processors){
             System.out.println("Processor " + p.getID() + ":");
