@@ -13,17 +13,21 @@ import java.util.concurrent.TimeUnit;
 import static scheduling.Utilities.deepClone;
 
 /**
- * Created by Ray on 28/07/2018.
- * Written by Kevin & Ray.
+ * Master scheduler for parallelisation. Runs BFS to create subtrees and then runs slave schedulers on these subtrees
+ * on separate threads.
  */
 public class DFBnBMasterScheduler implements  Scheduler {
 
+	private VisualisationController scheduleListener;
 
 	private List<Schedule> partialSchedules = new ArrayList<>();
+	private List<DFBnBSlaveScheduler> slaves = new ArrayList<>();
 	private int numCores;
 	private int processors;
 	private TaskGraph graph;
 	private int upperBound;
+	private long numPaths;
+	private long branchesPruned;
 	private Schedule schedule;
 
     /**
@@ -37,6 +41,8 @@ public class DFBnBMasterScheduler implements  Scheduler {
 		this.processors = processors;
 		this.numCores = numCores;
 		schedule = new Schedule(processors, graph);
+		numPaths = 0;
+		branchesPruned = 0;
 	}
 
     /**
@@ -49,6 +55,7 @@ public class DFBnBMasterScheduler implements  Scheduler {
 
 		Schedule greedySchedule = new GreedyScheduler(graph, processors).createSchedule();
 		Schedule defaultGreedy = (Schedule) deepClone(greedySchedule); //Default greedy schedule to use if no better schedule found in slave
+		updateSchedule(defaultGreedy);
 
 		//intializing the upperbound
 		upperBound = greedySchedule.getBound();
@@ -69,10 +76,12 @@ public class DFBnBMasterScheduler implements  Scheduler {
 
         //generating the number of threads associative to the number of cores
         for (Schedule schedule : partialSchedules) {
+        	final DFBnBMasterScheduler master = this;
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    DFBnBScheduler scheduler = new DFBnBSlaveScheduler(schedule.getGraph(), processors, schedule, upperBound);
+                    DFBnBSlaveScheduler scheduler = new DFBnBSlaveScheduler(schedule.getGraph(), processors, schedule, upperBound, master);
+                    slaves.add(scheduler);
 					Schedule s = scheduler.createSchedule();
 
 					//If bound found by thread is null, use default greedy
@@ -116,6 +125,58 @@ public class DFBnBMasterScheduler implements  Scheduler {
         return optimalSchedule;
 
     }
+
+    public void setScheduleListener(VisualisationController scheduleListener) {
+		this.scheduleListener = scheduleListener;
+	}
+
+
+	/**
+	 * Updates GUI with new optimal schedule and also notifies slaves of a better bound if necessary.
+	 * @param schedule
+	 */
+    public void updateSchedule (Schedule schedule) {
+		if (this.scheduleListener != null) {
+			if (schedule.getBound() < upperBound) {
+				upperBound = schedule.getBound();
+				for (DFBnBSlaveScheduler slave : slaves) {
+					slave.updateUpperBound(upperBound);
+				}
+				scheduleListener.updateSchedule(schedule);
+				try {
+					TimeUnit.MILLISECONDS.sleep(200);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public void updateBranchesPruned(long branchesPruned) {
+		this.branchesPruned = this.branchesPruned + branchesPruned;
+    	if (this.scheduleListener != null) {
+			scheduleListener.updateBranchesPruned(this.branchesPruned);
+		}
+	}
+
+	public void updateNumPaths (long numPaths) {
+		this.numPaths = this.numPaths + numPaths;
+		if (this.scheduleListener != null) {
+			scheduleListener.updateNumPaths(this.numPaths);
+		}
+
+	}
+
+	public void finish() {
+    	if (this.scheduleListener != null) {
+			for (DFBnBSlaveScheduler slave : slaves) {
+				if (!slave.isFinished()) {
+					return;
+				}
+			}
+			scheduleListener.finish();
+		}
+	}
 
     /**
      * Gets the list of the partial schedules
