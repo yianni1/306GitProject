@@ -1,28 +1,28 @@
-package testCases;
-
-import graph.TaskGraph;
-import io.GraphLoader;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.rules.Stopwatch;
-import scala.util.parsing.combinator.testing.Str;
-import scheduling.DFBnBScheduler;
-import scheduling.Schedule;
-import scheduling.Scheduler;
-import scheduling.DFBnBMasterScheduler;
-
-import java.io.File;
-import java.util.*;
-
-import static org.junit.Assert.*;
-
-/**
- * Created by olive on 13/08/2018.
- */
-public class TestOptimality {
-
-    private List<File> files = new ArrayList<File>();
-
+//package testCases;
+//
+//import graph.TaskGraph;
+//import io.GraphLoader;
+//import org.junit.Before;
+//import org.junit.Test;
+//import org.junit.rules.Stopwatch;
+//import scala.util.parsing.combinator.testing.Str;
+//import scheduling.DFBnBScheduler;
+//import scheduling.Schedule;
+//import scheduling.Scheduler;
+//import scheduling.DFBnBMasterScheduler;
+//
+//import java.io.File;
+//import java.util.*;
+//
+//import static org.junit.Assert.*;
+//
+///**
+// * Created by olive on 13/08/2018.
+// */
+//public class TestOptimality {
+//
+//    private List<File> files = new ArrayList<File>();
+//
 //    @Before
 //    public void setUp() {
 //        File folder = new File("src/main/resources/DotFiles/");
@@ -52,7 +52,7 @@ public class TestOptimality {
 //            int processors = Integer.parseInt(Character.toString(fileName.charAt(0)));
 //
 //            //Use for parrallel
-//            int corenum = 4;
+//            int corenum = 3;
 //            Scheduler schedule = new DFBnBMasterScheduler(graph, processors, corenum);
 //
 //            //Use for sequential
@@ -77,4 +77,4 @@ public class TestOptimality {
 //            assertEquals(optimal, solution.getBound());
 //        }
 //    }
-}
+//}
