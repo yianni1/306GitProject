@@ -42,13 +42,17 @@ public class App extends Application{
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+
+		//visualisation methods
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("Task Scheduler - Team K.O.D.Y.R");
 
 		Font.loadFont(getClass().getResourceAsStream("/fonts/Roboto-Thin.ttf"), 12);
 		Font.loadFont(getClass().getResourceAsStream("/fonts/Roboto-Light.ttf"), 12);
 
-		System.out.println("Starting Algorithm"); // FOR DEBUGGING ON CONSOLE
+		//For debugging at the console
+		System.out.println("Starting Algorithm");
+
 
 		Parameters params = getParameters(); 
 		int size = params.getRaw().size();
@@ -79,14 +83,20 @@ public class App extends Application{
 			System.exit(0);
 		} 
 		else {
-			//required arguments
+
+			//required arguments which is filename and processor is number
 			String fileName = args[0];
+
 
 			int processorNumber = 0;
 
 			try{
+
+				//store the processor number as per the parsed argument
 				processorNumber = Integer.parseInt(args[1]);
 			}
+
+			//catch an exception if the number for the processor is negative
 			catch (NumberFormatException ex) {
 				System.out.println("Please enter a positive integer for the processor number");
 				System.exit(0);
@@ -95,12 +105,18 @@ public class App extends Application{
 			//default values for optional arguments
 			int numCores = 1;
 
+			//this the parallelization option which takes in a parameter which is the number of cores that it
+			//is on
 			if (cmd.hasOption("p")) {
 
 
 				try{
+
+					//store the parse value as the num cores value
 					numCores = Integer.parseInt(cmd.getOptionValue("p"));
 				}
+
+				//check if the integer that is added is positive and not negative
 				catch (NumberFormatException ex) {
 					System.out.println("Please enter a positive integer for the core number");
 					System.exit(0);
@@ -109,8 +125,10 @@ public class App extends Application{
 
 			}
 
+			//this is the option for the visualisation which opens the GUI element of the algorithim
 			if (cmd.hasOption("v")) {
 				try {
+
 					//Load the root layout from the fxml file
 					FXMLLoader fxmlLoader = new FXMLLoader();
 					Parent root = fxmlLoader.load(getClass().getResource("/view/Visualisation.fxml").openStream());
@@ -143,6 +161,7 @@ public class App extends Application{
 				}
 			} else {
                 if (cmd.hasOption("o")) {
+
                     //Block for the user specificed option
                     String sendToOutputClass = cmd.getOptionValue("o");
 
@@ -163,20 +182,25 @@ public class App extends Application{
                 }
                 else {
 
+                	//output value which only prints out a default -output on the name if a proper name is not specificied
                     boolean inputOk = checkArgs(args);
 
                     if (inputOk) {
-                        //Block for non specified option
+
+                    	//Block for non specified option
                         String outputN = fileName.substring(0, fileName.length() - 4);
 
 
                         String sendToOutputClass = outputN;
 
-                        GraphLoader loader = new GraphLoader(); //Loading the graph
+                        //loading the graph
+                        GraphLoader loader = new GraphLoader();
+
 
                         String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
                         File parent = new File(path);
                         String parentPath = parent.getParent() + File.separator;
+
 
                         TaskGraph graph = loader.load(parentPath + fileName);
 
