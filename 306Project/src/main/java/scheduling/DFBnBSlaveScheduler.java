@@ -5,13 +5,24 @@ import graph.TaskGraph;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Slave version of DFbnBScheduler to support starting from a partial schedule and notifying master of updates.
+ * Slave version of the DFBNBScheduler purpose is to notifiy the masterScheduler of updates to support starting from a partial schedule
  * Written by Kevin.
+ * Cleaned by Oliver and Dweep
  */
 public class DFBnBSlaveScheduler extends DFBnBScheduler {
+
+    //create variable for the master
     private DFBnBMasterScheduler master;
     private boolean done;
 
+    /**
+     * DFBnBSlaveScheduler creates a slave which updates the masterScheduler once the DFS iteration is completed
+     * @param graph
+     * @param processors
+     * @param schedule
+     * @param upperBound
+     * @param master
+     */
     public DFBnBSlaveScheduler(TaskGraph graph, int processors, Schedule schedule, int upperBound, DFBnBMasterScheduler master) {
         super(graph, processors);
         this.master = master;
@@ -69,6 +80,10 @@ public class DFBnBSlaveScheduler extends DFBnBScheduler {
         master.finish();
     }
 
+    /**
+     * Basically to check if the slave has finished or not
+     * @return done , boolean value to learn
+     */
     public boolean isFinished() {
         return done;
     }
