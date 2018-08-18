@@ -13,12 +13,15 @@ public class TaskGraph implements Serializable {
 
     private HashSet<TaskEdge> edges; // The edges in the graph
     private HashSet<TaskNode> nodes; // The nodes in the graph
-    private String title;
+    private String title; //The title of the graph
 
-
+    /**
+     * Constructor takes in a title, and creates an empty TaskGraph
+     * @param title the title of the graph
+     */
     public TaskGraph(String title) {
-        edges = new HashSet<TaskEdge>();
-        nodes = new HashSet<TaskNode>();
+        edges = new HashSet<>();
+        nodes = new HashSet<>();
         this.title = title;
     }
 
@@ -47,7 +50,7 @@ public class TaskGraph implements Serializable {
     }
 
     /**
-     * Returns a Hashset of all the avilable edges
+     * Returns a Hashset of all the available edges
      * @return
      */
     public HashSet<TaskEdge> getEdges() {
