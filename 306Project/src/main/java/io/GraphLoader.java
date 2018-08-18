@@ -23,6 +23,12 @@ import graph.TaskNode;
  */
 public class GraphLoader {
 
+	/**
+	 * Loads a graph from an input dot file and outputs a
+	 * GraphStream graph
+	 * @param filePath
+	 * @return
+	 */
 	public Graph loadGraph(String filePath) {
 
 		Graph graph = new SingleGraph("graph"); // Creates graph
@@ -31,15 +37,13 @@ public class GraphLoader {
 		// Loads graph from filepath
 		try {
 			fs = FileSourceFactory.sourceFor(filePath);
-
 			fs.addSink(graph);
-
 			fs.readAll(filePath);
-
-
-		} catch( IOException e) {
-
-		} finally {
+		}
+		catch( IOException e) {
+			e.printStackTrace();
+		}
+		finally {
 			fs.removeSink(graph);
 		}
 
@@ -61,11 +65,13 @@ public class GraphLoader {
 			sc.close();
 		}
 		catch (Exception ex) {
-
+			ex.printStackTrace();
 		}
 
+		//Loading the dot file into a GraphStrema graph
 		Graph graph = loadGraph(filePath);
 
+		//Converting from the GraphStream graph to the taskgraph
 		TaskGraph taskGraph = convertGraph(graph, graphTitle);
 
 		return taskGraph;
@@ -114,7 +120,7 @@ public class GraphLoader {
 			TaskNode targetTaskNode = new TaskNode(targetWeightInt, target.toString());
 
 			//Compare the taskNodes created above with the taskNodes in the TaskGraph
-			TaskEdge tEdge = null;
+			TaskEdge tEdge;
 			for (TaskNode tNode : tNodesSet) {
 				if (sourceTaskNode.getName().equals(tNode.getName())) {
 					for (TaskNode tNodeA : tNodesSet) {
@@ -148,6 +154,7 @@ public class GraphLoader {
 		double nodeWeight =  Double.parseDouble(node.getAttribute("Weight").toString());
 		int nodeWeightInt = (int) nodeWeight;
 
+		//Setting the name of the node
 		String nodeName = node.toString();
 
 		//Creates the TaskNode according to its weight and name

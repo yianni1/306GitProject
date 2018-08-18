@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+/**
+ * This class is used to encapsulate a node on the input graph,
+ * as well as a task on the final solutionTree.
+ */
 public class TaskNode implements Serializable {
     private int weight; //The weight of the node
     private String name; //The name of the node, used to identify it
