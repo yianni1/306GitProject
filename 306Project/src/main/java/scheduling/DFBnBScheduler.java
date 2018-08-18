@@ -189,9 +189,7 @@ public class DFBnBScheduler implements Scheduler{
 				} else {	// Pruning
 					nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 					branchesPruned++;
-					if (scheduleListener != null && (System.currentTimeMillis() % 100 == 0)) { //update visualisation with new number of branches pruned
-						updateBranchesPruned();
-					}
+					updateBranchesPruned();
 
 				}
 			}
@@ -217,9 +215,7 @@ public class DFBnBScheduler implements Scheduler{
 			if (schedule.getScheduledNodes().size() > 0) {
 				schedule.removeLastScheduledTask();
 				numPaths++;
-				if ((System.currentTimeMillis() % 100 == 0)) { //update visualisation with new number of paths
-					updateNumPaths();
-				}
+				updateNumPaths();
 			}
 
 
@@ -473,8 +469,9 @@ public class DFBnBScheduler implements Scheduler{
      * Updates listener with number of branches pruned.
      */
 	public void updateBranchesPruned() {
-	    if (scheduleListener != null) {
-            scheduleListener.updateBranchesPruned(branchesPruned);       }
+		if (scheduleListener != null && (System.currentTimeMillis() % 100 == 0)) {
+            scheduleListener.updateBranchesPruned(branchesPruned);
+		}
 
     }
 
@@ -482,8 +479,8 @@ public class DFBnBScheduler implements Scheduler{
      * Updates listener with number of paths searched.
      */
     public void updateNumPaths() {
-        if (scheduleListener != null) {
-            scheduleListener.updateNumPaths(numPaths);
+		if (scheduleListener != null && (System.currentTimeMillis() % 100 == 0)) {
+			scheduleListener.updateNumPaths(numPaths);
         }
     }
 
