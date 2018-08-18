@@ -15,7 +15,7 @@ import java.util.List;
 
 import static junit.framework.TestCase.assertTrue;
 
-public class ParrallelUnitTests {
+public class ParallelUnitTests {
 
     @Test
     public void testinitialisePartialSchedules() {
