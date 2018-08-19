@@ -11,7 +11,7 @@ import scheduling.Schedule;
 
 import java.util.List;
 
-public class ScheduleClassTests {
+public class ScheduleClassTest {
 
     /**
      * Tests the addTask method in schedule

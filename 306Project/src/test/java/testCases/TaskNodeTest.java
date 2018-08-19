@@ -12,7 +12,7 @@ import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertFalse;
 
-public class TaskNodeTests {
+public class TaskNodeTest {
 
     /**
      * Tests a simple graph with two parents and a child node.

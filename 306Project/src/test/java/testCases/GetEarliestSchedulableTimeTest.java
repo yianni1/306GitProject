@@ -12,12 +12,12 @@ import scheduling.Schedule;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class GetEarliestSchedulableTimeTests extends testCases.CompareOutput {
+public class GetEarliestSchedulableTimeTest extends testCases.CompareOutput {
 
     @Test
     public void testGetEarliestSchedulableTime() throws NotSchedulableException {
         GraphLoader loader = new GraphLoader();
-        TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_7_OutTree.dot");
+        TaskGraph graph = loader.load("src/test/java/DotFiles/SuppliedTests/Nodes_7_OutTree.dot");
         Schedule schedule = new Schedule(2, graph);
 
         TaskNode rootNode = null;
@@ -58,7 +58,7 @@ public class GetEarliestSchedulableTimeTests extends testCases.CompareOutput {
             }
         }
 
-        schedule = new Schedule(2, loader.load("src/main/resources/DotFiles/Nodes_7_OutTree.dot"));
+        schedule = new Schedule(2, loader.load("src/test/java/DotFiles/SuppliedTests/Nodes_7_OutTree.dot"));
 
         for (TaskNode node : schedule.getSchedulableNodes()) {
             if (node.getName().equals("g")) {

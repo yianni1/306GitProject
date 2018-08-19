@@ -12,7 +12,7 @@ import exceptions.TaskException;
 /**
  * Created by olive on 7/08/2018.
  */
-public class ProcessorClassTests {
+public class ProcessorClassTest {
 
     private Processor processor;
 

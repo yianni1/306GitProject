@@ -34,7 +34,7 @@ import scheduling.Processor;
 import scheduling.Schedule;
 import scheduling.Scheduler;
 
-public class AllGraphTests extends testCases.CompareOutput {
+public class GreedyScheduleTestAndValidness extends testCases.CompareOutput {
 
     //Test Variables
     private static List<String> filePaths;
@@ -51,11 +51,11 @@ public class AllGraphTests extends testCases.CompareOutput {
 
         //file paths for all the tests
         filePaths = new ArrayList<String>();
-        filePaths.addAll(Arrays.asList("src/main/resources/DotFiles/Nodes_7_OutTree.dot", "src/main/resources/DotFiles/Test1.dot",
-                "src/main/resources/DotFiles/TestTwoParents.dot", "src/main/resources/DotFiles/Nodes_10_Random.dot",
-                "src/main/resources/DotFiles/Nodes_9_SeriesParallel.dot", "src/main/resources/DotFiles/Nodes_11_OutTree.dot",
-                "src/main/resources/DotFiles/Nodes_8_Random.dot", "src/main/resources/DotFiles/TripleProcessor.dot", 
-                "src/main/resources/DotFiles/threeParents.dot", "src/main/resources/DotFiles/CustomTest.dot"));
+        filePaths.addAll(Arrays.asList("src/test/java/DotFiles/SuppliedTests/Nodes_7_OutTree.dot", "src/test/java/DotFiles/otherTestCases/Test1.dot",
+                "src/test/java/DotFiles/otherTestCases/TestTwoParents.dot", "src/test/java/DotFiles/SuppliedTests/Nodes_10_Random.dot",
+                "src/test/java/DotFiles/SuppliedTests/Nodes_9_SeriesParallel.dot", "src/test/java/DotFiles/SuppliedTests/Nodes_11_OutTree.dot",
+                "src/test/java/DotFiles/SuppliedTests/Nodes_8_Random.dot", "src/test/java/DotFiles/otherTestCases/TripleProcessor.dot",
+                "src/test/java/DotFiles/otherTestCases/threeParents.dot", "src/test/java/DotFiles/otherTestCases/CustomTest.dot"));
     }
 
     /**
@@ -65,8 +65,8 @@ public class AllGraphTests extends testCases.CompareOutput {
     public void testGreedySchedule() throws NotSchedulableException {
         for (String filePath : filePaths) {
             greedySchedule(filePath);
-     }
-    //    greedySchedule("src/main/resources/DotFiles/CustomTest.dot");
+        }
+
     }
 
     private void greedySchedule(String filePath) throws NotSchedulableException {
@@ -129,7 +129,7 @@ public class AllGraphTests extends testCases.CompareOutput {
     @Test
     public void testTest1Dot() throws IOException, URISyntaxException, NotSchedulableException {
         GraphLoader loader = new GraphLoader();
-        TaskGraph graph = loader.load("src/main/resources/DotFiles/Test1.dot");
+        TaskGraph graph = loader.load("src/test/java/DotFiles/otherTestCases/Test1.dot");
 
         String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
         File parent = new File(path);
@@ -167,7 +167,7 @@ public class AllGraphTests extends testCases.CompareOutput {
     @Test
     public void testTripleProcessorDot() throws IOException, URISyntaxException, NotSchedulableException, NotDeschedulableException {
         GraphLoader loader = new GraphLoader();
-        TaskGraph graph = loader.load("src/main/resources/DotFiles/TripleProcessor.dot");
+        TaskGraph graph = loader.load("src/test/java/DotFiles/otherTestCases/TripleProcessor.dot");
 
         String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
         File parent = new File(path);
@@ -258,7 +258,7 @@ public class AllGraphTests extends testCases.CompareOutput {
     @Test
     public void testTwoEntryNodes() throws IOException, URISyntaxException, NotSchedulableException, NotDeschedulableException {
         GraphLoader loader = new GraphLoader();
-        TaskGraph graph = loader.load("src/main/resources/DotFiles/TestTwoParents.dot");
+        TaskGraph graph = loader.load("src/test/java/DotFiles/otherTestCases/TestTwoParents.dot");
 
         String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
         File parent = new File(path);
@@ -296,7 +296,7 @@ public class AllGraphTests extends testCases.CompareOutput {
     @Test
     public void testThreeParents() throws Exception {
         GraphLoader loader = new GraphLoader();
-        TaskGraph graph = loader.load("src/main/resources/DotFiles/threeParents.dot");
+        TaskGraph graph = loader.load("src/test/java/DotFiles/otherTestCases/threeParents.dot");
 
         String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
         File parent = new File(path);
@@ -326,44 +326,6 @@ public class AllGraphTests extends testCases.CompareOutput {
         System.out.println(same);
         assertTrue(same);
 
-    }
-
-    /**
-     * Tests a basic graph with 7 nodes.
-     *
-     * @throws IOException
-     */
-    @Test
-    public void testNodes7() throws IOException {
-
-        // Put a unique file name (doesn't have to be the name of the graph), and the graphs file path.
-		 	/*GraphLoader loader = new GraphLoader();
-	        String outputFileName = "Nodes7";
-	        TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_7_OutTree.dot");
-	        Scheduler scheduler = new GreedyScheduler(graph, 2);
-	        Schedule solution = scheduler.createSchedule();
-
-	        Output.createOutput(solution.getProcessors(), graph, outputFileName + "TestSolution");
-
-	        Schedule correctSolution = new Schedule(2, graph);
-
-	        List<Processor> processes = correctSolution.getProcessors();
-
-	        Processor p1 = processes.get(0);
-	        Processor p2 = processes.get(1);
-
-	        p1.addTask(new TaskNode(5, "0"), 0);
-	        p1.addTask(new TaskNode(5, "2"), 5);
-	        p1.addTask(new TaskNode(6, "3"), 10);
-	        p1.addTask(new TaskNode(6, "1"), 16);
-	        p1.addTask(new TaskNode(4, "4"), 22);
-	        p1.addTask(new TaskNode(7, "5"), 26);
-	        p1.addTask(new TaskNode(7, "6"), 33);
-
-	        Output.createOutput(processes, graph, outputFileName + "CorrectSolution");
-
-	        boolean same = compareTextFiles("src/main/resources/DotFiles/" + outputFileName +"TestSolution-output.dot", "src/main/resources/DotFiles/" + outputFileName + "CorrectSolution-output.dot");
-	        assertTrue(same);*/
     }
 
     /**

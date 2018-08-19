@@ -27,7 +27,7 @@ public class OptimalTestCase extends CompareOutput {
 	@Test
 	public void test() throws IOException, URISyntaxException {
 		GraphLoader loader = new GraphLoader();
-		TaskGraph graph = loader.load("src/main/resources/DotFiles/CustomOptimalSmallGraphTest.dot");
+		TaskGraph graph = loader.load("src/test/java/DotFiles/otherTestCases/CustomOptimalSmallGraphTest.dot");
 
 		String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
 		File parent = new File(path);
@@ -84,7 +84,7 @@ public class OptimalTestCase extends CompareOutput {
 	@Test
 	public void testNode7OptimalTwoProcesses() throws URISyntaxException {
 		GraphLoader loader = new GraphLoader();
-		TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_7_OutTree.dot");
+		TaskGraph graph = loader.load("src/test/java/DotFiles/SuppliedTests/Nodes_7_OutTree.dot");
 
 		String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
 		File parent = new File(path);
@@ -99,11 +99,7 @@ public class OptimalTestCase extends CompareOutput {
 	@Test
 	public void testNode8OptimalTwoProcesses() throws URISyntaxException {
 		GraphLoader loader = new GraphLoader();
-		TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_8_Random.dot");
-
-		String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-		File parent = new File(path);
-		String parentPath = parent.getParent() + "\\";
+		TaskGraph graph = loader.load("src/test/java/DotFiles/SuppliedTests/Nodes_8_Random.dot");
 
 		Scheduler schedule = new DFBnBScheduler(graph, 2);
 		Schedule solution = schedule.createSchedule();
@@ -114,11 +110,7 @@ public class OptimalTestCase extends CompareOutput {
 	@Test
 	public void testNode9OptimalTwoProcesses() throws URISyntaxException {
 		GraphLoader loader = new GraphLoader();
-		TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_9_SeriesParallel.dot");
-
-		String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-		File parent = new File(path);
-		String parentPath = parent.getParent() + "\\";
+		TaskGraph graph = loader.load("src/test/java/DotFiles/SuppliedTests/Nodes_9_SeriesParallel.dot");
 
 		Scheduler schedule = new DFBnBScheduler(graph, 2);
 		Schedule solution = schedule.createSchedule();
@@ -129,11 +121,7 @@ public class OptimalTestCase extends CompareOutput {
 	@Test
 	public void testNode10OptimalTwoProcesses() throws URISyntaxException {
 		GraphLoader loader = new GraphLoader();
-		TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_10_Random.dot");
-
-		String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-		File parent = new File(path);
-		String parentPath = parent.getParent() + "\\";
+		TaskGraph graph = loader.load("src/test/java/DotFiles/SuppliedTests/Nodes_10_Random.dot");
 
 		Scheduler schedule = new DFBnBScheduler(graph, 2);
 		Schedule solution = schedule.createSchedule();
@@ -144,11 +132,7 @@ public class OptimalTestCase extends CompareOutput {
 	@Test
 	public void testNode7Optimal4Processes() throws URISyntaxException {
 		GraphLoader loader = new GraphLoader();
-		TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_7_OutTree.dot");
-
-		String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-		File parent = new File(path);
-		String parentPath = parent.getParent() + "\\";
+		TaskGraph graph = loader.load("src/test/java/DotFiles/SuppliedTests/Nodes_7_OutTree.dot");
 
 		Scheduler schedule = new DFBnBScheduler(graph, 4);
 		Schedule solution = schedule.createSchedule();
@@ -160,11 +144,7 @@ public class OptimalTestCase extends CompareOutput {
 	@Test
 	public void testNode8Optimal4Processes() throws URISyntaxException {
 		GraphLoader loader = new GraphLoader();
-		TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_8_Random.dot");
-
-		String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-		File parent = new File(path);
-		String parentPath = parent.getParent() + "\\";
+		TaskGraph graph = loader.load("src/test/java/DotFiles/SuppliedTests/Nodes_8_Random.dot");
 
 		Scheduler schedule = new DFBnBScheduler(graph, 4);
 		Schedule solution = schedule.createSchedule();
@@ -175,11 +155,7 @@ public class OptimalTestCase extends CompareOutput {
 	@Test
 	public void testNode9Optimal4Processes() throws URISyntaxException {
 		GraphLoader loader = new GraphLoader();
-		TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_9_SeriesParallel.dot");
-
-		String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-		File parent = new File(path);
-		String parentPath = parent.getParent() + "\\";
+		TaskGraph graph = loader.load("src/test/java/DotFiles/SuppliedTests/Nodes_9_SeriesParallel.dot");
 
 		Scheduler schedule = new DFBnBScheduler(graph, 4);
 		Schedule solution = schedule.createSchedule();
@@ -190,11 +166,7 @@ public class OptimalTestCase extends CompareOutput {
 	@Test
 	public void testNode10Optimal4Processes() throws URISyntaxException {
 			GraphLoader loader = new GraphLoader();
-			TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_10_Random.dot");
-
-			String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-			File parent = new File(path);
-			String parentPath = parent.getParent() + "\\";
+			TaskGraph graph = loader.load("src/test/java/DotFiles/SuppliedTests/Nodes_10_Random.dot");
 
 			Scheduler schedule = new DFBnBScheduler(graph, 4);
 			Schedule solution = schedule.createSchedule();
@@ -205,11 +177,7 @@ public class OptimalTestCase extends CompareOutput {
 	@Test
 	public void testNode11OptimalTwoProcesses() throws URISyntaxException {
 		GraphLoader loader = new GraphLoader();
-		TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_11_OutTree.dot");
-
-		String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-		File parent = new File(path);
-		String parentPath = parent.getParent() + "\\";
+		TaskGraph graph = loader.load("src/test/java/DotFiles/SuppliedTests/Nodes_11_OutTree.dot");
 
 		Scheduler schedule = new DFBnBScheduler(graph, 2);
 		Schedule solution = schedule.createSchedule();
@@ -220,11 +188,7 @@ public class OptimalTestCase extends CompareOutput {
 	@Test
 	public void testNode11OptimalFourProcesses() throws URISyntaxException {
 		GraphLoader loader = new GraphLoader();
-		TaskGraph graph = loader.load("src/main/resources/DotFiles/Nodes_11_OutTree.dot");
-
-		String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-		File parent = new File(path);
-		String parentPath = parent.getParent() + "\\";
+		TaskGraph graph = loader.load("src/test/java/DotFiles/SuppliedTests/Nodes_11_OutTree.dot");
 
 		Scheduler schedule = new DFBnBScheduler(graph, 4);
 		Schedule solution = schedule.createSchedule();
