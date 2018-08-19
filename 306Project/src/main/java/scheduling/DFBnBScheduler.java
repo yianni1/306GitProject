@@ -40,7 +40,7 @@ public class DFBnBScheduler implements Scheduler{
 
 	private List<TaskNode> initialNodes;
 
-	private Map<String, Boolean> combinations = new HashMap<>();
+	protected Map<String, Boolean> combinations = new HashMap<>();
 
 	public DFBnBScheduler(TaskGraph graph, int processors) {
 		this.graph = graph;
@@ -59,7 +59,7 @@ public class DFBnBScheduler implements Scheduler{
 		numPaths = 1;
 		branchesPruned = 0;
 
-		// only initialise upper bound for non slave instances of the scheduler
+		// only initialise upper bound and generate combinations for non slave instances of the scheduler
 		if (!(this instanceof DFBnBSlaveScheduler)) {
             Schedule greedySchedule = new GreedyScheduler(graph, processors).createSchedule();
 
@@ -70,18 +70,17 @@ public class DFBnBScheduler implements Scheduler{
             while (greedySchedule.getScheduledNodes().size() > 0) {
                 greedySchedule.removeLastScheduledTask();
             }
+
+			String[] namesArray = new String[schedulableNodes.size()];
+
+			for (int i=0; i<schedulableNodes.size(); i++) {
+				namesArray[i]=schedulableNodes.get(i).getName();
+			}
+
+			for (int i = processors; i > 1; i--) {
+				generateCombinations(namesArray, i, 0, new String[i]);
+			}
         }
-
-		String[] namesArray = new String[schedulableNodes.size()];
-
-		for (int i=0; i<schedulableNodes.size(); i++) {
-			namesArray[i]=schedulableNodes.get(i).getName();
-		}
-
-		for (int i = processors; i > 1; i--) {
-			generateCombinations(namesArray, i, 0, new String[i]);
-		}
-
 
 	}
 

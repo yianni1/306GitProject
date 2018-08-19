@@ -28,7 +28,7 @@ public class TestOptimality {
 //        File folder = new File("src/main/resources/DotFiles/");
 //        File[] paths = folder.listFiles();
 //        for (File file : paths) {
-//            if (file.getName().startsWith("2p")) //||
+//            if (file.getName().startsWith("4p")) //||
 //                  //  file.getName().startsWith("4p") ||
 //                  //  file.getName().startsWith("8p")) {
 //                    {files.add(file);
@@ -51,12 +51,12 @@ public class TestOptimality {
 //            String fileName = file.getName();
 //            int processors = Integer.parseInt(Character.toString(fileName.charAt(0)));
 //
-//            //Use for parrallel
-//            //int corenum = 3;
-//           // Scheduler schedule = new DFBnBMasterScheduler(graph, processors, corenum);
+////            Use for parrallel
+//            int corenum = 3;
+//            Scheduler schedule = new DFBnBMasterScheduler(graph, processors, corenum);
 //
 //            //Use for sequential
-//            Scheduler schedule = new DFBnBScheduler(graph, processors);
+////            Scheduler schedule = new DFBnBScheduler(graph, processors);
 //            Schedule solution = schedule.createSchedule();
 //
 //            //Finding the optimal
