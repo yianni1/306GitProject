@@ -213,6 +213,9 @@ public class DFBnBMasterScheduler implements Scheduler {
         int processorNumber = schedule.getProcessors().size();
         boolean initialIteration = true;
 
+        List<Schedule> schedulesToCheck = new ArrayList<>();
+        schedulesToCheck.add(schedule);
+
         //creates partial schedules if the number of partial schedules in the list is less than the number of cores
         while (partialSchedules.size() < numCores) {
 
@@ -239,8 +242,14 @@ public class DFBnBMasterScheduler implements Scheduler {
                             createPartialSchedules(s, i);
                         }
 
-
-
+                        //Loop through cloned schedules and remove the unused parent on from partialSchedules
+                        for (Schedule k : partialSchedules) {
+                            if (equals(s, k)) {
+                                //Removes the parent schedule of the new schedules created
+                                partialSchedules.remove(k);
+                                break;
+                            }
+                        }
 
                         if (partialSchedules.size() >= numCores) {
                             break;
@@ -266,7 +275,32 @@ public class DFBnBMasterScheduler implements Scheduler {
 
 
 
+    private boolean equals(Schedule s1, Schedule s2) {
 
+        boolean same = false;
+        for (Processor p : s1.getProcessors()) {
+            for (Processor c : s2.getProcessors()) {
+                if (p.getID() == c.getID()) {
+
+                    for (TaskNode task : p.getTasks()) {
+                        for (TaskNode otherTask : c.getTasks()) {
+                            if ((task.getName().equals(otherTask.getName())) && (task.getStartTime() == otherTask.getStartTime()) ) {
+                                same = true;
+                            }
+                            else {
+                                same = false;
+                                return false;
+                            }
+                        }
+                    }
+                }
+
+            }
+
+        }
+
+        return same;
+    }
 
 
 
@@ -293,8 +327,10 @@ public class DFBnBMasterScheduler implements Scheduler {
             partialSchedules.add(partialSchedule);
         }
 
-        // Remove the 'parent' partial schedule.
-        partialSchedules.remove(s);
+        //remove the value if the partial schedule already contains it
+        if (partialSchedules.contains(s)) {
+            partialSchedules.remove(s);
+        }
 
     }
 
