@@ -154,14 +154,7 @@ public class App extends Application{
 						}
 					});
 
-					//scene showing the root layout is displayed
-					Scene scene = new Scene(root);
-					primaryStage.setScene(scene);
-					primaryStage.getIcons().add(new Image(App.class.getResourceAsStream("/background/icon.png")));
-					primaryStage.setResizable(false);
-					primaryStage.sizeToScene();
-					controller.createGraph();
-					primaryStage.show();
+					showVisualisation(root, controller);
 
 					//catching an input and output exception
 				} catch (IOException e) {
@@ -175,29 +168,13 @@ public class App extends Application{
                     //Block for the user specificed option
                     String sendToOutputClass = cmd.getOptionValue("o");
 
-                    //loading the specific graph
-                    GraphLoader loader = new GraphLoader();
+					String parentPath = computeFilePath(fileName);
 
-                    //get the path of the graph file (Must be in the target folder)
-                    String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-
-                    File parent = new File(path);
-                    String parentPath = parent.getParent() + File.separator;
-
-                    //load the graph value
-                    TaskGraph graph = loader.load(parentPath + fileName);
+					TaskGraph graph = loadGraph(fileName);
 
 					Schedule finalSolution = null;
-                    if (cmd.hasOption("p")) {
-						//Doing the algorithm
-						Scheduler solution = new DFBnBMasterScheduler(graph, processorNumber, numCores);
-						finalSolution = solution.createSchedule();
-					}
-					else {
-						//Doing the algorithm
-						Scheduler solution = new DFBnBScheduler(graph, processorNumber);
-						 finalSolution = solution.createSchedule();
-					}
+
+					finalSolution = optionProcessorScheduleGeneration(cmd, graph, processorNumber, numCores);
 
                     //Transporting to output. and output with either -output for a default output or the name of the output file
                     Output.createOutput(finalSolution.getProcessors(), graph, parentPath + sendToOutputClass + ".dot");
@@ -219,29 +196,14 @@ public class App extends Application{
 
                         String sendToOutputClass = outputN;
 
-                        //loading the graph
-                        GraphLoader loader = new GraphLoader();
+						String parentPath = computeFilePath(fileName);
 
-                        //get the path of the location for the dot file
-                        String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-                        File parent = new File(path);
-                        String parentPath = parent.getParent() + File.separator;
-
-
-                        TaskGraph graph = loader.load(parentPath + fileName);
+						TaskGraph graph = loadGraph(fileName);
 
 
 						Schedule finalSolution = null;
-						if (cmd.hasOption("p")) {
-							//Doing the algorithm
-							Scheduler solution = new DFBnBMasterScheduler(graph, processorNumber, numCores);
-							finalSolution = solution.createSchedule();
-						}
-						else {
-							//Doing the algorithm
-							Scheduler solution = new DFBnBScheduler(graph, processorNumber);
-							finalSolution = solution.createSchedule();
-						}
+
+						finalSolution = optionProcessorScheduleGeneration(cmd, graph, processorNumber, numCores);
 
                         //Transporting to output
                         Output.createOutput(finalSolution.getProcessors(), graph, parentPath + sendToOutputClass + "-output.dot");
@@ -263,6 +225,74 @@ public class App extends Application{
 			System.out.println("Scheduling on " + processorNumber + " processors using " + numCores + " cores.");
 		}
 	}
+
+
+	public void showVisualisation(Parent root, VisualisationController controller) {
+		//scene showing the root layout is displayed
+		Scene scene = new Scene(root);
+		primaryStage.setScene(scene);
+		primaryStage.getIcons().add(new Image(App.class.getResourceAsStream("/background/icon.png")));
+		primaryStage.setResizable(false);
+		primaryStage.sizeToScene();
+		controller.createGraph();
+		primaryStage.show();
+	}
+
+	public TaskGraph loadGraph(String fileName) {
+
+		//loading the graph
+		GraphLoader loader = new GraphLoader();
+
+		String parentPath = computeFilePath(fileName);
+
+
+		TaskGraph graph = loader.load(parentPath + fileName);
+
+		return graph;
+
+	}
+
+
+	public Schedule optionProcessorScheduleGeneration(CommandLine cmd, TaskGraph graph, int processorNumber, int numCores ) {
+
+		Schedule finalSolution = null;
+		if (cmd.hasOption("p")) {
+			//Doing the algorithm
+			Scheduler solution = new DFBnBMasterScheduler(graph, processorNumber, numCores);
+			finalSolution = solution.createSchedule();
+		} else {
+			//Doing the algorithm
+			Scheduler solution = new DFBnBScheduler(graph, processorNumber);
+			finalSolution = solution.createSchedule();
+		}
+
+		return finalSolution;
+	}
+
+
+	public String computeFilePath(String fileName) {
+
+		String parentPath = "";
+
+		try {
+
+			//get the path of the location for the dot file
+			String path = (App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+			File parent = new File(path);
+			parentPath = parent.getParent() + File.separator;
+
+			return parentPath;
+
+		} catch (URISyntaxException epex) {
+
+			System.out.println("URISyntaxException was Thrown");
+
+		}
+
+		return parentPath;
+
+	}
+
 
 	/**
 	 * Checks the args of the input to ensure it is correct when there is no -o selected
