@@ -17,7 +17,7 @@ public class DFBnBSlaveScheduler extends DFBnBScheduler {
         this.master = master;
         this.schedule = schedule;
         this.schedulableNodes = schedule.getSchedulableNodes();
-        this.minDepth = schedule.getScheduledNodes().size();
+        this.minDepth = schedule.getScheduledNodes().size() - 1;
         this.depth = minDepth;
         this.upperBound = upperBound;
         this.combinations = combinations;
@@ -49,8 +49,8 @@ public class DFBnBSlaveScheduler extends DFBnBScheduler {
      * Sends notification to master to update number of branches pruned.
      */
     @Override
-    public void updateBranchesPruned () {
-        master.updateBranchesPruned(branchesPruned);
+    public void updateBranchesPruned (boolean forced) {
+        master.updateBranchesPruned(branchesPruned, forced);
     }
 
     /**

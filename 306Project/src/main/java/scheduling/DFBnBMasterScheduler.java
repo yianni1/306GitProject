@@ -168,9 +168,9 @@ public class DFBnBMasterScheduler implements Scheduler {
         }
     }
 
-    public void updateBranchesPruned(long branchesPruned) {
+    public void updateBranchesPruned(long branchesPruned, boolean forced) {
         this.branchesPruned = this.branchesPruned + branchesPruned;
-        if (scheduleListener != null && (System.currentTimeMillis() % 40 == 0)) {
+        if (scheduleListener != null && ((System.currentTimeMillis() % 40 == 0) || forced)) {
             scheduleListener.updateBranchesPruned(this.branchesPruned);
         }
     }

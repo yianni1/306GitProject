@@ -207,7 +207,7 @@ public class DFBnBScheduler implements Scheduler{
 				} else {	// Pruning
 					nodeIndices.set(depth, nodeIndices.get(depth) + 1);
 					branchesPruned++;
-					updateBranchesPruned();
+					updateBranchesPruned(false);
 
 				}
 			}
@@ -251,7 +251,7 @@ public class DFBnBScheduler implements Scheduler{
 		//Updating the fields
 		updateSchedule();
 		updateNumPaths(true);
-		updateBranchesPruned();
+		updateBranchesPruned(true);
 		finish();
 
 		return optimalSchedule;
@@ -397,8 +397,8 @@ public class DFBnBScheduler implements Scheduler{
     /**
      * Updates listener with number of branches pruned.
      */
-	public void updateBranchesPruned() {
-		if (scheduleListener != null && (System.currentTimeMillis() % 100 == 0)) {
+	public void updateBranchesPruned(boolean forced) {
+		if (scheduleListener != null && ((System.currentTimeMillis() % 100 == 0) || forced)) {
             scheduleListener.updateBranchesPruned(branchesPruned);
 		}
 
