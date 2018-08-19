@@ -15,6 +15,7 @@ import java.util.List;
 public class Processor implements Serializable {
 
     private int procID; //The ID of the processor
+    private int bound = 0;
     private List<TaskNode> tasks = new ArrayList<TaskNode>(); //The list of tasks on that processor
 
     /**
@@ -50,6 +51,8 @@ public class Processor implements Serializable {
 
         tasks.add(node);
 
+        bound = startTime + node.getWeight();
+
         node.schedule(startTime, this);
 
     }
@@ -60,6 +63,11 @@ public class Processor implements Serializable {
      */
     public void removeTask(TaskNode node) throws NotDeschedulableException {
         tasks.remove(node);
+        if (tasks.size() > 0) {
+            bound = tasks.get(tasks.size() - 1).getEndTime();
+        } else {
+            bound = 0;
+        }
         node.deschedule();
     }
 
@@ -68,15 +76,6 @@ public class Processor implements Serializable {
      * @return
      */
     public int getBound() {
-        int bound = 0;
-
-        //Looping through all of the nodes to get the lowest bound
-        for (TaskNode node : tasks) {
-            if (node.getEndTime() > bound) {
-                bound = node.getEndTime();
-            }
-        }
-
         return bound;
     }
 
