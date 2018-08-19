@@ -1,34 +1,34 @@
-package testCases;
-
-import graph.TaskGraph;
-import io.GraphLoader;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.rules.Stopwatch;
-import scala.util.parsing.combinator.testing.Str;
-import scheduling.DFBnBScheduler;
-import scheduling.Schedule;
-import scheduling.Scheduler;
-import scheduling.DFBnBMasterScheduler;
-
-import java.io.File;
-import java.util.*;
-
-import static org.junit.Assert.*;
-
-/**
- * Created by olive on 13/08/2018.
- */
-public class TestOptimality {
-
-    private List<File> files = new ArrayList<File>();
-
+//package testCases;
+//
+//import graph.TaskGraph;
+//import io.GraphLoader;
+//import org.junit.Before;
+//import org.junit.Test;
+//import org.junit.rules.Stopwatch;
+//import scala.util.parsing.combinator.testing.Str;
+//import scheduling.DFBnBScheduler;
+//import scheduling.Schedule;
+//import scheduling.Scheduler;
+//import scheduling.DFBnBMasterScheduler;
+//
+//import java.io.File;
+//import java.util.*;
+//
+//import static org.junit.Assert.*;
+//
+///**
+// * Created by olive on 13/08/2018.
+// */
+//public class TestOptimality {
+//
+//    private List<File> files = new ArrayList<File>();
+//
 //    @Before
 //    public void setUp() {
-//        File folder = new File("src/main/resources/DotFiles/");
+//        File folder = new File("src/main/resources/DotFiles/added_19Aug");
 //        File[] paths = folder.listFiles();
 //        for (File file : paths) {
-//            if (file.getName().startsWith("2p")) //||
+//            if (file.getName().startsWith("2p") && !file.getName().contains("21")) //||
 //                  //  file.getName().startsWith("4p") ||
 //                  //  file.getName().startsWith("8p")) {
 //                    {files.add(file);
@@ -45,7 +45,7 @@ public class TestOptimality {
 //            long startTime = System.nanoTime();
 //            //Loading the file
 //            GraphLoader loader = new GraphLoader();
-//            TaskGraph graph = loader.load("src/main/resources/DotFiles/" + file.getName());
+//            TaskGraph graph = loader.load("src/main/resources/DotFiles/added_19Aug/" + file.getName());
 //
 //            //Getting filename
 //            String fileName = file.getName();
@@ -77,4 +77,4 @@ public class TestOptimality {
 //            assertEquals(optimal, solution.getBound());
 //        }
 //    }
-}
+//}
