@@ -20,7 +20,7 @@ public class Schedule implements Serializable {
     private List<TaskNode> schedulableNodes = new ArrayList<TaskNode>(); // The tasks that can be scheduled.
     private TaskGraph graph;
     private List<TaskNode> scheduleOrder; // The order in which the tasks have been scheduled.
-
+    private Map<String, Integer> map;
     /**
      * Constructor creates a Schedule object, representing a node on the
      * schedule tree
@@ -42,6 +42,23 @@ public class Schedule implements Serializable {
 
         initializeSchedulableNodes(graph);
 
+        map = new HashMap<>();
+    }
+
+
+
+
+    public String identify() {
+        String str = "";
+        for (Processor p : processors) {
+            for (TaskNode task : p.getTasks()) {
+
+                map.put(task.getName(), task.getStartTime());
+            }
+        }
+        str = map.keySet().toString() + map.values().toString();
+        map.clear();
+        return str;
     }
 
     /**

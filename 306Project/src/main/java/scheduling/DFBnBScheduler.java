@@ -181,8 +181,30 @@ public class DFBnBScheduler implements Scheduler{
 
 				int est = schedule.getEarliestSchedulableTime(nextTask, nextProcessor);
 
+				if (skip == false) {
+                    if (schedule.getScheduledNodes().size() <= processors) {
+                        String id = schedule.identify();
+                        for (String schedulesComb : combinations.keySet()) {
+
+                            if (id.equals(schedulesComb)) {
+                                if (combinations.get(schedulesComb) == true) {
+                                    skip = true;
+                                    // System.out.println("skip");
+                                    break;
+                                }
+                                else {
+                                    combinations.replace(schedulesComb, true);
+                                }
+                            }
+
+                        }
+                    }
+                }
+
+
+
 				// Don't add the task to the processor if the upper bound will be higher
-				if (est + nextTask.getWeight() < upperBound && !skip) {
+				if (est + nextTask.getWeight() < upperBound && !skip){
 					schedule.addTask(nextTask, nextProcessor, est);
 					schedulableNodes = schedule.getSchedulableNodes();
 					nodeIndices.set(depth, nodeIndices.get(depth) + 1);
@@ -389,7 +411,7 @@ public class DFBnBScheduler implements Scheduler{
 
     public void generateCombinations(String[] arr, int len, int startPosition, String[] result){
         if (len == 0){
-            System.out.println(Arrays.toString(result));
+            //System.out.println(Arrays.toString(result));
             combinations.put(Arrays.toString(result) + Arrays.toString(new int[result.length]), false);
             return;
         }
