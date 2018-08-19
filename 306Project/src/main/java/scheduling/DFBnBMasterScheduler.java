@@ -282,9 +282,6 @@ public class DFBnBMasterScheduler implements Scheduler {
         // Remove the 'parent' partial schedule.
         partialSchedules.remove(s);
 
-
-
-
     }
 
 }
