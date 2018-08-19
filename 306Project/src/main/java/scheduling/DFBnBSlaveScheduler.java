@@ -56,7 +56,7 @@ public class DFBnBSlaveScheduler extends DFBnBScheduler {
      * Sends notification to master to update number of paths.
      */
     @Override
-    public void updateNumPaths () {
+    public void updateNumPaths (boolean forced) {
         master.updateNumPaths(numPaths);
     }
 

@@ -88,7 +88,7 @@ public class DFBnBScheduler implements Scheduler{
 	public Schedule createSchedule() throws NotDeschedulableException, NotSchedulableException {
 
 		updateSchedule();
-		updateNumPaths();
+		updateNumPaths(true);
 
 		TaskNode nextTask;
 		Processor nextProcessor;
@@ -205,7 +205,7 @@ public class DFBnBScheduler implements Scheduler{
 				upperBound = schedule.getBound();
 				//update visualisation with new optimal schedule
 				updateSchedule();
-				updateNumPaths();
+				updateNumPaths(true);
 			}
 
 			//If there are scheduled nodes, we remove the last one and
@@ -213,7 +213,7 @@ public class DFBnBScheduler implements Scheduler{
 			if (schedule.getScheduledNodes().size() > 0) {
 				schedule.removeLastScheduledTask();
 				numPaths++;
-				updateNumPaths();
+				updateNumPaths(false);
 			}
 
 			schedulableNodes = schedule.getSchedulableNodes();
@@ -227,7 +227,7 @@ public class DFBnBScheduler implements Scheduler{
 
 		//Updating the fields
 		updateSchedule();
-		updateNumPaths();
+		updateNumPaths(true);
 		updateBranchesPruned();
 		finish();
 
@@ -475,8 +475,8 @@ public class DFBnBScheduler implements Scheduler{
     /**
      * Updates listener with number of paths searched.
      */
-    public void updateNumPaths() {
-		if (scheduleListener != null && (System.currentTimeMillis() % 100 == 0)) {
+    public void updateNumPaths(boolean forced) {
+		if (scheduleListener != null && ((System.currentTimeMillis() % 100 == 0) || forced)) {
 			scheduleListener.updateNumPaths(numPaths);
         }
     }
