@@ -12,6 +12,7 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static scheduling.Utilities.combinations2;
 import static scheduling.Utilities.deepClone;
 
 /**
@@ -69,6 +70,17 @@ public class DFBnBScheduler implements Scheduler{
                 greedySchedule.removeLastScheduledTask();
             }
         }
+
+		String[] namesArray = new String[schedulableNodes.size()];
+		String[] resultArray = new String[schedulableNodes.size()];
+		Map<String,Boolean> combinations= new HashMap<>();
+
+		for (int i=0; i<schedulableNodes.size(); i++) {
+			namesArray[i]=schedulableNodes.get(i).getName();
+		}
+
+        combinations2(namesArray, processors, 0, new String[processors]);
+		System.out.println("test");
 
 
 

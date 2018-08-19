@@ -1,11 +1,14 @@
 package scheduling;
 
 import graph.TaskNode;
+import javafx.concurrent.Task;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Array;
+import java.util.*;
 
 public class Utilities {
 
@@ -60,4 +63,16 @@ public class Utilities {
 
         return same;
     }
+
+    static void combinations2(String[] arr, int len, int startPosition, String[] result){
+        if (len == 0){
+            System.out.println(Arrays.toString(result));
+            return;
+        }
+        for (int i = startPosition; i <= arr.length-len; i++){
+            result[result.length - len] = arr[i];
+            combinations2(arr, len-1, i+1, result);
+        }
+    }
+
 }
