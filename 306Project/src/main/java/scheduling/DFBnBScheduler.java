@@ -12,7 +12,6 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import static scheduling.Utilities.combinations2;
 import static scheduling.Utilities.deepClone;
 
 /**
@@ -29,6 +28,7 @@ public class DFBnBScheduler implements Scheduler{
 	protected int minDepth;
 	protected long numPaths;
 	protected long branchesPruned;
+	private int processors;
 
 	// Index of the children of the schedule.
 	private List<Integer> nodeIndices;
@@ -40,10 +40,11 @@ public class DFBnBScheduler implements Scheduler{
 
 	private List<TaskNode> initialNodes;
 
-	private Map<String, Integer> bottomLevelCosts = new HashMap<String ,Integer>();
+	private Map<String, Boolean> combinations = new HashMap<>();
 
 	public DFBnBScheduler(TaskGraph graph, int processors) {
 		this.graph = graph;
+		this.processors = processors;
 
         //storing the initial nodes, indexs for the nodes and processors
         initialNodes = new ArrayList<>();
@@ -79,17 +80,11 @@ public class DFBnBScheduler implements Scheduler{
 			namesArray[i]=schedulableNodes.get(i).getName();
 		}
 
-        combinations2(namesArray, processors, 0, new String[processors]);
-		System.out.println("test");
-
-
-
-		for (TaskNode n : graph.getNodes()) {
-		    Integer blp = criticalPath(n);
-            bottomLevelCosts.put(n.getName(), blp);
-        }
+		generateCombinations(namesArray, processors, 0, new String[processors]);
 
 	}
+
+
 
 	/**
 	 * Returns the schedule according to DFSBnB
@@ -248,71 +243,6 @@ public class DFBnBScheduler implements Scheduler{
 	}
 
 	/**
-	 * Calculates the cost function for a TaskNode on a Processor
-	 * @param nextTask The taskNode we are looking at scheduling
-	 * @param nextProcessor The processor we are looking at scheduling it on
-	 * @return The 'cost' for scheduling that task on that processor
-	 */
-	private int costFunction(TaskNode nextTask, Processor nextProcessor) {
-
-		//COST FUNCTION CODE---------------------------------------------
-
-		// F-IDLE CALCULATION -------------------------------------------
-
-		// Gets the total cost of all nodes
-		int totalCostOfNodes = 0;
-		for (TaskNode node : graph.getNodes()) {
-			totalCostOfNodes = totalCostOfNodes + node.getWeight();
-		}
-
-		int totalIdleTime = 0;
-		// Gets the total idle time for that partial schedule
-		for (Processor p : schedule.getProcessors()) {
-			int totalTime = schedule.getBound(); // Use the entire bound of the processor
-			int totalTaskWeight = 0;
-			for (TaskNode tasks : p.getTasks()) {
-				totalTaskWeight = totalTaskWeight + tasks.getWeight();
-			}
-			totalIdleTime = totalIdleTime + totalTime - totalTaskWeight;
-		}
-
-		// fIdle formula calculation
-		int fIdle = (totalCostOfNodes + totalIdleTime) / schedule.getProcessors().size();
-
-		// F-BOTTOM-LEVEL CALCULATION ----------------------------------------------
-		// fbl(s) = max(start time + bottom level weight) of all nodes of that partial schedule.
-
-		int fblTemp;
-		int fblMax = 0;    // The currently highest maximum fbl.
-
-		// Loop through all the scheduled nodes, then the node we want to schedule and find the maxFbl out of them.
-		for (TaskNode tn : schedule.getScheduledNodes()) {
-			Integer value = bottomLevelCosts.get(tn.getName());
-			fblTemp = tn.getStartTime() + value;
-			fblMax = Math.max(fblMax, fblTemp);
-		}
-
-		// Can't call getStartTime on the child node because we haven't scheduled it yet.
-		int childStartTime = schedule.getEarliestSchedulableTime(nextTask, nextProcessor);
-		Integer value = bottomLevelCosts.get(nextTask.getName());
-		fblTemp = childStartTime + value;
-		fblMax = Math.max(fblMax, fblTemp);
-
-		// fDRT CALCULATION -------------------------------------------------------------------------
-		// fDRT(s) = max{tdr(n) + blw(n) for every free node.
-		// tdr(n) = min (tdr(n,P) i.e. earliest schedulable node.
-		// tdr(n,P) is earliest schedulable time.
-
-//		int fDRT = schedule.getEarliestSchedulableTime(nextTask,nextProcessor) + childStartTime;
-
-//		child.setCostFunction(Math.max(fblMax, fIdle));
-
-//		return Math.max(Math.max(fblMax, fIdle), fDRT);
-//		System.out.println("Cost function is: " + Math.max(fblMax,fIdle));
-		return Math.max(fblMax,fIdle);
-	}
-
-	/**
 	 * Calculates the longest path from the current node to an end node.
 	 * @param node The node we're finding the critical path for.
 	 * @return int: The highest critical path for that node.
@@ -455,6 +385,18 @@ public class DFBnBScheduler implements Scheduler{
 		}
 
 	}
+
+    public void generateCombinations(String[] arr, int len, int startPosition, String[] result){
+        if (len == 0){
+            System.out.println(Arrays.toString(result));
+            combinations.put(Arrays.toString(result) + Arrays.toString(new int[processors]), false);
+            return;
+        }
+        for (int i = startPosition; i <= arr.length-len; i++){
+            result[result.length - len] = arr[i];
+            generateCombinations(arr, len-1, i+1, result);
+        }
+    }
 
 	public void setScheduleListener(VisualisationController listener) {
 		this.scheduleListener = listener;
