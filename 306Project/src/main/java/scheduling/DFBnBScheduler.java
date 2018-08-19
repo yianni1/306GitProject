@@ -46,9 +46,11 @@ public class DFBnBScheduler implements Scheduler{
 
 	private HashSet<String> seenSchedules = new HashSet<>();
 
+	private int numProcessors;
+
 	public DFBnBScheduler(TaskGraph graph, int processors) {
 		this.graph = graph;
-
+		this.numProcessors = processors-1;
         //storing the initial nodes, indexs for the nodes and processors
         initialNodes = new ArrayList<>();
         nodeIndices = new ArrayList<>(Collections.nCopies((graph.getNodes().size()), 0)); //depth of all nodes in the nodeIndices array is set to zero
@@ -199,61 +201,45 @@ public class DFBnBScheduler implements Scheduler{
 
 				int est = schedule.getEarliestSchedulableTime(nextTask, nextProcessor);
 
+
+
+
 				// Don't add the task to the processor if the upper bound will be higher
 				if ( (est + nextTask.getWeight() < upperBound && !skip) ) {
 					//System.out.println("Task " + nextTask.getName() + " on schedule "+nextProcessor.getID()+" will be less than the upper bound. ("+est+" vs. "+ upperBound+")");
+					boolean dontDo = false;
 
+					String id = schedule.identify(nextTask, nextProcessor, est);
+					if (seenSchedules.contains(id)) {
+						// Skip code
+						if (schedule.getSchedulableNodes().size()-1 == nodeIndex) {
+							if (processorIndex == numProcessors) {
 
-                    schedule.addTask(nextTask, nextProcessor, est);
+								dontDo = true;
+								//System.out.println("dup");
+							}
+						}
+					} else {
+						if (seenSchedules.size() < 5000000) {
+							seenSchedules.add(id);
 
+						}
+					}
 
-                    boolean dontDo = false;
-                    if (seenSchedules.size() < 5000000) {
-                        String id = schedule.identify();
+					if (!dontDo) {
+						schedule.addTask(nextTask, nextProcessor, est);
 
-                        if (seenSchedules.contains(id)) {
-                            schedule.removeLastScheduledTask();
-
-                            nodeIndices.set(depth, nodeIndices.get(depth) + 1);
-                            branchesPruned++;
-                            if (scheduleListener != null && (System.currentTimeMillis() % 100 == 0)) { //update visualisation with new number of branches pruned
-                                scheduleListener.updateBranchesPruned(branchesPruned);
-                            }
-                            dontDo = true;
-
-                        }
-                        else {
-                            seenSchedules.add(id);
-                        }
-                    }
-
-
-
-//				// Run the cost function for each of the tasks children to determine which one to schedule first.
-//				TaskNode minTask;			// The node and processor that has the lowest cost
-//				Processor minProcessor;
-
-//                int costF;
-//				for (TaskEdge e: nextTask.getOutgoingEdges()){
-//					TaskNode tn = e.getEndNode();
-//                    costF = Integer.MAX_VALUE;
-//
-//                    for (Processor p: schedule.getProcessors()) {
-//
-//					    //costF = costFunction(tn, p);
-//                        int currentCF = costFunction(tn,p);
-//
-//					    if (currentCF <= costF) {
-//                            tn.setCostFunction(currentCF);
-//                        }
-//					}
-//				}
-                    if (dontDo == false) {
-                        schedulableNodes = schedule.getSchedulableNodes();
-                        nodeIndices.set(depth, nodeIndices.get(depth) + 1);
-                        depth++;
-                    }
-
+						schedulableNodes = schedule.getSchedulableNodes();
+						nodeIndices.set(depth, nodeIndices.get(depth) + 1);
+						depth++;
+					}
+					else {
+						nodeIndices.set(depth, nodeIndices.get(depth) + 1);
+						branchesPruned++;
+						if (scheduleListener != null && (System.currentTimeMillis() % 100 == 0)) { //update visualisation with new number of branches pruned
+							scheduleListener.updateBranchesPruned(branchesPruned);
+						}
+					}
 
 
 

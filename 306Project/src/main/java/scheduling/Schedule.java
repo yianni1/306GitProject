@@ -41,12 +41,24 @@ public class Schedule implements Serializable {
     }
 
     private Map<String, Integer> map;
-    public String identify() {
+    public String identify(TaskNode nextNode, Processor nextProcessor, int nextStartTime) {
         String str = "";
-
+        int numOfTasksAdded;
+        int numTasksTotal;
         for (Processor p : processors) {
+            numOfTasksAdded=0;
+            numTasksTotal=p.getTasks().size();
             for (TaskNode task : p.getTasks()) {
-                map.put(task.getName(), p.getID());
+
+                map.put(task.getName() + task.getStartTime(), p.getID());
+                numOfTasksAdded++;
+
+                if (nextProcessor.equals(p)) {
+                    if (numTasksTotal == numOfTasksAdded) {
+                        map.put(nextNode.getName() + nextStartTime, nextProcessor.getID());
+                        //System.out.println("Added task to procs");
+                    }
+                }
             }
         }
         str = map.keySet().toString() + map.values().toString();
