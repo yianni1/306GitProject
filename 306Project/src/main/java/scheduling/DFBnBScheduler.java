@@ -73,14 +73,15 @@ public class DFBnBScheduler implements Scheduler{
         }
 
 		String[] namesArray = new String[schedulableNodes.size()];
-		String[] resultArray = new String[schedulableNodes.size()];
-		Map<String,Boolean> combinations= new HashMap<>();
 
 		for (int i=0; i<schedulableNodes.size(); i++) {
 			namesArray[i]=schedulableNodes.get(i).getName();
 		}
 
-		generateCombinations(namesArray, processors, 0, new String[processors]);
+		for (int i = processors; i > 1; i--) {
+			generateCombinations(namesArray, i, 0, new String[i]);
+		}
+
 
 	}
 
@@ -389,7 +390,7 @@ public class DFBnBScheduler implements Scheduler{
     public void generateCombinations(String[] arr, int len, int startPosition, String[] result){
         if (len == 0){
             System.out.println(Arrays.toString(result));
-            combinations.put(Arrays.toString(result) + Arrays.toString(new int[processors]), false);
+            combinations.put(Arrays.toString(result) + Arrays.toString(new int[result.length]), false);
             return;
         }
         for (int i = startPosition; i <= arr.length-len; i++){
