@@ -68,15 +68,18 @@ public class DFBnBScheduler implements Scheduler{
                 greedySchedule.removeLastScheduledTask();
             }
 
-			String[] namesArray = new String[schedulableNodes.size()];
+			if (combinations != null) {
+				String[] namesArray = new String[schedulableNodes.size()];
 
-			for (int i=0; i<schedulableNodes.size(); i++) {
-				namesArray[i]=schedulableNodes.get(i).getName();
+				for (int i=0; i<schedulableNodes.size(); i++) {
+					namesArray[i]=schedulableNodes.get(i).getName();
+				}
+
+				for (int i = processors; i > 1; i--) {
+					generateCombinations(namesArray, i, 0, new String[i]);
+				}
 			}
 
-			for (int i = processors; i > 1; i--) {
-				generateCombinations(namesArray, i, 0, new String[i]);
-			}
         }
 
 	}
@@ -177,24 +180,28 @@ public class DFBnBScheduler implements Scheduler{
 
 				int est = schedule.getEarliestSchedulableTime(nextTask, nextProcessor);
 
-				if (skip == false) {
-                    if (schedule.getScheduledNodes().size() <= processors) {
-                        String id = schedule.identify();
-                        for (String schedulesComb : combinations.keySet()) {
+				if (combinations != null) {
+					if (skip == false) {
+						if (schedule.getScheduledNodes().size() <= processors) {
+							String id = schedule.identify();
+							for (String schedulesComb : combinations.keySet()) {
 
-                            if (id.equals(schedulesComb)) {
-                                if (combinations.get(schedulesComb) == true) {
-                                    skip = true;
-                                    break;
-                                }
-                                else {
-                                    combinations.replace(schedulesComb, true);
-                                }
-                            }
+								if (id.equals(schedulesComb)) {
+									if (combinations.get(schedulesComb) == true) {
+										skip = true;
+										break;
+									}
+									else {
+										combinations.replace(schedulesComb, true);
+									}
+								}
 
-                        }
-                    }
-                }
+							}
+						}
+					}
+
+				}
+
 
 
 
