@@ -88,8 +88,6 @@ public class DFBnBMasterScheduler implements Scheduler {
         //Thread pool assigned with the number of cores
         ExecutorService executor = Executors.newFixedThreadPool(numCores);
 
-        // System.out.println("Running on " + numCores + " threads with " + partialSchedules.size() + " slave schedulers.");
-
         List<Schedule> locallyOptimalSchedules = new ArrayList<>();
 
         //generating the number of threads associative to the number of cores
@@ -138,7 +136,7 @@ public class DFBnBMasterScheduler implements Scheduler {
 
         }
 
-        System.out.println("Global optimal solution with bound of " + optimalSchedule.getBound() + " found!");
+        System.out.println("Optimal solution with bound of " + optimalSchedule.getBound() + " found!");
         return optimalSchedule;
 
     }
@@ -302,7 +300,6 @@ public class DFBnBMasterScheduler implements Scheduler {
 
     public void generateCombinations(String[] arr, int len, int startPosition, String[] result){
         if (len == 0){
-            //System.out.println(Arrays.toString(result));
             combinations.put(Arrays.toString(result) + Arrays.toString(new int[result.length]), false);
             return;
         }

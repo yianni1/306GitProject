@@ -1,6 +1,5 @@
 package scheduling;
 
-import comparators.CostFunctionComparator;
 import exceptions.NotDeschedulableException;
 import exceptions.NotSchedulableException;
 import graph.TaskEdge;
@@ -111,118 +110,7 @@ public class Schedule implements Serializable {
     public List<TaskNode> getSchedulableNodes() {
 
         this.schedulableNodes = sortSchedulableNodesAlphabetically();
-//      this.schedulableNodes = sortByCostFunction();
-        // Sort the schedulable nodes. Decide which sorting to use based on how many processors (and nodes).
-//        if ((this.processors.size() > 1) && (graph.getNodes().size()>=10)) {
-//            this.schedulableNodes=sortSchedulableNodesByEET();
-//        } else {
-//            this.schedulableNodes = sortSchedulableNodesAlphabetically();
-//        }
-    	
-
         return this.schedulableNodes;
-    }
-
-    /**
-     * Sorts all of the nodes by their cost function, to make the algorithm as fast
-     * as possible
-     * @return
-     */
-    private List<TaskNode> sortByCostFunction() {
-
-        //Copying and sorting scheduled nodes
-        List<TaskNode> schedCopy = schedulableNodes;
-        Collections.sort(schedCopy, new CostFunctionComparator());
-
-//        for (TaskNode tn: schedCopy) {
-//            System.out.print(tn.getCostFunction() + ", ");
-//        }
-//        System.out.println();
-
-        return schedCopy;
-    }
-    
-    
-    
-    
-    
-    /**
-     * Sorts nodes according to earliest end times (ONLY CONSIDERING p0 for the sake of speed).
-     * @return ArrayList<TaskNode> sorted by end time
-     */
-    private List<TaskNode> sortSchedulableNodesByEET() {
-        List<TaskNode> schedCopy = schedulableNodes;
-        List<TaskNode> sorted = new ArrayList<TaskNode>();
-
-        TaskNode nextNode;
-        Processor nextProcessor = this.getProcessors().get(0);
-        // The processor to be scheduled on. (We're only considering P0 for this sorting method).
-
-        while (schedCopy.size() > 0) {
-            // Adapated from GreedyScheduler
-            nextNode = schedCopy.get(0);
-            int nextStartTime = this.getEarliestSchedulableTime(nextNode, nextProcessor);
-            int nextEndTime = nextStartTime + nextNode.getWeight();
-
-            //Go through all nodes and check earliest schedulable time on each processor to find next best node to schedule
-            for (TaskNode n : schedCopy) {
-
-                int tentativeStartTime = this.getEarliestSchedulableTime(n, nextProcessor);
-                int tentativeEndTime = tentativeStartTime + n.getWeight();
-
-                if (tentativeEndTime < nextEndTime) {
-//                        nextStartTime = tentativeStartTime;
-                    nextEndTime = tentativeEndTime;
-                    nextNode = n;
-                }
-
-            }
-            sorted.add(nextNode);
-            schedCopy.remove(nextNode);
-        }
-
-        return sorted;
-    }
-
-    /**
-     * Sorts the schedulable nodes by the earliest end time (over all processors)
-     * @return List<TaskNode> sorted by all earliest end times
-     */
-    private List<TaskNode> sortSchedulableNodesByAllEET () {
-        List<TaskNode> schedCopy = schedulableNodes;
-        List<TaskNode> sorted = new ArrayList<TaskNode>();
-
-        TaskNode nextNode;
-        Processor nextProcessor;
-
-        while (schedCopy.size()>0) {
-            // Adapated from GreedyScheduler
-            nextNode = schedCopy.get(0);
-            nextProcessor = this.getProcessors().get(0);
-            int nextStartTime = this.getEarliestSchedulableTime(nextNode, nextProcessor);
-            int nextEndTime = nextStartTime + nextNode.getWeight();
-
-            //Go through all nodes and check earliest schedulable time on each processor to find next best node to schedule
-            for (Processor p : this.getProcessors()) {
-                for (TaskNode n : schedCopy) {
-
-                    int tentativeStartTime = this.getEarliestSchedulableTime(n, p);
-                    int tentativeEndTime = tentativeStartTime + n.getWeight();
-
-                    if (tentativeEndTime < nextEndTime) {
-//                        nextStartTime = tentativeStartTime;
-                        nextEndTime = tentativeEndTime;
-                        nextNode = n;
-//                        nextProcessor = p;
-                    }
-
-                }
-            }
-            sorted.add(nextNode);
-            schedCopy.remove(nextNode);
-        }
-
-        return sorted;
     }
 
     /**

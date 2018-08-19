@@ -3,7 +3,6 @@ package scheduling;
 import graph.TaskGraph;
 
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Slave version of DFbnBScheduler to support starting from a partial schedule and notifying master of updates.

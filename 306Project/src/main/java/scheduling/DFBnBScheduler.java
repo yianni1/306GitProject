@@ -6,9 +6,6 @@ import graph.TaskEdge;
 import graph.TaskGraph;
 import graph.TaskNode;
 import view.VisualisationController;
-
-
-import java.io.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -188,7 +185,6 @@ public class DFBnBScheduler implements Scheduler{
                             if (id.equals(schedulesComb)) {
                                 if (combinations.get(schedulesComb) == true) {
                                     skip = true;
-                                    // System.out.println("skip");
                                     break;
                                 }
                                 else {
@@ -248,10 +244,8 @@ public class DFBnBScheduler implements Scheduler{
 			schedulableNodes = schedule.getSchedulableNodes();
 
 		}
-		if (optimalSchedule == null) {
-			System.out.println("No solution better than initial upper bound found on this branch.");
-		} else {
-			System.out.println("Solution with bound of " + optimalSchedule.getBound() + " found");
+		if (!(this instanceof DFBnBSlaveScheduler)) {
+			System.out.println("Optimal solution with bound of " + optimalSchedule.getBound() + " found!");
 		}
 
 		//Updating the fields
@@ -263,43 +257,6 @@ public class DFBnBScheduler implements Scheduler{
 		return optimalSchedule;
 
 	}
-
-	/**
-	 * Calculates the longest path from the current node to an end node.
-	 * @param node The node we're finding the critical path for.
-	 * @return int: The highest critical path for that node.
-	 */
-	public int criticalPath(TaskNode node) {
-		return dfsCriticalPath(node) + node.getWeight();
-	}
-
-	/**
-	 * This is used to find the highest critical path Does the DFS over the tree.
-	 * @param node The node we're finding the critical path for.
-	 * @return int: The highest critical path for that node's children.
-	 */
-	private int dfsCriticalPath(TaskNode node) {
-
-		int ans = 0;
-
-		//Loop through all children
-		for (TaskEdge edge : node.getOutgoingEdges()) {
-			TaskNode child = edge.getEndNode();
-
-			//Do recursion as described by oliver's task scheduling for bottom level path
-			int temp = dfsCriticalPath(child) + child.getWeight();
-
-			//Select the maximum weight of the current path
-			if (temp > ans) {
-				ans = temp;
-			}
-		}
-
-		return ans;
-	}
-
-
-
 
 	/**
 	 * This method removes replicated parts of the tree depending on the number of initial nodes
@@ -410,7 +367,6 @@ public class DFBnBScheduler implements Scheduler{
 
     public void generateCombinations(String[] arr, int len, int startPosition, String[] result){
         if (len == 0){
-            //System.out.println(Arrays.toString(result));
             combinations.put(Arrays.toString(result) + Arrays.toString(new int[result.length]), false);
             return;
         }

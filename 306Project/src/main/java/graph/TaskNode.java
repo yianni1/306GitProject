@@ -29,9 +29,6 @@ public class TaskNode implements Serializable {
     //the processor on which the task is scheduled
     private Processor processor;
 
-    //the cost function intial value
-    private int costFunction = Integer.MAX_VALUE;
-
     //the set to store the incoming edges
     private HashSet<TaskEdge> incomingEdges;
 
@@ -55,23 +52,6 @@ public class TaskNode implements Serializable {
         incomingEdges = new HashSet<TaskEdge>();
         outgoingEdges = new HashSet<TaskEdge>();
     }
-
-    /**
-     * the Get method returns the cost Function of the node
-     * @return
-     */
-    public int getCostFunction() {
-    	return costFunction;
-    }
-
-    /**
-     * This sets the cost function for a particular node
-     * @param costFunction
-     */
-    public void setCostFunction(int costFunction) {
-    	this.costFunction = costFunction;
-    }
-    
     
     /**
      *
