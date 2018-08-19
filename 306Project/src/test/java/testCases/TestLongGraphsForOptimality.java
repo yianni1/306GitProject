@@ -52,11 +52,11 @@ public class TestLongGraphsForOptimality {
             int processors = Integer.parseInt(Character.toString(fileName.charAt(0)));
 
 //            Use for parrallel
-      //      int corenum = 3;
-         //   Scheduler schedule = new DFBnBMasterScheduler(graph, processors, corenum);
+            int corenum = 3;
+            Scheduler schedule = new DFBnBMasterScheduler(graph, processors, corenum);
 
             //Use for sequential
-            Scheduler schedule = new DFBnBScheduler(graph, processors);
+//            Scheduler schedule = new DFBnBScheduler(graph, processors);
             Schedule solution = schedule.createSchedule();
 
             //Finding the optimal
