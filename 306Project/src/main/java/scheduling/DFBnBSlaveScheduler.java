@@ -2,6 +2,7 @@ package scheduling;
 
 import graph.TaskGraph;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -12,7 +13,7 @@ public class DFBnBSlaveScheduler extends DFBnBScheduler {
     private DFBnBMasterScheduler master;
     private boolean done;
 
-    public DFBnBSlaveScheduler(TaskGraph graph, int processors, Schedule schedule, int upperBound, DFBnBMasterScheduler master) {
+    public DFBnBSlaveScheduler(TaskGraph graph, int processors, Schedule schedule, int upperBound, DFBnBMasterScheduler master, Map<String, Boolean> combinations) {
         super(graph, processors);
         this.master = master;
         this.schedule = schedule;
@@ -20,6 +21,7 @@ public class DFBnBSlaveScheduler extends DFBnBScheduler {
         this.minDepth = schedule.getScheduledNodes().size();
         this.depth = minDepth;
         this.upperBound = upperBound;
+        this.combinations = combinations;
         this.done = false;
     }
 

@@ -30,6 +30,9 @@ public class DFBnBMasterScheduler implements Scheduler {
     private long branchesPruned;
     private Schedule schedule;
 
+    private Map<String, Boolean> combinations = new HashMap<>();
+
+
     /**
      * Constructor which generates an initial empty schedule based on the processors and the graph
      *
@@ -67,6 +70,19 @@ public class DFBnBMasterScheduler implements Scheduler {
             greedySchedule.removeLastScheduledTask();
         }
 
+        // generate combinations for removal of duplicates in slaves
+        List<TaskNode> schedulableNodes = greedySchedule.getSchedulableNodes();
+        String[] namesArray = new String[(schedulableNodes.size())];
+
+        for (int i=0; i<schedulableNodes.size(); i++) {
+            namesArray[i]=schedulableNodes.get(i).getName();
+        }
+
+        for (int i = processors; i > 1; i--) {
+            generateCombinations(namesArray, i, 0, new String[i]);
+        }
+
+        //initialise all the partial schedules
         initialisePartialSchedules();
 
         //Thread pool assigned with the number of cores
@@ -82,7 +98,7 @@ public class DFBnBMasterScheduler implements Scheduler {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    DFBnBSlaveScheduler scheduler = new DFBnBSlaveScheduler(schedule.getGraph(), processors, schedule, upperBound, master);
+                    DFBnBSlaveScheduler scheduler = new DFBnBSlaveScheduler(schedule.getGraph(), processors, schedule, upperBound, master, combinations);
                     slaves.add(scheduler);
                     Schedule s = scheduler.createSchedule();
 
@@ -282,6 +298,18 @@ public class DFBnBMasterScheduler implements Scheduler {
         // Remove the 'parent' partial schedule.
         partialSchedules.remove(s);
 
+    }
+
+    public void generateCombinations(String[] arr, int len, int startPosition, String[] result){
+        if (len == 0){
+            //System.out.println(Arrays.toString(result));
+            combinations.put(Arrays.toString(result) + Arrays.toString(new int[result.length]), false);
+            return;
+        }
+        for (int i = startPosition; i <= arr.length-len; i++){
+            result[result.length - len] = arr[i];
+            generateCombinations(arr, len-1, i+1, result);
+        }
     }
 
 }
