@@ -34,7 +34,7 @@ The output file should then be generated in the same directory as the jar. Pleas
 
 It's possible to change the way the program runs via a number of options available. Any combination of these options may be used.
 - The -o option allows the user to specify the name of the output file. This defaults to [INPUT-NAME]-output.dot if this option is not selected.
-- The -v option will display a GUI visualisation is selected.
+- The -v option will display a GUI visualisation if selected.
 - The -p option allows the user to specify the number of 'cores' (or threads) to run the program on. This defaults to 1 if this option is not selected.
 
 They should be used as such:
